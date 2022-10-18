@@ -1,0 +1,15 @@
+{
+  "author": "susantlalshrestha",
+  "files": [
+    "base.json",
+    "react-native.json"
+  ],
+  "license": "MIT",
+  "main": "index.ts",
+  "name": "tsconfigs",
+  "peerDependencies": {
+    "typescript": "^4.7.4"
+  },
+  "private": true,
+  "version": "0.0.0"
+}

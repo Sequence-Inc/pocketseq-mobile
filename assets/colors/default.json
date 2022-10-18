@@ -1,0 +1,14 @@
+{
+  "primary": "#00A79E",
+  "primaryVariant": "#00978D",
+  "secondary": "#D0AE6C",
+  "secondaryVariant": "#C09E6C",
+  "background": "#FFFFFF",
+  "backgroundVariant": "#EFEFEF",
+  "surface": "#1C1F23",
+  "surfaceVariant": "#C2C9D1",
+  "error": "#F4D3D6",
+  "text": "#000000",
+  "textVariant": "#505050",
+  "link": "#6363ff"
+}

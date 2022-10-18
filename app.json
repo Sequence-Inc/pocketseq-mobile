@@ -1,0 +1,55 @@
+{
+  "expo": {
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/ic_adaptive.png",
+        "backgroundColor": "#FFFFFF"
+      },
+      "package": "com.sequenceinc.pocketseq",
+      "permissions": [
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE"
+      ],
+      "versionCode": 1
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "0d25da57-059d-4fd1-ad34-23d9debffae5"
+      }
+    },
+    "icon": "./assets/images/ic_app.png",
+    "ios": {
+      "bundleIdentifier": "com.sequence.pocketseq",
+      "buildNumber": "1.0.2",
+      "supportsTablet": false,
+      "infoPlist": {
+        "NSLocationUsageDescription": "Allow location access so that we can help you find spaces near you."
+      }
+    },
+    "name": "PocketSeq",
+    "orientation": "portrait",
+    "owner": "jrgavinash",
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "The app accesses your photos to let you share them with your friends."
+        }
+      ]
+    ],
+    "slug": "pocketseq",
+    "splash": {
+      "image": "./assets/images/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#FFFFFF"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "version": "1.0.0"
+  }
+}

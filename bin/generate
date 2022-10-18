@@ -1,0 +1,522 @@
+#!/usr/bin/env node
+"use strict";
+
+const fs = require("fs");
+const path = require("path");
+
+const defaultCtx = {
+  defaultResources: undefined,
+  defaultState: undefined,
+  effects: undefined,
+  mainImports: undefined,
+  memos: undefined,
+  props: undefined,
+  propsType: undefined,
+  resourcesType: undefined,
+  resourcesValue: undefined,
+  typesImports: undefined,
+};
+
+const cmdParams = [
+  {
+    aliases: ["--source", "-src"],
+    desc: "Path of the source assets directory",
+    name: "Source directory path",
+    required: true,
+  },
+  {
+    aliases: ["--destination", "-dst"],
+    desc: "Path for the generated resources destination directory",
+    name: "Destination directory path",
+    required: false,
+  },
+  {
+    aliases: ["--help", "-h"],
+    desc: "Show help message to generate resources. If provided --source or -src can be omitted.",
+    name: "Help flag",
+    required: false,
+  },
+];
+
+const templateCreators = {
+  colors: createColorsTemplate,
+  dimens: createDimensTemplate,
+  fonts: createFontsTemplate,
+  images: createImagesTemplate,
+  strings: createStringsTemplate,
+};
+
+function createColorsTemplate(colorsPath, dstPath) {
+  const absPath = path.resolve(colorsPath);
+  const relPath = path.relative(__dirname, colorsPath);
+  const dstRelPath = path.relative(dstPath, colorsPath);
+
+  const name = "colors";
+  const ctx = { ...defaultCtx };
+  let main = "module.exports = {}";
+  let types = "";
+
+  const extension = ".json";
+  const fileNames = Array.from(
+    new Set(fs.readdirSync(absPath).filter((file) => file.endsWith(extension)))
+  );
+  if (fileNames.length === 0) return { ctx, main, name, types };
+
+  const colorGroups = fileNames.map((fileName) =>
+    fileName.replace(extension, "").replace(/\W/, "_")
+  );
+  main = `const colors = {\n${colorGroups
+    .map(
+      (groupName) =>
+        `  ${groupName}: require('${path.join(
+          dstRelPath,
+          `${groupName}${extension}`
+        )}'),`
+    )
+    .join("\n")}\n};\nmodule.exports = { colors };\n
+  `;
+
+  const colorNames = new Set(
+    fileNames.flatMap((fileName) =>
+      Object.keys(require(path.join(relPath, fileName)))
+    )
+  );
+  types = `type ColorGroups = ${colorGroups
+    .map((group) => `'${group}'`)
+    .join(" | ")};\ntype Colors = {\n${Array.from(colorNames)
+    .map((colorName) => `  ${colorName}: string;`)
+    .join("\n")}\n};\nexport const colors: Record<ColorGroups, Colors>;\n`;
+
+  const defaultGroup = `${
+    colorGroups.includes("default") ? "default" : colorGroups[0]
+  }`;
+  ctx.defaultResources = `colors: colors['${defaultGroup}']`;
+  ctx.mainImports = `const { colors } = require('./${name}')`;
+  ctx.memos = `const _colors = React.useMemo(() => colors[colorTheme || '${defaultGroup}'], [colorTheme])`;
+  ctx.props = `colorTheme`;
+  ctx.propsType = `colorTheme?: ColorGroups`;
+  ctx.resourcesType = `colors: Colors`;
+  ctx.resourcesValue = `colors: _colors`;
+  ctx.typesImports = `import { Colors, ColorGroups } from './${name}'`;
+
+  return { ctx, main, name, types };
+}
+
+function createDimensTemplate(dimensPath, dstPath) {
+  const absPath = path.resolve(dimensPath);
+  const relPath = path.relative(__dirname, dimensPath);
+  const dstRelPath = path.relative(dstPath, dimensPath);
+
+  const name = "dimens";
+  const ctx = { ...defaultCtx };
+  let main = "module.exports = {}";
+  let types = "";
+
+  const extension = ".json";
+  const fileNames = Array.from(
+    new Set(fs.readdirSync(absPath).filter((file) => file.endsWith(extension)))
+  );
+  if (fileNames.length === 0) return { ctx, main, name, types };
+
+  const dimensGroups = fileNames.map((fileName) =>
+    fileName.replace(extension, "").replace(/\W/, "_")
+  );
+  main = `const dimens = {\n${dimensGroups
+    .map(
+      (groupName) =>
+        `  ${groupName}: require('${path.join(
+          dstRelPath,
+          `${groupName}${extension}`
+        )}'),`
+    )
+    .join("\n")}\n};\nmodule.exports = { dimens };\n
+  `;
+
+  const dimensNames = new Set(
+    fileNames.flatMap((fileName) =>
+      Object.keys(require(path.join(relPath, fileName)))
+    )
+  );
+  types = `type DimenGroups = ${dimensGroups
+    .map((group) => `'${group}'`)
+    .join(" | ")};\ntype Dimens = {\n${Array.from(dimensNames)
+    .map((dimenName) => `  ${dimenName}: number;`)
+    .join("\n")}\n};\nexport const dimens: Record<DimenGroups, Dimens>;\n`;
+
+  ctx.defaultResources = `dimens: dimens`;
+  ctx.mainImports = `const { dimens } = require('./${name}')`;
+  ctx.resourcesType = `dimens: Dimens`;
+  ctx.typesImports = `import { Dimens } from './${name}'`;
+
+  return { ctx, main, name, types };
+}
+
+function createFontsTemplate(fontsPath, dstPath) {
+  const absPath = path.resolve(fontsPath);
+  const relPath = path.relative(__dirname, fontsPath);
+  const dstRelPath = path.relative(dstPath, fontsPath);
+
+  const name = "fonts";
+  const ctx = { ...defaultCtx };
+  let main = "module.exports = {}";
+  let types = "";
+
+  const fileNames = Array.from(
+    new Set(
+      fs
+        .readdirSync(absPath)
+        .filter((file) => file.endsWith(".ttf") || file.endsWith(".otf"))
+    )
+  );
+  if (fileNames.length === 0) return { ctx, main, name, types };
+
+  main = `const fonts = {\n${fileNames
+    .map((file) => {
+      const fontName = file
+        .replace(".ttf", "")
+        .replace(".otf", "")
+        .replace(/\W/, "_");
+      return `  ${fontName}: require('${path.join(dstRelPath, file)}'),`;
+    })
+    .join("\n")}\n};\nmodule.exports = { fonts };\n
+  `;
+
+  types = `type Fonts = ${fileNames
+    .map((font) => {
+      const fontName = font
+        .replace(".ttf", "")
+        .replace(".otf", "")
+        .replace(/\W/, "_");
+      return `'${fontName}'`;
+    })
+    .join(" | ")};\n`;
+
+  ctx.defaultResources = `fonts: fonts`;
+  ctx.mainImports = `const { fonts } = require('./${name}')`;
+  ctx.resourcesType = `fonts: Fonts`;
+  ctx.typesImports = `import { Fonts } from './${name}'`;
+
+  return { ctx, main, name, types };
+}
+
+function createImagesTemplate(imagesPath, dstPath) {
+  const absPath = path.resolve(imagesPath);
+  const relPath = path.relative(__dirname, imagesPath);
+  const dstRelPath = path.relative(dstPath, imagesPath);
+
+  const name = "images";
+  const ctx = { ...defaultCtx };
+  let main = "module.exports = {}";
+  let types = "";
+
+  const jpegFileNames = Array.from(
+    new Set(
+      fs
+        .readdirSync(absPath)
+        .filter((file) => file.endsWith(`.jpeg`) || file.endsWith(`.jpg`))
+    )
+  );
+  const pngFileNames = Array.from(
+    new Set(fs.readdirSync(absPath).filter((file) => file.endsWith(`.png`)))
+  );
+  const svgFileNames = Array.from(
+    new Set(fs.readdirSync(absPath).filter((file) => file.endsWith(`.svg`)))
+  );
+  main = `const images = {\n  jpeg: {\n${jpegFileNames
+    .map((fileName) => {
+      const imageName = fileName
+        .replace(".jpeg", "")
+        .replace(".jpg", "")
+        .replace(/\W/, "_");
+      const imagePath = path.join(dstRelPath, fileName);
+      return `    ${imageName}: require('${imagePath}'),`;
+    })
+    .join("\n")}\n  },\n  png: {\n${pngFileNames
+    .map((fileName) => {
+      const imageName = fileName.replace(".png", "").replace(/\W/, "_");
+      const imagePath = path.join(dstRelPath, fileName);
+      return `    ${imageName}: require('${imagePath}'),`;
+    })
+    .join("\n")}\n  },\n  svg: {\n${svgFileNames
+    .map((fileName) => {
+      const imageName = fileName.replace(".svg", "").replace(/\W/, "_");
+      const imagePath = path.join(absPath, fileName);
+      return `    ${imageName}: ${JSON.stringify(
+        fs.readFileSync(imagePath, "utf-8")
+      )},`;
+    })
+    .join("\n")}\n  }\n};\nmodule.exports = { images };\n`;
+
+  const hasJpeg = jpegFileNames.length !== 0;
+  const jpegImageNames = jpegFileNames
+    .map((fileName) =>
+      fileName.replace(".jpeg", "").replace(".jpg", "").replace(/\W/, "_")
+    )
+    .map((imageName) => `'${imageName}'`);
+  const hasPng = pngFileNames.length !== 0;
+  const pngImageNames = pngFileNames
+    .map((fileName) => fileName.replace(".png", "").replace(/\W/, "_"))
+    .map((imageName) => `'${imageName}'`);
+  const hasSvg = svgFileNames.length !== 0;
+  const svgImageNames = svgFileNames
+    .map((fileName) => fileName.replace(".svg", "").replace(/\W/, "_"))
+    .map((imageName) => `'${imageName}'`);
+  types = `${
+    hasJpeg ? `type JpegImages = ${jpegImageNames.join(" | ")};\n` : ""
+  }${hasPng ? `type PngImages = ${pngImageNames.join(" | ")};\n` : ""}${
+    hasSvg ? `type SvgImages = ${svgImageNames.join(" | ")};\n` : ""
+  }type Images = {\n${hasJpeg ? `  jpeg: Record<JpegImages, any>,\n` : ""}${
+    hasPng ? `  png: Record<PngImages, any>,\n` : ""
+  }${
+    hasSvg ? `  svg: Record<SvgImages, string>,\n` : ""
+  }};\nexport const images: Images;\n`;
+
+  ctx.defaultResources = `images: images`;
+  ctx.mainImports = `const { images } = require('./${name}')`;
+  ctx.resourcesType = `images: Images`;
+  ctx.typesImports = `import { Images } from './${name}'`;
+
+  return { ctx, main, name, types };
+}
+
+function createIndexTemplate(templates) {
+  const name = "index";
+  let main = "module.exports = {}";
+  let types = "";
+
+  if (templates.length === 0) return { main, name, types };
+
+  const defaultResources = templates
+    .map(({ ctx }) => ctx?.defaultResources)
+    .filter((resource) => resource);
+  const defaultState = templates
+    .map(({ ctx }) => ctx?.defaultState)
+    .filter((state) => state);
+  const effects = templates
+    .map(({ ctx }) => ctx?.effects)
+    .filter((effect) => effect);
+  const mainImports = templates
+    .map(({ ctx }) => ctx?.mainImports)
+    .filter((imprt) => imprt);
+  const memos = templates.map(({ ctx }) => ctx?.memos).filter((memo) => memo);
+  const props = templates.map(({ ctx }) => ctx?.props).filter((prop) => prop);
+  const resourcesValue = templates
+    .map(({ ctx }) => ctx?.resourcesValue)
+    .filter((value) => value);
+  main = `const React = require('react');\n${mainImports
+    .map((imprt) => `${imprt};`)
+    .join("\n")}\nconst defaultResources = {\n${defaultResources
+    .map((resource) => `  ${resource},`)
+    .join(
+      "\n"
+    )}\n};\nconst ResourcesContext = React.createContext(defaultResources);\nconst ResourcesProvider = ({ ${props.join(
+    ` ,`
+  )}, ...props }) => {\n  const [state, setState] = React.useState({ ${defaultState.join(
+    ", "
+  )} });\n${memos.map((memo) => `  ${memo};`).join(`\n`)}\n${effects
+    .map((effect) => `  ${effect};`)
+    .join(
+      "\n"
+    )}\n  return (\n    <ResourcesContext.Provider value={{ ...defaultResources, ${resourcesValue.join(
+    `, `
+  )} }} ref={props.ref} >\n      {props.children}\n    </ResourcesContext.Provider>\n  );\n}\nconst ResourcesConsumer = (props) => {\n  return <ResourcesContext.Consumer {...props} />;\n}\nfunction resourcesConsumer(render) {\n  return <ResourcesConsumer>{render}</ResourcesConsumer>;\n}\nfunction useResources() {\n  return React.useContext(ResourcesContext);\n}\nfunction withResources(Component) {\n  return (props) => resourcesConsumer((resources) => <Component {...props} resources={resources} />);\n}\nmodule.exports = { ResourcesContext, ResourcesProvider, ResourcesConsumer, resourcesConsumer, useResources, withResources };\n`;
+
+  const propsType = templates
+    .map(({ ctx }) => ctx?.propsType)
+    .filter((props) => props);
+  const resourcesType = templates
+    .map(({ ctx }) => ctx?.resourcesType)
+    .filter((resource) => resource);
+  const typesImports = templates
+    .map(({ ctx }) => ctx?.typesImports)
+    .filter((imports) => imports);
+  types = `import React from 'react';\n${typesImports
+    .map((imprt) => `${imprt};`)
+    .join("\n")}\ntype ResourcesProviderProps = {\n${propsType
+    .map((prop) => `  ${prop};`)
+    .join("\n")}\n};\ntype Resources = {\n${resourcesType
+    .map((resource) => `  ${resource};`)
+    .join(
+      "\n"
+    )}\n};\nexport const ResourcesContext: React.Context<Resources>;\nexport const ResourcesProvider: React.FC<ResourcesProviderProps>;\nexport const ResourcesConsumer: ResourcesContext.Consumer;\nexport function resourcesConsumer(render: (resources: Resources) => React.ReactNode): React.ReactNode {}\nexport function useResources(): Resources {}\nexport function withResources(Component: React.ComponentType<any>): React.ComponentType<any> {}\n`;
+
+  return { main, name, types };
+}
+
+function createStringsTemplate(stringsPath, dstPath) {
+  const absPath = path.resolve(stringsPath);
+  const relPath = path.relative(__dirname, stringsPath);
+  const dstRelPath = path.relative(dstPath, stringsPath);
+
+  const name = "strings";
+  const ctx = { ...defaultCtx };
+  let main = "module.exports = {}";
+  let types = "";
+
+  const extension = ".json";
+  const fileNames = Array.from(
+    new Set(fs.readdirSync(absPath).filter((file) => file.endsWith(extension)))
+  );
+  if (fileNames.length === 0) return { ctx, main, name, types };
+
+  const stringGroups = fileNames.map((fileName) =>
+    fileName.replace(extension, "").replace(/\W/, "_")
+  );
+  const defaultGroup = stringGroups.includes("default")
+    ? "default"
+    : stringGroups[0];
+  main = `const i18next = require('i18next');\nconst { initReactI18next } = require('react-i18next');\nrequire('intl-pluralrules');\nconst strings = {\n${stringGroups
+    .map(
+      (groupName) =>
+        `  ${groupName}: { translation: require('${path.join(
+          dstRelPath,
+          `${groupName}${extension}`
+        )}') },`
+    )
+    .join(
+      "\n"
+    )}\n};\ni18next.use(initReactI18next).init({\n  fallbackLng: '${defaultGroup}',\n  interpolation: { escapeValue: false },\n  resources: strings,\n});\nfunction changeLanguage(lng, callback) {\n  if(i18next.language === lng) return;\n  i18next.changeLanguage(lng, callback);\n}\nmodule.exports = { strings: i18next.t, changeLanguage: changeLanguage };\n`;
+
+  const stringNames = new Set(
+    fileNames.flatMap((fileName) =>
+      Object.keys(require(path.join(relPath, fileName)))
+    )
+  );
+  types = `import { Callback, StringMap, TFunction, TFunctionKeys, TFunctionResult, TOptions } from 'i18next';\ntype StringGroups = ${stringGroups
+    .map((group) => `'${group}'`)
+    .join(" | ")};\ntype Strings = {\n${Array.from(stringNames)
+    .map((colorName) => `  ${colorName}: string;`)
+    .join(
+      "\n"
+    )}\n};\ntype GetString<TKeys extends TFunctionKeys = string> = (\n  key: TKeys | TKeys[],\n  options?: TOptions<StringMap> | string\n) => TFunctionResult;\ntype ChangeLanguage = (lng?: StringGroups, callback?: Callback) => Promise<TFunction>;\nexport const strings: GetString<keyof Strings>;\nexport const changeLanguage: ChangeLanguage\n`;
+
+  ctx.defaultResources = `strings: strings`;
+  ctx.defaultState = `language: '${defaultGroup}'`;
+  ctx.effects = `React.useEffect(() => { language !== state.language && changeLanguage(language, () => setState({ ...state, language: language })) }, [language])`;
+  ctx.mainImports = `const { changeLanguage, strings } = require('./${name}')`;
+  ctx.props = `language`;
+  ctx.propsType = `language?: StringGroups`;
+  ctx.resourcesType = `strings: GetString<keyof Strings>`;
+  ctx.typesImports = `import { GetString, Strings, StringGroups } from './${name}'`;
+
+  return { ctx, main, name, types };
+}
+
+function createTemplates(sourcePath, dstPath) {
+  let resourcesDir = fs.readdirSync(sourcePath);
+  if (resourcesDir.length === 0)
+    throw new Error(
+      `Resources not found in the source directory '${sourcePath}'`
+    );
+  resourcesDir = resourcesDir.filter((dirName) => !dirName.startsWith("."));
+  const templates = resourcesDir.map((dirName) => {
+    if (!isTemplateAvailable(dirName))
+      throw new Error(`Cannot create resource for ${dirName}`);
+    return templateCreators[dirName](path.join(sourcePath, dirName), dstPath);
+  });
+  templates.push(createIndexTemplate(templates));
+  return templates;
+}
+
+function execute() {
+  try {
+    const args = process.argv.slice(3);
+    if (args.includes("--help") || args.includes("-h")) showHelpMsg();
+    else generate(resolveSourceAndDestinationPath(args));
+  } catch (error) {
+    console.log(`\x1b[31m[!] ${error.message}\x1b[0m`);
+    console.log();
+    showHelpMsg();
+    console.log();
+  }
+}
+
+function generate({ destinationPath, sourcePath }) {
+  console.log(`\x1b[33m[●] Generating resources\x1b[0m`);
+  const templates = createTemplates(sourcePath, destinationPath);
+  writeTemplates(destinationPath, templates);
+  writeResourcesIndex(destinationPath);
+  console.log(`\x1b[32m[✔] Resources generated\x1b[0m`);
+}
+
+function isTemplateAvailable(name) {
+  return Object.keys(templateCreators).includes(name);
+}
+
+function resolveSourceAndDestinationPath(args) {
+  const binDir = __dirname;
+
+  // RESOLVE SOURCE PATH
+  if (!args.includes("--source") && !args.includes("-src"))
+    throw new Error("Missing source");
+  let sourceIndex = args.indexOf("--source") + 1;
+  if (sourceIndex < 1) sourceIndex = args.indexOf("-src") + 1;
+  let sourcePath = path.resolve(args[sourceIndex]);
+
+  // RESOLVE DESTINATION PATH
+  let destinationPath = path.resolve(binDir, "../.generated");
+  if (args.includes("--destination") || args.includes("-dst")) {
+    let destinationIndex = args.indexOf("--destination") + 1;
+    if (destinationIndex < 1) destinationIndex = args.indexOf("-dst") + 1;
+    destinationPath = path.resolve(args[destinationIndex]);
+  }
+
+  return { destinationPath, sourcePath };
+}
+
+function showHelpMsg() {
+  console.log(`\x1b[1mResource generate syntax:\x1b[0m`);
+  console.log(
+    ` - npx resources generate \x1b[3m<param_name> param_value\x1b[0m`
+  );
+  console.log();
+  console.log(`\x1b[1mExample:\x1b[0m`);
+  console.log(` - npx resources generate --source ./assets`);
+  console.log();
+  console.log(`\x1b[1mAvailable generate params:\x1b[0m`);
+  // clone params array
+  const clnParams = Array.from(
+    cmdParams
+      .sort((a, b) => a.aliases.join(", ").localeCompare(b.aliases.join(", ")))
+      .sort((a, b) =>
+        a.required && !b.required ? -1 : !a.required && b.required ? 1 : 0
+      )
+  );
+  // highest length of params aliases
+  const hlen =
+    cmdParams
+      .sort((a, b) => b.aliases.join(", ").length - a.aliases.join(", ").length)
+      .at(0)
+      ?.aliases.join(", ").length || 0;
+  clnParams.forEach(({ aliases, desc, required }) => {
+    const opspcs = Array(4 + hlen - aliases.join(", ").length)
+      .fill(" ")
+      .join("");
+    console.log(
+      `\x1b[33m${aliases.join(", ")}\x1b[0m${opspcs}\x1b[3m${
+        required ? "(required)" : "(optional)"
+      }\x1b[0m: ${desc}`
+    );
+  });
+}
+
+function writeResourcesIndex(destinationPath) {
+  // const mainPath = path.resolve(__dirname, "../");
+  const mainPath = path.resolve(destinationPath, "../");
+  const relDestinationPath = path.relative(mainPath, destinationPath);
+
+  const main = `const generatedResources = require('./${relDestinationPath}');\nmodule.exports = generatedResources`;
+  const types = `export * from './${relDestinationPath}'`;
+  fs.writeFileSync(path.join(mainPath, `index.js`), main);
+  fs.writeFileSync(path.join(mainPath, `index.d.ts`), types);
+}
+
+function writeTemplates(destinationPath, templates) {
+  if (!fs.existsSync(destinationPath)) fs.mkdirSync(destinationPath);
+  templates.forEach(({ name, main, types }) => {
+    fs.writeFileSync(path.join(destinationPath, `${name}.js`), main);
+    fs.writeFileSync(path.join(destinationPath, `${name}.d.ts`), types);
+  });
+}
+
+module.exports = { execute, showHelpMsg };

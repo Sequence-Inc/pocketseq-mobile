@@ -1,0 +1,70 @@
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import React from "react";
+import AccountCoordinator from "./account-coordinator";
+import { AccountDetailScreen, AccountPaymentMethodScreen } from "./screens";
+import { useResources } from "../../resources";
+import { Profile } from "../../services/domains";
+import { HeaderLeftButton } from "../../widgets/header-left-button";
+
+type AccountStackParamList = {
+  "account-detail-screen": undefined;
+  "account-payment-method-screen": undefined;
+};
+
+type AccountStackProps = {
+  accountCoordinator: () => AccountCoordinator;
+  profile?: Profile;
+};
+
+const { Group, Navigator, Screen } =
+  createNativeStackNavigator<AccountStackParamList>();
+
+export default function AccountStack({
+  accountCoordinator: accountCoordinator,
+}: AccountStackProps) {
+  const coordinator = accountCoordinator();
+  const { colors } = useResources();
+  return (
+    <Navigator
+      initialRouteName="account-detail-screen"
+      screenOptions={{
+        headerBackTitleVisible: true,
+        headerStyle: { backgroundColor: colors.primary },
+        headerTitleAlign: "center",
+        headerTitleStyle: { color: colors.background },
+        headerLeft: (props) => {
+          return (
+            <HeaderLeftButton
+              headerButtonProps={props}
+              coordinator={coordinator}
+            />
+          );
+        },
+      }}
+    >
+      <Group
+        screenOptions={{
+          headerShown: true,
+          headerTransparent: true,
+          title: "アカウント",
+        }}
+      >
+        <Screen name="account-detail-screen">
+          {(props) => (
+            <AccountDetailScreen {...props} coordinator={coordinator} />
+          )}
+        </Screen>
+        <Screen
+          name="account-payment-method-screen"
+          options={{
+            title: "ペイメント管理",
+          }}
+        >
+          {(props) => (
+            <AccountPaymentMethodScreen {...props} coordinator={coordinator} />
+          )}
+        </Screen>
+      </Group>
+    </Navigator>
+  );
+}

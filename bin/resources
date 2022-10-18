@@ -1,0 +1,13 @@
+#!/usr/bin/env node
+"use strict";
+
+function execute() {
+  try {
+    require(`./${process.argv[2]}`).execute();
+  } catch (err) {
+    if (!process.argv[2]) require(`./help`);
+    else console.log(`Command not found ${process.argv[2]}`);
+  }
+}
+
+execute();

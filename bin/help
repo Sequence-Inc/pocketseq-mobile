@@ -1,0 +1,92 @@
+#!/usr/bin/env node
+"use strict";
+
+const cmds = [
+  {
+    desc: "Print this help message",
+    name: "help",
+  },
+  {
+    desc: "Generate application resources",
+    name: "generate",
+    params: [
+      {
+        aliases: ["--source", "-src"],
+        desc: "Path of the source assets directory",
+        name: "Source directory path",
+        required: true,
+      },
+      {
+        aliases: ["--destination", "-dst"],
+        desc: "Path for the generated resources destination directory",
+        name: "Destination directory path",
+        required: false,
+      },
+      {
+        aliases: ["--help", "-h"],
+        desc: "Show help message to generate resources",
+        name: "Help flag",
+        required: false,
+      },
+    ],
+  },
+];
+
+function showHelpMsg() {
+  console.log(`\x1b[1mCommand syntax:\x1b[0m`);
+  console.log(` - npx resources \x1b[3m<command_option>\x1b[0m`);
+  console.log();
+  console.log(`\x1b[1mExample:\x1b[0m`);
+  console.log(` - npx resources help`);
+  console.log();
+  console.log(`\x1b[1mAvailable command options:\x1b[0m`);
+
+  // clone cmds array
+  const clnCmds = Array.from(cmds.sort((a, b) => a.name.localeCompare(b.name)));
+  // highest length of cmds names
+  const hlen = cmds.sort((a, b) => b.name.length - a.name.length).at(0)?.name.length || 0;
+  // highest length of params aliases
+  const phlen =
+    cmds
+      .flatMap(({ params }) => params)
+      .sort((a, b) => b.aliases.join(", ").length - a.aliases.join(", ").length)
+      .at(0)
+      ?.aliases.join(", ").length || 0;
+  clnCmds.forEach(({ desc, name, params }) => {
+    let spcs = Array(4 + hlen - name.length)
+      .fill(" ")
+      .join("");
+    console.log(` - \x1b[4m${name}\x1b[0m${spcs}${desc}`);
+
+    // print params if available
+    if (params && params.length > 0) {
+      const spcs = Array(7 + hlen)
+        .fill(" ")
+        .join("");
+      console.log(`${spcs}\x1b[2;33mParameters:\x1b[0m`);
+      // clone params array
+      const clnParams = Array.from(
+        params
+          .sort((a, b) => a.aliases.join(", ").localeCompare(b.aliases.join(", ")))
+          .sort((a, b) => (a.required && !b.required ? -1 : !a.required && b.required ? 1 : 0))
+      );
+      clnParams.forEach(({ aliases, desc, required }) => {
+        const opspcs = Array(4 + phlen - aliases.join(", ").length)
+          .fill(" ")
+          .join("");
+        console.log(
+          `${spcs}\x1b[2m${aliases.join(", ")}${opspcs}\x1b[3m${
+            required ? "(required)" : "(optional)"
+          }\x1b[0m\x1b[2m: ${desc}\x1b[0m`
+        );
+      });
+    }
+  });
+  console.log();
+}
+
+function execute() {
+  showHelpMsg();
+}
+
+module.exports = { execute, showHelpMsg };
