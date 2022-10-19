@@ -5,7 +5,7 @@
         "foregroundImage": "./assets/images/ic_adaptive.png",
         "backgroundColor": "#FFFFFF"
       },
-      "package": "com.sequenceinc.pocketseq",
+      "package": "com.sequence.pocketseq",
       "permissions": [
         "CAMERA",
         "READ_EXTERNAL_STORAGE",
@@ -24,7 +24,7 @@
     "icon": "./assets/images/ic_app.png",
     "ios": {
       "bundleIdentifier": "com.sequence.pocketseq",
-      "buildNumber": "1.0.4",
+      "buildNumber": "5",
       "supportsTablet": false,
       "infoPlist": {
         "NSLocationUsageDescription": "Allow location access so that we can help you find spaces near you."

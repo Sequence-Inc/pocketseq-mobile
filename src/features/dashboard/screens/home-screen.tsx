@@ -148,47 +148,6 @@ export const HomeScreen: React.FC<IHomeScreenProps> = ({ coordinator }) => {
         style={{ backgroundColor: colors.backgroundVariant, flex: 1 }}
         keyboardDismissMode="on-drag"
       >
-        <View
-          style={{
-            width: width,
-            marginTop: 12,
-            marginBottom: 12,
-            paddingVertical: 12,
-            backgroundColor: colors.background,
-          }}
-        >
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "space-between",
-              paddingBottom: 12,
-              paddingHorizontal: 12,
-            }}
-          >
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
-              <Text
-                style={{
-                  color: colors.primary,
-                  fontSize: 18,
-                  fontWeight: "500",
-                }}
-              >
-                Subscriptions
-              </Text>
-            </View>
-          </View>
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              paddingHorizontal: 12,
-            }}
-          >
-            <SubscriptionBanner onPress={(val) => goToSubscription(val)} />
-          </View>
-        </View>
-
         {/* Space Types */}
         <View
           style={{
@@ -482,6 +441,46 @@ export const HomeScreen: React.FC<IHomeScreenProps> = ({ coordinator }) => {
                 </Touchable>
               ))}
           </ScrollView>
+        </View>
+        <View
+          style={{
+            width: width,
+            marginTop: 12,
+            marginBottom: 12,
+            paddingVertical: 12,
+            backgroundColor: colors.background,
+          }}
+        >
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
+              paddingBottom: 12,
+              paddingHorizontal: 12,
+            }}
+          >
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <Text
+                style={{
+                  color: colors.primary,
+                  fontSize: 18,
+                  fontWeight: "500",
+                }}
+              >
+                Subscriptions
+              </Text>
+            </View>
+          </View>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              paddingHorizontal: 12,
+            }}
+          >
+            <SubscriptionBanner onPress={(val) => goToSubscription(val)} />
+          </View>
         </View>
       </ScrollView>
     </View>

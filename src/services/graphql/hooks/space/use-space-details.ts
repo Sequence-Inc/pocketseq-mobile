@@ -1,5 +1,5 @@
 import { gql, useLazyQuery } from "@apollo/client";
-import { Space, SPACE } from "../../../domains";
+import { Space, SPACE, SpaceType, SPACE_TYPE_LIST } from "../../../domains";
 import React from "react";
 
 const SPACE_BY_ID = gql`
@@ -10,12 +10,24 @@ const SPACE_BY_ID = gql`
   }
 `;
 
+const AVAILABLE_SPACE_TYPES = gql`
+  query SpaceTypes {
+    availableSpaceTypes {
+      ${SPACE_TYPE_LIST}
+    }
+  }
+`;
+
 export type SpaceByIdInput = {
   id: string;
 };
 
 export interface SpaceByIdResult {
   spaceById: Space;
+}
+
+export interface AvailableSpaceTypesResult {
+  availableSpaceTypes: SpaceType;
 }
 
 export const useSpace = () => {
@@ -35,5 +47,17 @@ export const useSpace = () => {
       }),
     [spaceById]
   );
-  return { spaceById, fetchSpaceById, loading, error, data: data?.spaceById };
+
+  const [getAvailableSpaceTypes] = useLazyQuery<AvailableSpaceTypesResult>(
+    AVAILABLE_SPACE_TYPES
+  );
+
+  return {
+    spaceById,
+    fetchSpaceById,
+    loading,
+    error,
+    data: data?.spaceById,
+    getAvailableSpaceTypes,
+  };
 };

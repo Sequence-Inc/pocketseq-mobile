@@ -13,6 +13,7 @@ const { width, height } = Dimensions.get("window");
 export type BannerPropTypes = {
   onPress: (val: string) => void;
 };
+
 const Banner = (props: BannerPropTypes) => {
   const { colors } = useResources();
   const [{ globalStyles }] = React.useState(() => styleStore);
@@ -23,7 +24,7 @@ const Banner = (props: BannerPropTypes) => {
         globalStyles.row,
         {
           width: "100%",
-          justifyContent: "space-evenly",
+          justifyContent: "space-between",
         },
       ]}
     >
@@ -35,11 +36,10 @@ const Banner = (props: BannerPropTypes) => {
               borderWidth: 1,
               borderRadius: 7,
               borderColor: `rgba(210,220,220,0.2)`,
-              height: height / 7,
-              width: width / 2.3,
-              paddingHorizontal: 10,
-              justifyContent: "center",
-              alignItems: "center",
+              width: (width - 8 * 5) / 2,
+              padding: 8,
+              justifyContent: "flex-start",
+              alignItems: "flex-start",
               backgroundColor: "rgba(255,255,255,0.9)",
             },
           ]}
@@ -50,7 +50,6 @@ const Banner = (props: BannerPropTypes) => {
               color: colors.primaryVariant,
               fontSize: 18,
               fontWeight: "600",
-              marginVertical: 10,
             }}
           >
             Space subscriptions
@@ -67,13 +66,11 @@ const Banner = (props: BannerPropTypes) => {
               borderWidth: 1,
               borderRadius: 7,
               borderColor: `rgba(210,220,220,0.2)`,
+              width: (width - 8 * 5) / 2,
+              padding: 8,
+              justifyContent: "flex-start",
+              alignItems: "flex-start",
               backgroundColor: "rgba(255,255,255,0.9)",
-              height: height / 7,
-
-              width: width / 2.3,
-              paddingHorizontal: 10,
-              justifyContent: "center",
-              alignItems: "center",
             },
           ]}
         >
@@ -83,7 +80,6 @@ const Banner = (props: BannerPropTypes) => {
               color: colors.primaryVariant,
               fontSize: 18,
               fontWeight: "600",
-              marginVertical: 10,
             }}
           >
             Hotel subscriptions
