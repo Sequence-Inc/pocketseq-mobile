@@ -24,7 +24,7 @@
     "icon": "./assets/images/ic_app.png",
     "ios": {
       "bundleIdentifier": "com.sequence.pocketseq",
-      "buildNumber": "1.0.2",
+      "buildNumber": "1.0.4",
       "supportsTablet": false,
       "infoPlist": {
         "NSLocationUsageDescription": "Allow location access so that we can help you find spaces near you."

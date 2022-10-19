@@ -55,7 +55,6 @@
     "typescript": "^4.7.4"
   },
   "license": "MIT",
-  "main": "index.ts",
   "name": "@applications/pocketseq",
   "private": true,
   "scripts": {
