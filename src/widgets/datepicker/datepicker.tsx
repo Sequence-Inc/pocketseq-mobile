@@ -1,6 +1,8 @@
 import { View, Text, Platform } from "react-native";
 import React from "react";
-import DateTimePicker, { DateTimePickerAndroid } from "@react-native-community/datetimepicker";
+import DateTimePicker, {
+  DateTimePickerAndroid,
+} from "@react-native-community/datetimepicker";
 import moment, { Moment } from "moment";
 
 export type DatePickerprops = {
@@ -30,17 +32,12 @@ const DatePicker = (props: DatePickerprops) => {
     });
   };
 
-  console.log("platform", Platform.OS);
   return (
-    <View
-      style={{
-        flexDirection: "row",
-        justifyContent: "space-between",
-        flexGrow: 1,
-      }}
-    >
+    <View>
       {Platform.OS === "android" && (
-        <Text onPress={() => showMode()}>{moment(props?.date || new Date()).format("YYYY-MM-DD")}</Text>
+        <Text onPress={() => showMode()}>
+          {moment(props?.date || new Date()).format("YYYY-MM-DD")}
+        </Text>
       )}
 
       {Platform.OS === "ios" && (
@@ -60,3 +57,8 @@ const DatePicker = (props: DatePickerprops) => {
 };
 
 export default DatePicker;
+
+// style={{
+//         flexDirection: "row",
+//         justifyContent: "space-between",
+//       }}

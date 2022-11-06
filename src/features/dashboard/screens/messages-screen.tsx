@@ -120,7 +120,7 @@ const ItemSeperator: React.FC = () => {
 const EmptyMessageComponent: React.FC = () => {
   return (
     <View style={{ alignItems: "center", padding: 20 }}>
-      <Text>No Messages</Text>
+      <Text>メッセージはありません。</Text>
     </View>
   );
 };

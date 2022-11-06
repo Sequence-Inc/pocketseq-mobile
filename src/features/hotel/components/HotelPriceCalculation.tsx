@@ -137,7 +137,7 @@ export const HotelPriceCalculation = ({
             marginRight: 14,
           }}
         >
-          Selected Plan
+          プラン選択
         </Text>
         <View style={[globalStyles.row]}>
           <Picker
@@ -162,10 +162,26 @@ export const HotelPriceCalculation = ({
           </Picker>
 
           <View>
-            <Text style={{ fontSize: 14, fontWeight: "600", marginBottom: 10 }}>
-              Plan Description
+            <Text
+              style={{
+                fontSize: 18,
+                fontWeight: "600",
+                marginBottom: 10,
+                color: colors.textVariant,
+              }}
+            >
+              選択したプラン
             </Text>
-            <Text style={{ fontSize: 14, fontWeight: "200" }}>
+            <Text
+              style={{
+                fontSize: 16,
+                fontWeight: "700",
+                color: colors.textVariant,
+              }}
+            >
+              {selectedPlan?.name || ""}
+            </Text>
+            <Text style={{ fontSize: 16, color: colors.textVariant }}>
               {selectedPlan?.description || ""}
             </Text>
           </View>
@@ -180,7 +196,7 @@ export const HotelPriceCalculation = ({
             marginRight: 14,
           }}
         >
-          Selected Room
+          ルーム選択
         </Text>
         <View style={[globalStyles.row]}>
           <Picker
@@ -205,12 +221,27 @@ export const HotelPriceCalculation = ({
               );
             })}
           </Picker>
-
           <View>
-            <Text style={{ fontSize: 14, fontWeight: "600", marginBottom: 10 }}>
-              Room Description
+            <Text
+              style={{
+                fontSize: 18,
+                fontWeight: "600",
+                marginBottom: 10,
+                color: colors.textVariant,
+              }}
+            >
+              選択したルーム
             </Text>
-            <Text style={{ fontSize: 14, fontWeight: "200" }}>
+            <Text
+              style={{
+                fontSize: 16,
+                fontWeight: "700",
+                color: colors.textVariant,
+              }}
+            >
+              {selectedRoom?.hotelRoom?.name || ""}
+            </Text>
+            <Text style={{ fontSize: 16, color: colors.textVariant }}>
               {selectedRoom?.hotelRoom?.description || ""}
             </Text>
           </View>
@@ -221,26 +252,11 @@ export const HotelPriceCalculation = ({
         <Text
           style={{ fontSize: 18, fontWeight: "700", color: colors.textVariant }}
         >
-          Date
+          予定日
         </Text>
 
         <View style={[globalStyles.row, { marginTop: 10 }]}>
-          <View
-            style={[
-              globalStyles.col_6,
-              {
-                justifyContent: "center",
-                alignItems: "center",
-                borderWidth: StyleSheet.hairlineWidth,
-                borderRightWidth: 1,
-                borderTopRightRadius: 0,
-                borderBottomRightRadius: 0,
-                paddingVertical: 10,
-                borderColor: colors.secondaryVariant,
-                borderRadius: 10,
-              },
-            ]}
-          >
+          <View style={{ flexGrow: 1, marginRight: 8 }}>
             <Text
               style={{
                 fontSize: 16,
@@ -249,7 +265,7 @@ export const HotelPriceCalculation = ({
                 marginRight: 14,
               }}
             >
-              Check In
+              チェックイン
             </Text>
 
             <DatePicker
@@ -263,23 +279,7 @@ export const HotelPriceCalculation = ({
             />
           </View>
 
-          <View
-            style={[
-              globalStyles.col_6,
-              {
-                justifyContent: "center",
-                alignItems: "center",
-                borderWidth: StyleSheet.hairlineWidth,
-                borderLeftWidth: 1,
-                borderTopLeftRadius: 0,
-                borderBottomLeftRadius: 0,
-
-                paddingVertical: 10,
-                borderColor: colors.secondaryVariant,
-                borderRadius: 10,
-              },
-            ]}
-          >
+          <View style={{ flexGrow: 1, marginLeft: 8 }}>
             <Text
               style={{
                 fontSize: 16,
@@ -288,7 +288,7 @@ export const HotelPriceCalculation = ({
                 marginRight: 14,
               }}
             >
-              Check Out
+              チェックアウト
             </Text>
 
             <DatePicker
@@ -305,17 +305,16 @@ export const HotelPriceCalculation = ({
       <View style={[commonStyles(colors)]}>
         <Text
           style={{
-            fontSize: 16,
+            fontSize: 18,
             fontWeight: "700",
             color: colors.textVariant,
-            marginRight: 14,
             marginBottom: 14,
           }}
         >
-          Number of Peoples
+          人数
         </Text>
         <View style={[globalStyles.row, { width: "100%" }]}>
-          <View style={[globalStyles.col_6]}>
+          <View style={[{ flexGrow: 1, marginRight: 8 }]}>
             <Text
               style={{
                 fontSize: 14,
@@ -324,7 +323,7 @@ export const HotelPriceCalculation = ({
                 marginRight: 14,
               }}
             >
-              Adults
+              大人
             </Text>
             <TextInput
               containerStyle={[globalStyles.col_12]}
@@ -338,7 +337,7 @@ export const HotelPriceCalculation = ({
               }}
             />
           </View>
-          <View style={[globalStyles.col_6]}>
+          <View style={[{ flexGrow: 1, marginLeft: 8 }]}>
             <Text
               style={{
                 fontSize: 14,
@@ -347,7 +346,7 @@ export const HotelPriceCalculation = ({
                 marginRight: 14,
               }}
             >
-              Childs
+              子供
             </Text>
             <TextInput
               containerStyle={[globalStyles.col_12]}
@@ -368,7 +367,7 @@ export const HotelPriceCalculation = ({
         <Text
           style={{ fontSize: 20, fontWeight: "700", color: colors.textVariant }}
         >
-          Price
+          料金
         </Text>
 
         {calculatingPrice && (
@@ -381,7 +380,7 @@ export const HotelPriceCalculation = ({
                 marginVertical: 14,
               }}
             >
-              Calculating Fees ...
+              ...
             </Text>
           </View>
         )}
@@ -395,7 +394,7 @@ export const HotelPriceCalculation = ({
                 marginVertical: 14,
               }}
             >
-              Hotel unavailable for the choosen details
+              選択した日付は利用できません。
             </Text>
           </View>
         )}
@@ -426,17 +425,15 @@ export const HotelPriceCalculation = ({
                   { justifyContent: "flex-end" },
                 ]}
               >
-                <Text
-                  style={{ fontSize: 18, fontWeight: "700", letterSpacing: 2 }}
-                >
-                  {Math.ceil(priceDate?.totalAmount / 1.1) || "0"}
+                <Text style={{ fontSize: 18, fontWeight: "700" }}>
+                  ￥{Math.ceil(priceDate?.totalAmount / 1.1) || "0"}
                 </Text>
               </View>
             </View>
 
             <View style={[globalStyles.row, { marginVertical: 14 }]}>
               <View style={[globalStyles.row, globalStyles.col_6]}>
-                <Text style={{ fontSize: 15, fontWeight: "600" }}>Tax </Text>
+                <Text style={{ fontSize: 15, fontWeight: "600" }}>税金</Text>
               </View>
 
               <View
@@ -446,9 +443,8 @@ export const HotelPriceCalculation = ({
                   { justifyContent: "flex-end" },
                 ]}
               >
-                <Text
-                  style={{ fontSize: 18, fontWeight: "700", letterSpacing: 2 }}
-                >
+                <Text style={{ fontSize: 18, fontWeight: "700" }}>
+                  ￥
                   {Math.ceil(
                     priceDate?.totalAmount - priceDate?.totalAmount / 1.1
                   ) || "0"}
@@ -458,7 +454,7 @@ export const HotelPriceCalculation = ({
 
             <View style={[globalStyles.row, { marginVertical: 14 }]}>
               <View style={[globalStyles.row, globalStyles.col_6]}>
-                <Text style={{ fontSize: 15, fontWeight: "600" }}>Total </Text>
+                <Text style={{ fontSize: 15, fontWeight: "600" }}>合計</Text>
               </View>
 
               <View
@@ -468,16 +464,14 @@ export const HotelPriceCalculation = ({
                   { justifyContent: "flex-end" },
                 ]}
               >
-                <Text
-                  style={{ fontSize: 18, fontWeight: "700", letterSpacing: 2 }}
-                >
-                  {Math.ceil(priceDate?.totalAmount) || "0"}
+                <Text style={{ fontSize: 18, fontWeight: "700" }}>
+                  ￥{Math.ceil(priceDate?.totalAmount) || "0"}
                 </Text>
               </View>
             </View>
 
             <Button
-              title="Confirm"
+              title="次へ"
               onPress={makeReservation}
               containerStyle={{
                 backgroundColor: colors.primary,
