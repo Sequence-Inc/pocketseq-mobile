@@ -38,7 +38,13 @@
     "react-native-safe-area-context": "~4.2.4",
     "react-native-screens": "~3.11.1",
     "react-native-svg": "12.3.0",
-    "yup": "^0.32.11"
+    "yup": "^0.32.11",
+    "sentry-expo": "^4.2.0",
+    "expo-application": "~4.1.0",
+    "expo-constants": "~13.1.1",
+    "expo-device": "~4.2.0",
+    "expo-updates": "~0.13.4",
+    "@sentry/react-native": "^3.1.1"
   },
   "devDependencies": {
     "@babel/core": "^7.18.10",
@@ -60,7 +66,8 @@
   "scripts": {
     "build:ios": "eas build --platform ios",
     "resources": "node ./bin/resources generate -src assets -dst ./src/resources/generated",
-    "start": "npm run resources & expo start --clear"
+    "start": "npm run resources & expo start --clear",
+    "build": "eas build -p=ios --auto-submit --clear-cache"
   },
   "version": "0.0.0"
 }

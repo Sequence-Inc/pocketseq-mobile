@@ -188,7 +188,6 @@ export const SearchMapScreen: React.FC<ISearchScreenProps> = ({
           ref={map}
           style={{ ...StyleSheet.absoluteFillObject }}
           initialRegion={params?.geoloc}
-          provider="google"
           showsUserLocation
           onRegionChangeComplete={(region) => {
             handleRegionChange(region);

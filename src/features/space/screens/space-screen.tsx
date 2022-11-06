@@ -327,7 +327,6 @@ export const SpaceScreen: React.FC<ISpaceScreenProps> = ({ coordinator }) => {
               maxZoomLevel={20}
               region={mapCenter}
               style={{ width: MAP_WIDTH, height: MAP_HEIGHT, borderRadius: 8 }}
-              provider="google"
             >
               <Marker
                 key={space?.id}

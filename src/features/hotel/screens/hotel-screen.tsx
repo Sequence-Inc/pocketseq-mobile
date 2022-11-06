@@ -547,8 +547,6 @@ export const HotelScreen: React.FC<ISpaceScreenProps> = ({ coordinator }) => {
               maxZoomLevel={20}
               region={mapCenter}
               style={{ width: MAP_WIDTH, height: MAP_HEIGHT, borderRadius: 8 }}
-              provider="google"
-              onRegionChangeComplete={(region) => {}}
             >
               <Marker
                 key={hotel?.id}
