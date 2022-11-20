@@ -44,7 +44,7 @@ export default function SubscriptionStack({
         screenOptions={{
           headerShown: true,
           headerTransparent: true,
-          title: "レンタルスペース",
+          title: "サブスクリプション",
         }}
       >
         <Screen name="subscriptions-screen">
