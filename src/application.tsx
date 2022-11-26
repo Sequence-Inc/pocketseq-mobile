@@ -1,4 +1,3 @@
-import * as Device from "expo-device";
 import * as Notifications from "expo-notifications";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AlgoliaProvider } from "./services/algolia";
@@ -8,9 +7,9 @@ import { AppNavigation } from "./navigation";
 import React from "react";
 import { ResourcesProvider } from "./resources";
 import { AuthContextProvider } from "./contexts/auth";
-import { Platform } from "react-native";
 import { Subscription } from "expo-modules-core";
 import { Notification } from "expo-notifications";
+import { registerNotifications } from "./utils/notification";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -36,9 +35,7 @@ export function Application() {
   const responseListener = React.useRef<Subscription>();
 
   React.useEffect(() => {
-    registerForPushNotificationsAsync().then((token) =>
-      setExpoPushToken(token)
-    );
+    registerNotifications().then((token) => setExpoPushToken(token));
 
     notificationListener.current =
       Notifications.addNotificationReceivedListener((notification) => {
@@ -72,37 +69,4 @@ export function Application() {
       </AlgoliaProvider>
     </AppClientProvider>
   );
-}
-
-async function registerForPushNotificationsAsync() {
-  let token;
-
-  if (Platform.OS === "android") {
-    await Notifications.setNotificationChannelAsync("default", {
-      name: "default",
-      importance: Notifications.AndroidImportance.MAX,
-      vibrationPattern: [0, 250, 250, 250],
-      lightColor: "#FF231F7C",
-    });
-  }
-
-  if (Device.isDevice) {
-    const { status: existingStatus } =
-      await Notifications.getPermissionsAsync();
-    let finalStatus = existingStatus;
-    if (existingStatus !== "granted") {
-      const { status } = await Notifications.requestPermissionsAsync();
-      finalStatus = status;
-    }
-    if (finalStatus !== "granted") {
-      alert("Failed to get push token for push notification!");
-      return;
-    }
-    token = (await Notifications.getExpoPushTokenAsync()).data;
-    console.log(token);
-  } else {
-    alert("Must use physical device for Push Notifications");
-  }
-
-  return token;
 }

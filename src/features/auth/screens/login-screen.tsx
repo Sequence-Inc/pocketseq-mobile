@@ -14,6 +14,7 @@ import { ScrollView } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useResources } from "../../../resources";
 import AuthCoordinator from "../auth-coordinator";
+import { registerNotifications } from "../../../utils/notification";
 
 export type ILoginScreenProps = {
   coordinator: AuthCoordinator;
@@ -34,7 +35,12 @@ export const LoginScreen: React.FC<ILoginScreenProps> = observer(
         if (loading) return;
         const { email, password } = input;
         if (isEmpty(email) || isEmpty(password)) console.log("Empty fields");
-        const result = await login({ email: email!!, password: password!! });
+        const deviceID = await registerNotifications();
+        const result = await login({
+          email: email!!,
+          password: password!!,
+          deviceID,
+        });
         if (result.data) {
           flowResult(saveLogin({ ...result.data?.login }));
           coordinator.toDashboardScreen();
