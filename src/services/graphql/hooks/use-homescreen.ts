@@ -43,8 +43,11 @@ const TOP_PICKS = gql`
 `;
 
 export const useHomeScreen = ({ take, skip }: PaginationOption) => {
-  let [getTopPicks] = useLazyQuery<TopPicksResult, TopPicksInput>(TOP_PICKS, {
-    variables: { paginate: { take, skip } },
-  });
-  return { getTopPicks };
+  let [getTopPicks, result] = useLazyQuery<TopPicksResult, TopPicksInput>(
+    TOP_PICKS,
+    {
+      variables: { paginate: { take, skip } },
+    }
+  );
+  return { getTopPicks, result };
 };
