@@ -1,13 +1,10 @@
 import {
-  Hotel,
   HotelPlan,
-  Space,
   SpacePricePlan,
   SpacePricePlanType,
-  SpaceType,
 } from "../../../services/domains";
 import { useHomeScreen } from "../../../services/graphql";
-import React, { ReactElement, useCallback, useEffect, useState } from "react";
+import React, { ReactElement, useEffect } from "react";
 import { View, Text, Image, Dimensions } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import { useResources } from "../../../resources";
@@ -27,29 +24,16 @@ export type IHomeScreenProps = {
 const { width, height } = Dimensions.get("window");
 
 export const HomeScreen: React.FC<IHomeScreenProps> = ({ coordinator }) => {
-  const [loading, setLoading] = useState<boolean>(true);
-  const [spaceTypes, setSpaceTypes] = useState<SpaceType[] | undefined>();
-  const [spaces, setSpaces] = useState<Space[] | undefined>();
-  const [hotels, setHotels] = useState<Hotel[] | undefined>();
-
   const { colors, images, strings } = useResources();
-  const { getTopPicks } = useHomeScreen({ take: 8, skip: 0 });
-
-  const getData = useCallback(async () => {
-    const { data, error } = await getTopPicks();
-    if (!error) {
-      setSpaceTypes(data?.availableSpaceTypes);
-      setSpaces(data?.allSpaces?.data);
-      setHotels(data?.allPublishedHotels);
-      setLoading(false);
-    }
-  }, []);
+  const { getTopPicks, result } = useHomeScreen({ take: 8, skip: 0 });
 
   useEffect(() => {
-    getData();
+    getTopPicks();
   }, []);
 
-  if (loading) {
+  console.log(result.loading);
+
+  if (result.loading) {
     return <FullScreenActivityIndicator />;
   }
 
@@ -189,9 +173,9 @@ export const HomeScreen: React.FC<IHomeScreenProps> = ({ coordinator }) => {
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={{ paddingHorizontal: 6 }}
           >
-            {spaceTypes &&
-              spaceTypes?.length > 0 &&
-              spaceTypes?.map((spaceType) => (
+            {result.data?.availableSpaceTypes &&
+              result.data?.availableSpaceTypes?.length > 0 &&
+              result.data?.availableSpaceTypes?.map((spaceType) => (
                 <Touchable
                   key={spaceType.id}
                   style={{ marginHorizontal: 6 }}
@@ -265,9 +249,9 @@ export const HomeScreen: React.FC<IHomeScreenProps> = ({ coordinator }) => {
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={{ paddingHorizontal: 6 }}
           >
-            {spaces &&
-              spaces?.length > 0 &&
-              spaces?.map((space) => (
+            {result.data?.allSpaces.data &&
+              result.data?.allSpaces?.data?.length > 0 &&
+              result.data?.allSpaces?.data?.map((space) => (
                 <Touchable key={space.id} onPress={() => goToSpace(space.id)}>
                   <View style={{ marginHorizontal: 6, width: 160 }}>
                     <Image
@@ -372,9 +356,9 @@ export const HomeScreen: React.FC<IHomeScreenProps> = ({ coordinator }) => {
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={{ paddingHorizontal: 6 }}
           >
-            {hotels &&
-              hotels?.length > 0 &&
-              hotels?.map((hotel) => (
+            {result.data?.allPublishedHotels &&
+              result.data?.allPublishedHotels?.length > 0 &&
+              result.data?.allPublishedHotels?.map((hotel) => (
                 <Touchable key={hotel.id} onPress={() => goToHotel(hotel.id)}>
                   <View
                     key={hotel.id}

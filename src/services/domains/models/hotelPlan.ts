@@ -161,9 +161,10 @@ export const HOTEL_PLAN = `
   roomTypes {
     ${HOTEL_PACKAGE_PLAN_ROOM_TYPE}
   }
-  subscriptionProducts {
-    ${SUBSCRIPTION}
-  }
   createdAt
   updatedAt
 `;
+
+// subscriptionProducts {
+//   ${SUBSCRIPTION}
+// }

@@ -10,7 +10,12 @@ import { SpaceType, SPACE_TYPE } from "./spaceType";
 import { NearestStation, NEAREST_STATION } from "./station";
 import { SUBSCRIPTION, Subscription } from "./subscription";
 
-export type FilterPaxGroup = { type: string; name: string; min: number | null; max: number | null };
+export type FilterPaxGroup = {
+  type: string;
+  name: string;
+  min: number | null;
+  max: number | null;
+};
 
 export const filterPaxGroup: FilterPaxGroup[] = [
   {
@@ -149,11 +154,11 @@ export const SPACE = `
   cancelPolicy {
     ${CANCEL_POLICY}
   }
-  subscriptionProducts {
-    ${SUBSCRIPTION}
-  }
 `;
 
+// subscriptionProducts {
+//   ${SUBSCRIPTION}
+// }
 export const SPACE_EXCERPT = `
   id
   description
