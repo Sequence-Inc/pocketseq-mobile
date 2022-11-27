@@ -6,6 +6,7 @@ import { MutationHook } from "../../types";
 export type LoginInput = {
   email: string;
   password: string;
+  deviceID?: string;
 };
 
 export type LoginVariables = {
@@ -58,11 +59,11 @@ const LOGIN = gql`
 
 export const useLogin: MutationHook<LoginResult, LoginInput> = () => {
   let [mutation, result] = useMutation<LoginResult, LoginVariables>(LOGIN);
-  async function login({ email, password }: LoginInput) {
+  async function login({ email, password, deviceID }: LoginInput) {
     if (isEmpty(email) || isEmpty(password))
       throw new Error("Both email and password are required!!");
     const loginResult = await mutation({
-      variables: { input: { email, password } },
+      variables: { input: { email, password, deviceID } },
       fetchPolicy: "no-cache",
     });
 
