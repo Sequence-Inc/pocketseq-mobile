@@ -1,4 +1,9 @@
-import { LoginInput, useLogin } from "../../../services/graphql";
+import {
+  LoginInput,
+  SocialLoginInput,
+  useLogin,
+  useSocialLogin,
+} from "../../../services/graphql";
 import { SessionStore } from "../../../services/storage";
 
 import { Button } from "../../../widgets/button";
@@ -16,20 +21,88 @@ import { useResources } from "../../../resources";
 import AuthCoordinator from "../auth-coordinator";
 import { registerNotifications } from "../../../utils/notification";
 
+import * as WebBrowser from "expo-web-browser";
+import * as Facebook from "expo-auth-session/providers/facebook";
+import * as Google from "expo-auth-session/providers/google";
+import { ResponseType } from "expo-auth-session";
+
 export type ILoginScreenProps = {
   coordinator: AuthCoordinator;
 };
 
+WebBrowser.maybeCompleteAuthSession();
+
 export const LoginScreen: React.FC<ILoginScreenProps> = observer(
   ({ coordinator }) => {
     const { colors, images, strings } = useResources();
-    const [login, { loading }] = useLogin();
     const [input, setInput] = React.useState<Partial<LoginInput>>({});
     const [{ saveLogin }] = React.useState(SessionStore);
+    const [socialLoginInput, setSocialLoginInput] =
+      React.useState<SocialLoginInput | null>(null);
+    const [login, { loading }] = useLogin();
+    const [socialLogin, { loading: socialLoginLoading }] = useSocialLogin();
+
+    const [requestFB, responseFB, promptAsyncFB] = Facebook.useAuthRequest({
+      clientId: "857708635675643",
+      responseType: ResponseType.Token,
+    });
+    const [requestGoogle, responseGoogle, promptAsyncGoogle] =
+      Google.useAuthRequest({
+        clientId:
+          "145904259029-ef78u8t8ue97i0jumes58kpgkor6ut1u.apps.googleusercontent.com",
+        responseType: ResponseType.IdToken,
+        selectAccount: true,
+      });
+
+    React.useEffect(() => {
+      if (responseFB?.type === "success") {
+        if (responseFB?.authentication?.accessToken) {
+          fetch(
+            `https://graph.facebook.com/me?access_token=${responseFB?.authentication?.accessToken}`
+          )
+            .then((response) => response.json())
+            .then((data) => {
+              onSocialLogin({
+                provider: "facebook",
+                providerAccountId: data.id,
+                id_token: `${responseFB?.authentication?.accessToken}`,
+              });
+            })
+            .catch((error) => {
+              console.log(error);
+              Alert.alert(error.message);
+            });
+        }
+      }
+    }, [responseFB]);
+
+    React.useEffect(() => {
+      if (responseGoogle?.type === "success") {
+        if (responseGoogle?.params?.id_token) {
+          fetch(
+            `https://oauth2.googleapis.com/tokeninfo?id_token=${responseGoogle?.params?.id_token}`
+          )
+            .then((response) => response.json())
+            .then((data) => {
+              onSocialLogin({
+                provider: "google",
+                providerAccountId: data.sub,
+                id_token: `${responseGoogle?.params?.id_token}`,
+              });
+            })
+            .catch((error) => {
+              console.log(error);
+              Alert.alert(error.message);
+            });
+        }
+      }
+    }, [responseGoogle]);
+
     const onForgotPasswordPress = React.useCallback(
       () => !loading && coordinator.toForgotPasswordScreen(),
       []
     );
+
     const onLoginPress = React.useCallback(async () => {
       try {
         if (loading) return;
@@ -50,8 +123,28 @@ export const LoginScreen: React.FC<ILoginScreenProps> = observer(
         Alert.alert(err.message);
       }
     }, [input]);
+
     const onSignupPress = React.useCallback(
       () => !loading && coordinator.toSignupScreen("replace"),
+      []
+    );
+
+    const onSocialLogin = React.useCallback(
+      async (params: SocialLoginInput) => {
+        try {
+          if (loading) return;
+          // TODO: updated social login mutation to accept deviceID
+          // const deviceID = await registerNotifications();
+          const result = await socialLogin(params);
+          if (result.data) {
+            flowResult(saveLogin({ ...result.data?.socialLogin }));
+            coordinator.toDashboardScreen();
+          }
+        } catch (error: any) {
+          console.log(error);
+          Alert.alert(error.message);
+        }
+      },
       []
     );
 
@@ -83,7 +176,7 @@ export const LoginScreen: React.FC<ILoginScreenProps> = observer(
             </Text>
             <TextInput
               containerStyle={{ margin: 12 }}
-              editable={!loading}
+              editable={!loading || !socialLoginLoading}
               keyboardType="email-address"
               label={`${strings("mail_address")}`}
               onChangeText={React.useCallback(
@@ -94,7 +187,7 @@ export const LoginScreen: React.FC<ILoginScreenProps> = observer(
             />
             <TextInput
               containerStyle={{ margin: 12 }}
-              editable={!loading}
+              editable={!loading || !socialLoginLoading}
               label={`${strings("password")}`}
               placeholder={`${strings("password_hint")}`}
               onChangeText={React.useCallback(
@@ -117,10 +210,38 @@ export const LoginScreen: React.FC<ILoginScreenProps> = observer(
             </Text>
             <Button
               containerStyle={{ backgroundColor: colors.primary, margin: 12 }}
-              loading={loading}
+              loading={
+                loading || socialLoginLoading || !requestFB || !requestGoogle
+              }
               onPress={onLoginPress}
               titleStyle={{ color: colors.background }}
               title={`${strings("do_login")}`}
+            />
+            <Button
+              containerStyle={{ backgroundColor: "#4285F4", margin: 12 }}
+              loading={
+                loading || socialLoginLoading || !requestFB || !requestGoogle
+              }
+              onPress={() => {
+                promptAsyncGoogle();
+              }}
+              titleStyle={{ color: colors.background }}
+              title={`Googleでログイン`}
+            />
+            <Button
+              containerStyle={{
+                backgroundColor: "#1877F2",
+                marginHorizontal: 12,
+                marginTop: 0,
+              }}
+              loading={
+                loading || socialLoginLoading || !requestFB || !requestGoogle
+              }
+              onPress={() => {
+                promptAsyncFB();
+              }}
+              titleStyle={{ color: colors.background }}
+              title={`Facebookでログイン`}
             />
             <View
               style={{
@@ -128,6 +249,7 @@ export const LoginScreen: React.FC<ILoginScreenProps> = observer(
                 flexDirection: "row",
                 justifyContent: "center",
                 margin: 12,
+                marginTop: 24,
               }}
             >
               <View
@@ -150,6 +272,7 @@ export const LoginScreen: React.FC<ILoginScreenProps> = observer(
                     backgroundColor: colors.background,
                     color: colors.text,
                     fontSize: 14,
+                    paddingHorizontal: 8,
                   }}
                 >
                   {strings("do_you_have_acc")}

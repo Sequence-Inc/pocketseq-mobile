@@ -40,7 +40,11 @@
     "react-native-svg": "12.3.0",
     "yup": "^0.32.11",
     "expo-notifications": "~0.15.4",
-    "expo-device": "~4.2.0"
+    "expo-device": "~4.2.0",
+    "expo-auth-session": "~3.6.1",
+    "expo-random": "~12.2.0",
+    "expo-web-browser": "~10.2.1",
+    "expo-application": "~4.1.0"
   },
   "devDependencies": {
     "@babel/core": "^7.18.10",
