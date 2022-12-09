@@ -452,7 +452,7 @@ export const HomeScreen: React.FC<IHomeScreenProps> = ({ coordinator }) => {
                   fontWeight: "500",
                 }}
               >
-                Subscriptions
+                サブスクリプションのご案内
               </Text>
             </View>
           </View>

@@ -55,7 +55,7 @@ export const AccountDetailScreen: React.FC<IAccountDetailScreenProps> =
                 fontWeight: "700",
               }}
             >
-              Email
+              メール
             </Text>
             <Text
               style={{
@@ -84,7 +84,7 @@ export const AccountDetailScreen: React.FC<IAccountDetailScreenProps> =
                 fontWeight: "700",
               }}
             >
-              Last name
+              性
             </Text>
             <Text
               style={{
@@ -113,7 +113,7 @@ export const AccountDetailScreen: React.FC<IAccountDetailScreenProps> =
                 fontWeight: "700",
               }}
             >
-              First name
+              名
             </Text>
             <Text
               style={{
@@ -142,7 +142,7 @@ export const AccountDetailScreen: React.FC<IAccountDetailScreenProps> =
                 fontWeight: "700",
               }}
             >
-              Last name (kana)
+              性 (カナ)
             </Text>
             <Text
               style={{
@@ -171,7 +171,7 @@ export const AccountDetailScreen: React.FC<IAccountDetailScreenProps> =
                 fontWeight: "700",
               }}
             >
-              First name (kana)
+              名 (カナ)
             </Text>
             <Text
               style={{

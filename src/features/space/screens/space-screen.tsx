@@ -327,7 +327,6 @@ export const SpaceScreen: React.FC<ISpaceScreenProps> = ({ coordinator }) => {
               maxZoomLevel={20}
               region={mapCenter}
               style={{ width: MAP_WIDTH, height: MAP_HEIGHT, borderRadius: 8 }}
-              provider="google"
             >
               <Marker
                 key={space?.id}
@@ -368,7 +367,11 @@ export const SpaceScreen: React.FC<ISpaceScreenProps> = ({ coordinator }) => {
           }}
         >
           <Image
-            source={{ uri: "https://dev.pocketseq.com/review.jpg" }}
+            source={{
+              uri: space?.host.profilePhoto?.medium?.url
+                ? space?.host.profilePhoto?.medium?.url
+                : `https://avatars.dicebear.com/api/identicon/${space?.host.id}.png`,
+            }}
             style={{
               width: 50,
               height: 50,
@@ -639,11 +642,10 @@ export const SpaceScreen: React.FC<ISpaceScreenProps> = ({ coordinator }) => {
         onPress={toReservation}
         titleStyle={{
           color: colors.background,
-          fontSize: 19,
+          fontSize: 18,
           fontWeight: "600",
-          letterSpacing: 4,
         }}
-        title={`${strings("reserve")}`}
+        title="予約"
       />
     </SafeAreaView>
   );

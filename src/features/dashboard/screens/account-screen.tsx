@@ -70,7 +70,9 @@ export const AccountScreen: React.FC<IAccountScreenProps> = observer(
             >
               <Image
                 source={{
-                  uri: `https://avatars.dicebear.com/api/identicon/${profile.id}.png`,
+                  uri: profile.profilePhoto?.medium?.url
+                    ? profile.profilePhoto?.medium?.url
+                    : `https://avatars.dicebear.com/api/identicon/${profile.id}.png`,
                 }}
                 style={{
                   borderWidth: 1,
@@ -127,7 +129,7 @@ export const AccountScreen: React.FC<IAccountScreenProps> = observer(
                   fontWeight: "500",
                 }}
               >
-                Account information
+                アカウント
               </Text>
             </Touchable>
             <Touchable
@@ -158,7 +160,7 @@ export const AccountScreen: React.FC<IAccountScreenProps> = observer(
                   fontWeight: "500",
                 }}
               >
-                Payment methods
+                お支払方法
               </Text>
             </Touchable>
             <Touchable
@@ -183,7 +185,7 @@ export const AccountScreen: React.FC<IAccountScreenProps> = observer(
                   fontWeight: "500",
                 }}
               >
-                Settings
+                設定
               </Text>
             </Touchable>
             <View
@@ -213,7 +215,7 @@ export const AccountScreen: React.FC<IAccountScreenProps> = observer(
                     textAlign: "center",
                   }}
                 >
-                  Log out
+                  ログアウト
                 </Text>
               </Touchable>
             </View>
@@ -249,13 +251,18 @@ export const AccountScreen: React.FC<IAccountScreenProps> = observer(
               />
               <View style={{ flex: 1, justifyContent: "center" }}>
                 <Text
-                  style={{ color: colors.text, fontSize: 20, marginBottom: 4 }}
+                  style={{
+                    color: colors.textVariant,
+                    fontSize: 18,
+                    fontWeight: "bold",
+                    marginBottom: 8,
+                  }}
                 >
-                  Login / Signup
+                  ログインまたは登録
                 </Text>
-                <Text style={{ color: colors.textVariant, fontSize: 12 }}>
-                  Please login to use the app services. Or create an account if
-                  you don't have one.
+                <Text style={{ color: colors.textVariant, fontSize: 16 }}>
+                  アプリサービスを利用するにはログインしてください。
+                  または、アカウントをお持ちでない場合は登録してください。
                 </Text>
               </View>
               <SVGImage

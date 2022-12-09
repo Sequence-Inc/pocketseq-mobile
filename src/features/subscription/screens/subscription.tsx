@@ -87,7 +87,7 @@ export const Subscription: React.FC<ISpaceReservationConfirmationProps> = ({
     useBuySubscription({
       onCompleted: () => {
         setSelectedPriceId(null);
-        Alert.alert("Subscribed successfully.");
+        Alert.alert("サブスクリプションが成功しました。");
       },
       onError: () => {
         setSelectedPriceId(null);
@@ -95,9 +95,15 @@ export const Subscription: React.FC<ISpaceReservationConfirmationProps> = ({
           subscriptionFailed?.message ===
           `You have already subscribed to ${subscriptionType} subscription`
         ) {
-          Alert.alert(`You have already subscribed to ${subscriptionType}`);
+          Alert.alert(
+            `既に ${
+              subscriptionType === "hotel" ? "ホテル" : "スペース"
+            } サブスクリプションに加入しています`
+          );
         } else {
-          Alert.alert("Subscription failed. Try again later.");
+          Alert.alert(
+            "サブスクリプションに失敗しました。 後でもう一度試してください。"
+          );
         }
       },
     });
@@ -136,6 +142,8 @@ export const Subscription: React.FC<ISpaceReservationConfirmationProps> = ({
 
   useFocusEffect(handleFetchAllSubscriptions);
 
+  const subscriptionUnit = subscriptionType === "hotel" ? "日" : "時間";
+
   return (
     <SafeAreaView
       edges={["bottom", "left", "right"]}
@@ -163,7 +171,7 @@ export const Subscription: React.FC<ISpaceReservationConfirmationProps> = ({
               ),
             ]}
           >
-            Category A
+            カテゴリーA
           </Text>
         </Touchable>
         <Touchable
@@ -183,7 +191,7 @@ export const Subscription: React.FC<ISpaceReservationConfirmationProps> = ({
               ),
             ]}
           >
-            Category B
+            カテゴリーB
           </Text>
         </Touchable>
         <Touchable
@@ -203,7 +211,7 @@ export const Subscription: React.FC<ISpaceReservationConfirmationProps> = ({
               ),
             ]}
           >
-            Category C
+            カテゴリーC
           </Text>
         </Touchable>
       </View>
@@ -211,14 +219,14 @@ export const Subscription: React.FC<ISpaceReservationConfirmationProps> = ({
         style={{ backgroundColor: colors.background, borderRadius: 10 }}
       >
         <View>
-          {fetchingAllSubscriptions ? <Text>Loading...</Text> : <></>}
+          {fetchingAllSubscriptions ? <Text>読み込み中...</Text> : <></>}
           {!fetchingAllSubscriptions && fetchingAllSubscriptionError ? (
-            <Text>Opps...</Text>
+            <Text>エラーが発生しました。 後でもう一度試してください。</Text>
           ) : (
             <></>
           )}
           {!fetchingAllSubscriptions && !subscriptions.length ? (
-            <Text>Subscriptions not availale</Text>
+            <Text>サブスクリプション プランは利用できません。</Text>
           ) : (
             <></>
           )}
@@ -235,7 +243,8 @@ export const Subscription: React.FC<ISpaceReservationConfirmationProps> = ({
                       {subscription.categoryName}
                     </Text>
                     <Text style={[styles.planCardDesc]}>
-                      Spend {subscription.unit} hours a month
+                      毎月{subscription.unit}
+                      {subscriptionUnit}を使う
                     </Text>
                   </View>
                   <View style={[styles.planCardPrice]}>
@@ -248,7 +257,7 @@ export const Subscription: React.FC<ISpaceReservationConfirmationProps> = ({
                       }}
                     >
                       <Text style={[styles.priceText]}>
-                        {subscription.amount}
+                        ￥{subscription.amount}
                       </Text>
                       <Text
                         style={{
@@ -257,12 +266,12 @@ export const Subscription: React.FC<ISpaceReservationConfirmationProps> = ({
                           marginLeft: 5,
                         }}
                       >
-                        / month
+                        /月
                       </Text>
                     </View>
 
                     <Button
-                      title={`Buy ${subscription.categoryName}`}
+                      title={`${subscription.categoryName}を買う`}
                       titleStyle={{ color: colors.background }}
                       loading={
                         creatingSubscription &&
@@ -329,6 +338,7 @@ const styles = StyleSheet.create({
     padding: 10,
     alignItems: "center",
     borderColor: "rgba(125,125,125,0.2)",
+    backgroundColor: "rgba(255,255,255,1)",
   },
   planCardTitleSection: {
     alignItems: "center",
@@ -338,13 +348,11 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 22,
     lineHeight: 30,
-    letterSpacing: 2,
   },
   planCardDesc: {
     fontWeight: "200",
     fontSize: 17,
     lineHeight: 30,
-    letterSpacing: 2,
   },
   planCardPrice: {
     flexGrow: 1,
@@ -356,5 +364,6 @@ const styles = StyleSheet.create({
   },
   priceText: {
     fontSize: 32,
+    fontWeight: "700",
   },
 });

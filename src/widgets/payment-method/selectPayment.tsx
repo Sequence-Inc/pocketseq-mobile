@@ -65,14 +65,25 @@ const SelectPayment = ({ onSelect = noOp }: SelectPaymentProps) => {
     onSelect && onSelect(null);
   }, [onSelect]);
 
-  if (!accessToken) return <Text>Please login to load payment source.</Text>;
+  if (!accessToken)
+    return (
+      <Text style={{ fontSize: 16, color: colors.textVariant }}>
+        ログインして支払い方法をロードしてください。
+      </Text>
+    );
 
   return (
     <>
-      {paymentMethodsLoading && <Text>Payment methods loading ...</Text>}
+      {paymentMethodsLoading && (
+        <Text style={{ fontSize: 16, color: colors.textVariant }}>
+          読み込み中...
+        </Text>
+      )}
 
       {!paymentMethodsLoading && paymentMethodsError && (
-        <Text>Could not load payment methods</Text>
+        <Text style={{ fontSize: 16, color: colors.textVariant }}>
+          お支払い方法の読み込み中にエラーが発生しました。
+        </Text>
       )}
 
       {paymentMethods?.paymentSource?.map(

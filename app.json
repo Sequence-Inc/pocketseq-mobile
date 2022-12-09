@@ -1,6 +1,7 @@
 {
   "expo": {
     "scheme": "pocketseq",
+    "userInterfaceStyle": "light",
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/ic_adaptive.png",
@@ -17,9 +18,7 @@
       "versionCode": 5,
       "track": "internal"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "extra": {
       "eas": {
         "projectId": "0d25da57-059d-4fd1-ad34-23d9debffae5"
@@ -49,7 +48,8 @@
         {
           "color": "#ffffff"
         }
-      ]
+      ],
+      "sentry-expo"
     ],
     "slug": "pocketseq",
     "splash": {

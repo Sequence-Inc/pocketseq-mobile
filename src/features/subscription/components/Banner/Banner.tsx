@@ -52,10 +52,14 @@ const Banner = (props: BannerPropTypes) => {
               fontWeight: "600",
             }}
           >
-            Space subscriptions
+            スペース
           </Text>
 
-          <Text>See Subscription plans for Hotels</Text>
+          <Text
+            style={{ fontSize: 13, marginTop: 8, color: colors.textVariant }}
+          >
+            スペースを定額制でご利用いただけます。アカウントプランでは、さらに多くの機能を利用できます。
+          </Text>
         </CardView>
       </Touchable>
       <Touchable onPress={() => props.onPress("hotel")}>
@@ -82,10 +86,12 @@ const Banner = (props: BannerPropTypes) => {
               fontWeight: "600",
             }}
           >
-            Hotel subscriptions
+            ホテル
           </Text>
-          <Text style={{ width: "100%" }}>
-            See subscription plans for Hotels
+          <Text
+            style={{ fontSize: 13, marginTop: 8, color: colors.textVariant }}
+          >
+            宿泊を定額制でご利用いただけます。アカウントプランでは、さらに多くの機能を利用できます。
           </Text>
         </CardView>
       </Touchable>
