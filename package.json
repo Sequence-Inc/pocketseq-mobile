@@ -64,8 +64,8 @@
   "name": "@applications/pocketseq",
   "private": true,
   "scripts": {
-    "build:ios": "eas build --platform ios",
-    "build:android": "eas build --platform android",
+    "build:ios": "eas build --platform ios  --auto-submit ",
+    "build:android": "eas build --platform android  --auto-submit ",
     "resources": "node ./bin/resources generate -src assets -dst ./src/resources/generated",
     "start": "npm run resources & expo start --clear"
   },

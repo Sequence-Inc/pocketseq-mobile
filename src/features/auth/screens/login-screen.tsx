@@ -50,6 +50,10 @@ export const LoginScreen: React.FC<ILoginScreenProps> = observer(
       Google.useAuthRequest({
         clientId:
           "145904259029-ef78u8t8ue97i0jumes58kpgkor6ut1u.apps.googleusercontent.com",
+        iosClientId:
+          "145904259029-rharoiel15uferss2aai07lejgs0s834.apps.googleusercontent.com",
+        androidClientId:
+          "145904259029-fgie3cq5o3p03bk7vihl3t0m8m1j12pm.apps.googleusercontent.com",
         responseType: ResponseType.IdToken,
         selectAccount: true,
       });
