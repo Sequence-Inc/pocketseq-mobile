@@ -17,7 +17,9 @@
       "versionCode": 5,
       "track": "internal"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "extra": {
       "eas": {
         "projectId": "0d25da57-059d-4fd1-ad34-23d9debffae5"
@@ -26,7 +28,7 @@
     "icon": "./assets/images/ic_app.png",
     "ios": {
       "bundleIdentifier": "com.sequence.pocketseq",
-      "buildNumber": "14",
+      "buildNumber": "16",
       "supportsTablet": false,
       "infoPlist": {
         "NSLocationUsageDescription": "Allow location access so that we can help you find spaces near you."

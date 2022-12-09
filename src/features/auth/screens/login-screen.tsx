@@ -47,7 +47,7 @@ export const LoginScreen: React.FC<ILoginScreenProps> = observer(
       responseType: ResponseType.Token,
     });
     const [requestGoogle, responseGoogle, promptAsyncGoogle] =
-      Google.useAuthRequest({
+      Google.useIdTokenAuthRequest({
         clientId:
           "145904259029-ef78u8t8ue97i0jumes58kpgkor6ut1u.apps.googleusercontent.com",
         iosClientId:
