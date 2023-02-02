@@ -9,7 +9,7 @@ const hitsPerPage = 40;
 export class SpaceIndex {
   private index: SearchIndex;
   constructor(client: AlgoliaClient) {
-    this.index = client.initIndex("space_dev");
+    this.index = client.initIndex("space_prod");
   }
   async search(text: string = "", filter?: SpaceSearchFilterOptions) {
     if (!filter) {

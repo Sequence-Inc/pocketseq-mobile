@@ -37,23 +37,21 @@ export const LoginScreen: React.FC<ILoginScreenProps> = observer(
     const { colors, images, strings } = useResources();
     const [input, setInput] = React.useState<Partial<LoginInput>>({});
     const [{ saveLogin }] = React.useState(SessionStore);
-    const [socialLoginInput, setSocialLoginInput] =
-      React.useState<SocialLoginInput | null>(null);
     const [login, { loading }] = useLogin();
     const [socialLogin, { loading: socialLoginLoading }] = useSocialLogin();
 
     const [requestFB, responseFB, promptAsyncFB] = Facebook.useAuthRequest({
-      clientId: "857708635675643",
+      clientId: "3219481098313902",
       responseType: ResponseType.Token,
     });
     const [requestGoogle, responseGoogle, promptAsyncGoogle] =
       Google.useIdTokenAuthRequest({
         clientId:
-          "145904259029-ef78u8t8ue97i0jumes58kpgkor6ut1u.apps.googleusercontent.com",
+          "433774052323-s08bivoltig4h9enlidqrj8ja7ghe0g0.apps.googleusercontent.com",
         iosClientId:
-          "145904259029-rharoiel15uferss2aai07lejgs0s834.apps.googleusercontent.com",
+          "433774052323-728i8icfbc4dfpqo75lo5h5fhqemjlbg.apps.googleusercontent.com",
         androidClientId:
-          "145904259029-fgie3cq5o3p03bk7vihl3t0m8m1j12pm.apps.googleusercontent.com",
+          "433774052323-b1v3dps6o8vkltmevobci2b9cena85og.apps.googleusercontent.com",
         responseType: ResponseType.IdToken,
         selectAccount: true,
       });
@@ -66,6 +64,11 @@ export const LoginScreen: React.FC<ILoginScreenProps> = observer(
           )
             .then((response) => response.json())
             .then((data) => {
+              console.log(
+                "HERE!",
+                data.id,
+                responseFB?.authentication?.accessToken
+              );
               onSocialLogin({
                 provider: "facebook",
                 providerAccountId: data.id,

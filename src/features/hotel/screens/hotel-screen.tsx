@@ -18,6 +18,7 @@ import {
 import MapView, { Marker, LatLng, Region } from "react-native-maps";
 import { Button } from "../../../widgets/button";
 import { SVGImage } from "../../../widgets/svg-image";
+import { currencyFormatter } from "../../../utils/strings";
 
 export type ISpaceScreenProps = {
   coordinator: HotelCoordinator;
@@ -121,11 +122,6 @@ export const HotelScreen: React.FC<ISpaceScreenProps> = ({ coordinator }) => {
     longitude: addressCoordinates.longitude,
     latitudeDelta: 0.009991524946315167,
     longitudeDelta: 0.02093397080898285,
-  };
-
-  const currencyFormatter = (amount: number): string => {
-    // return new Intl.NumberFormat("ja-JP", { style: "currency", currency: "JPY" }).format(amount);
-    return amount.toString();
   };
 
   const renderHotelBuildingType = (type: HotelBuildingType | undefined) => {
@@ -627,7 +623,7 @@ export const HotelScreen: React.FC<ISpaceScreenProps> = ({ coordinator }) => {
         </View>
 
         {/* Review */}
-        <View
+        {/* <View
           style={{
             backgroundColor: colors.background,
             paddingHorizontal: 12,
@@ -700,7 +696,7 @@ export const HotelScreen: React.FC<ISpaceScreenProps> = ({ coordinator }) => {
               );
             })}
           </View>
-        </View>
+        </View> */}
       </ScrollView>
 
       <Button

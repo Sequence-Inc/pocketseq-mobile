@@ -16,6 +16,7 @@ import {
   SpaceSearchFilterOptions,
 } from "../../../features/search/search-helpers";
 import { SubscriptionBanner } from "../../../features/subscription";
+import { currencyFormatter } from "../../../utils/strings";
 
 export type IHomeScreenProps = {
   coordinator: DashboardCoordinator;
@@ -91,12 +92,6 @@ export const HomeScreen: React.FC<IHomeScreenProps> = ({ coordinator }) => {
         </Text>
       </Text>
     );
-  };
-
-  const currencyFormatter = (amount: number): string => {
-    // return new Intl.NumberFormat("ja-JP", { style: "currency", currency: "JPY" }).format(amount);
-
-    return amount.toString();
   };
 
   const spacePricePlanTypeFormatter = (type: SpacePricePlanType): string => {

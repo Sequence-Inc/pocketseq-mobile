@@ -10,7 +10,7 @@ const hitsPerPage = 40;
 export class HotelIndex {
   private index: SearchIndex;
   constructor(client: AlgoliaClient) {
-    this.index = client.initIndex("hotel_dev");
+    this.index = client.initIndex("hotel_prod");
   }
   async search(text: string = "", filter?: HotelSearchFilterOptions) {
     if (!filter) {
