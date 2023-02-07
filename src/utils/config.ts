@@ -15,7 +15,7 @@ interface AppConfig {
   prod: EnvironmentConfig;
 }
 export const CONFIG: AppConfig = {
-  mode: "dev", // CHANGE ENVIRONMENT FROM HERE
+  mode: "prod", // CHANGE ENVIRONMENT FROM HERE
   dev: {
     api: "https://dev-api.pocketseq.com/dev/graphql",
     algoliaApiKey: "6c2c5bb09c6f0da1002a51d1995969bd",

@@ -35,6 +35,7 @@ export const HomeScreen: React.FC<IHomeScreenProps> = ({ coordinator }) => {
   }, []);
 
   const { refetch, networkStatus } = result;
+  //
 
   const refresh = async () => {
     await refetch();
