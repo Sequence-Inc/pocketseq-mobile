@@ -15,7 +15,7 @@
         "SCHEDULE_EXACT_ALARM",
         "WRITE_EXTERNAL_STORAGE"
       ],
-      "versionCode": 9
+      "versionCode": 10
     },
     "assetBundlePatterns": [
       "**/*"
@@ -28,7 +28,7 @@
     "icon": "./assets/images/ic_app.png",
     "ios": {
       "bundleIdentifier": "com.sequence.pocketseq",
-      "buildNumber": "18",
+      "buildNumber": "19",
       "supportsTablet": false,
       "infoPlist": {
         "NSLocationUsageDescription": "Allow location access so that we can help you find spaces near you."

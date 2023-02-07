@@ -10,6 +10,7 @@ import { AuthContextProvider } from "./contexts/auth";
 import { Subscription } from "expo-modules-core";
 import { Notification } from "expo-notifications";
 import { registerNotifications } from "./utils/notification";
+import { CONFIG } from "./utils/config";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -20,10 +21,12 @@ Notifications.setNotificationHandler({
 });
 
 export function Application() {
-  const algoliaApiKey = "6c2c5bb09c6f0da1002a51d1995969bd";
-  const algoliaAppId = "K2PIS0458U";
+  const config = CONFIG[CONFIG.mode];
 
-  const apiUri = "https://api.pocketseq.com/prod/graphql";
+  const algoliaApiKey = config.algoliaApiKey;
+  const algoliaAppId = config.algoliaAppId;
+
+  const apiUri = config.api;
   const appCache = new AppCache({ storage: AsyncStorage });
   const appClient = new AppClient({ cache: appCache, uri: apiUri });
 

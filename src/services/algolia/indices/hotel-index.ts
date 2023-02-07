@@ -3,6 +3,7 @@ import {
   HotelSearchFilterOptions,
   mapSpaceSearchResponseToSpaceObject,
 } from "../../../features/search/search-helpers";
+import { CONFIG } from "../../../utils/config";
 import { AlgoliaClient } from "../algolia-client";
 
 const hitsPerPage = 40;
@@ -10,7 +11,7 @@ const hitsPerPage = 40;
 export class HotelIndex {
   private index: SearchIndex;
   constructor(client: AlgoliaClient) {
-    this.index = client.initIndex("hotel_prod");
+    this.index = client.initIndex(CONFIG[CONFIG.mode].algoliaIndex.hotel);
   }
   async search(text: string = "", filter?: HotelSearchFilterOptions) {
     if (!filter) {

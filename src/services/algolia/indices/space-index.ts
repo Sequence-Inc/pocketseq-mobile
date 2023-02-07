@@ -3,13 +3,14 @@ import {
   mapSpaceSearchResponseToSpaceObject,
   SpaceSearchFilterOptions,
 } from "../../../features/search/search-helpers";
+import { CONFIG } from "../../../utils/config";
 import { AlgoliaClient } from "../algolia-client";
 
 const hitsPerPage = 40;
 export class SpaceIndex {
   private index: SearchIndex;
   constructor(client: AlgoliaClient) {
-    this.index = client.initIndex("space_prod");
+    this.index = client.initIndex(CONFIG[CONFIG.mode].algoliaIndex.space);
   }
   async search(text: string = "", filter?: SpaceSearchFilterOptions) {
     if (!filter) {

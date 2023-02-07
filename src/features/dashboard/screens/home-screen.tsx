@@ -5,7 +5,7 @@ import {
 } from "../../../services/domains";
 import { useHomeScreen } from "../../../services/graphql";
 import React, { ReactElement, useEffect } from "react";
-import { View, Text, Image, Dimensions } from "react-native";
+import { View, Text, Image, Dimensions, RefreshControl } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import { useResources } from "../../../resources";
 import DashboardCoordinator from "../dashboard-coordinator";
@@ -17,24 +17,30 @@ import {
 } from "../../../features/search/search-helpers";
 import { SubscriptionBanner } from "../../../features/subscription";
 import { currencyFormatter } from "../../../utils/strings";
+import { NetworkStatus } from "@apollo/client";
+import { delay } from "../../../utils/delay";
 
 export type IHomeScreenProps = {
   coordinator: DashboardCoordinator;
 };
 
-const { width, height } = Dimensions.get("window");
+const { width } = Dimensions.get("window");
 
 export const HomeScreen: React.FC<IHomeScreenProps> = ({ coordinator }) => {
-  const { colors, images, strings } = useResources();
+  const { colors } = useResources();
   const { getTopPicks, result } = useHomeScreen({ take: 8, skip: 0 });
 
   useEffect(() => {
     getTopPicks();
   }, []);
 
-  console.log(result.loading);
+  const { refetch, networkStatus } = result;
 
-  if (result.loading) {
+  const refresh = async () => {
+    await refetch();
+  };
+
+  if (result.loading && networkStatus !== NetworkStatus.refetch) {
     return <FullScreenActivityIndicator />;
   }
 
@@ -126,6 +132,13 @@ export const HomeScreen: React.FC<IHomeScreenProps> = ({ coordinator }) => {
       <ScrollView
         style={{ backgroundColor: colors.backgroundVariant, flex: 1 }}
         keyboardDismissMode="on-drag"
+        refreshControl={
+          <RefreshControl
+            refreshing={networkStatus === NetworkStatus.refetch}
+            onRefresh={refresh}
+            title="リフレッシュ中"
+          />
+        }
       >
         {/* Space Types */}
         <View
