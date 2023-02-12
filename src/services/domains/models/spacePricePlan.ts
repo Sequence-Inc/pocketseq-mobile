@@ -33,7 +33,7 @@ export interface SpacePricePlan {
 }
 
 export const SPACE_PRICE_PLAN = `
-  id:
+  id
   title
   isDefault
   type

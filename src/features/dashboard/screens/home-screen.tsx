@@ -18,7 +18,6 @@ import {
 import { SubscriptionBanner } from "../../../features/subscription";
 import { currencyFormatter } from "../../../utils/strings";
 import { NetworkStatus } from "@apollo/client";
-import { delay } from "../../../utils/delay";
 
 export type IHomeScreenProps = {
   coordinator: DashboardCoordinator;
