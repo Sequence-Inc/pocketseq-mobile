@@ -13,7 +13,12 @@ import {
   SpacePricePlan,
   SpacePricePlanType,
 } from "../../../services/domains";
-import MapView, { Marker, LatLng, Region } from "react-native-maps";
+import MapView, {
+  Marker,
+  LatLng,
+  Region,
+  PROVIDER_GOOGLE,
+} from "react-native-maps";
 import { Button } from "../../../widgets/button";
 import { SVGImage } from "../../../widgets/svg-image";
 import { currencyFormatter } from "../../../utils/strings";
@@ -319,6 +324,7 @@ export const SpaceScreen: React.FC<ISpaceScreenProps> = ({ coordinator }) => {
 
           <View>
             <MapView
+              provider={PROVIDER_GOOGLE}
               minZoomLevel={14}
               maxZoomLevel={20}
               region={mapCenter}
@@ -437,7 +443,7 @@ export const SpaceScreen: React.FC<ISpaceScreenProps> = ({ coordinator }) => {
                     key={`${plan.id}-${index}`}
                   >
                     <Text style={{ fontSize: 18, color: colors.textVariant }}>
-                      {plan.id}
+                      {plan.title}
                     </Text>
                     <Text style={{ fontSize: 18, color: colors.textVariant }}>
                       <Text style={{ fontWeight: "700" }}>
@@ -489,7 +495,7 @@ export const SpaceScreen: React.FC<ISpaceScreenProps> = ({ coordinator }) => {
                     key={`${plan.id}-${index}`}
                   >
                     <Text style={{ fontSize: 18, color: colors.textVariant }}>
-                      {plan.id}
+                      {plan.title}
                     </Text>
                     <Text style={{ fontSize: 18, color: colors.textVariant }}>
                       <Text style={{ fontWeight: "700" }}>
@@ -541,7 +547,7 @@ export const SpaceScreen: React.FC<ISpaceScreenProps> = ({ coordinator }) => {
                     key={`${plan.id}-${index}`}
                   >
                     <Text style={{ fontSize: 18, color: colors.textVariant }}>
-                      {plan.id}
+                      {plan.title}
                     </Text>
                     <Text style={{ fontSize: 18, color: colors.textVariant }}>
                       <Text style={{ fontWeight: "700" }}>

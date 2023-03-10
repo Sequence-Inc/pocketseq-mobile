@@ -13,9 +13,15 @@
         "READ_EXTERNAL_STORAGE",
         "RECEIVE_BOOT_COMPLETED",
         "SCHEDULE_EXACT_ALARM",
-        "WRITE_EXTERNAL_STORAGE"
+        "WRITE_EXTERNAL_STORAGE",
+        "AD_ID"
       ],
-      "versionCode": 11
+      "versionCode": 15,
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyD2fBfh5KYKd4Mcyw_iN90EQCfGT917fKE"
+        }
+      }
     },
     "assetBundlePatterns": [
       "**/*"
@@ -28,10 +34,13 @@
     "icon": "./assets/images/ic_app.png",
     "ios": {
       "bundleIdentifier": "com.sequence.pocketseq",
-      "buildNumber": "20",
+      "buildNumber": "24",
       "supportsTablet": false,
       "infoPlist": {
         "NSLocationUsageDescription": "Allow location access so that we can help you find spaces near you."
+      },
+      "config": {
+        "googleMapsApiKey": "AIzaSyDijYEeUIa9FCakUPipxEUAKjKaAv1DsXo"
       }
     },
     "name": "PocketSeq",

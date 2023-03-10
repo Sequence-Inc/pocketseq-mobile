@@ -10,13 +10,13 @@ import {
 } from "../../../services/domains";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import moment from "moment";
-import { currencyFormatter } from "../../../widgets/search-list-item/search-list-item";
 import { Button } from "../../../widgets/button";
 import { Touchable } from "../../../widgets/touchable";
 import {
   useCancelHotelReservation,
   useCancelSpaceReservation,
 } from "../../../services/graphql";
+import { currencyFormatter } from "../../../utils/strings";
 
 export type IUserReservationScreenProps = {
   coordinator: UserReservationCoordinator;
@@ -53,20 +53,6 @@ export const UserReservationScreen: React.FC<IUserReservationScreenProps> = ({
     coordinator.goBack();
   }, []);
 
-  // const planTypes = [
-  //   { title: "DAILY", label: "日" },
-  //   { title: "HOURLY", label: "時間" },
-  //   { title: "MINUTES", label: "分" },
-  // ];
-
-  // const durationSuffix = (type: SpacePricePlanType) => {
-  //   return planTypes.filter((plan) => plan.title === type)[0].label;
-  // };
-
-  // const currencyFormatter = (amount: number): string => {
-  //   // return new Intl.NumberFormat("ja-JP", { style: "currency", currency: "JPY" }).format(amount);
-  //   return amount.toString();
-  // };
   const fromDateTime = moment(data.fromDateTime);
   const toDateTime = moment(data.toDateTime);
 

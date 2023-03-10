@@ -96,12 +96,27 @@ export const Subscription: React.FC<ISpaceReservationConfirmationProps> = ({
           `You have already subscribed to ${subscriptionType} subscription`
         ) {
           Alert.alert(
+            `加入しています`,
             `既に ${
               subscriptionType === "hotel" ? "ホテル" : "スペース"
             } サブスクリプションに加入しています`
           );
+        } else if (subscriptionFailed?.message === "Not authorized") {
+          Alert.alert(
+            `ログインしてください`,
+            `サブスクリプションに登録する前にログインしてください。`
+          );
+        } else if (
+          subscriptionFailed?.message ===
+          "Cannot charge a customer that has no active card"
+        ) {
+          Alert.alert(
+            "カードがありません",
+            "アカウントにカードを追加してください。"
+          );
         } else {
           Alert.alert(
+            "失敗しました",
             "サブスクリプションに失敗しました。 後でもう一度試してください。"
           );
         }

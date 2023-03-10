@@ -15,7 +15,12 @@ import {
   HotelPackagePlanRoomType,
   PaymentTerm,
 } from "../../../services/domains";
-import MapView, { Marker, LatLng, Region } from "react-native-maps";
+import MapView, {
+  Marker,
+  LatLng,
+  Region,
+  PROVIDER_GOOGLE,
+} from "react-native-maps";
 import { Button } from "../../../widgets/button";
 import { SVGImage } from "../../../widgets/svg-image";
 import { currencyFormatter } from "../../../utils/strings";
@@ -538,6 +543,7 @@ export const HotelScreen: React.FC<ISpaceScreenProps> = ({ coordinator }) => {
           {/* Google map */}
           <View>
             <MapView
+              provider={PROVIDER_GOOGLE}
               minZoomLevel={0}
               maxZoomLevel={20}
               region={mapCenter}

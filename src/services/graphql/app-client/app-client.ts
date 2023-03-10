@@ -47,14 +47,15 @@ const newErrorLink = (uri: string) => {
       console.log("-".repeat(25) + "Graphql Error" + "-".repeat(25));
       for (const error of graphQLErrors) {
         const gqlError = error as unknown as GqlError;
+        console.log(error);
         const { action, code, info, message } = gqlError;
-        const { locations, path, stacktrace } = info;
+        // const { locations, path, stacktrace } = info;
         console.log(`code:       ${code}`);
         console.log(`message:    ${message}`);
         console.log(`action:     ${action}`);
-        console.log(`location:   ${locations?.map((location) => location)}`);
-        console.log(`path:       ${path}`);
-        console.log(`stacktrace: ${stacktrace}`);
+        // console.log(`location:   ${locations?.map((location) => location)}`);
+        // console.log(`path:       ${path}`);
+        // console.log(`stacktrace: ${stacktrace}`);
         if (action === "logout") SessionStore.clearToken();
         if (action === "refresh-token") {
           const refreshToken = SessionStore.refreshToken;

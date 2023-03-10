@@ -17,12 +17,12 @@ import {
   ISearchScreenProps,
   SearchResult,
 } from "../search-helpers";
-import MapView, { Marker, LatLng, Region } from "react-native-maps";
+import MapView, { Marker, Region, PROVIDER_GOOGLE } from "react-native-maps";
 import * as Location from "expo-location";
 import { FullScreenActivityIndicator } from "../../../widgets/full-screen-activity-indicator";
 import { FullScreenErrorView } from "../../../widgets/full-screen-error-view";
-import { currencyFormatter } from "../../../widgets/search-list-item/search-list-item";
 import { useAlgolia } from "../../../services/algolia";
+import { currencyFormatter } from "../../../utils/strings";
 
 export const getBoungindBox = (center: Region) => {
   let northeast = {
@@ -185,6 +185,7 @@ export const SearchMapScreen: React.FC<ISearchScreenProps> = ({
     >
       <View style={{ position: "relative", flex: 1 }}>
         <MapView
+          provider={PROVIDER_GOOGLE}
           ref={map}
           style={{ ...StyleSheet.absoluteFillObject }}
           initialRegion={params?.geoloc}
