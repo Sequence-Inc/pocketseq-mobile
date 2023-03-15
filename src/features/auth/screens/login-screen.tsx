@@ -132,7 +132,7 @@ export const LoginScreen: React.FC<ILoginScreenProps> = observer(
             );
           }
 
-          coordinator.toDashboardScreen();
+          coordinator.toDashboardScreen("replace");
         }
       } catch (err: any) {
         console.log(err);
@@ -167,7 +167,7 @@ export const LoginScreen: React.FC<ILoginScreenProps> = observer(
               );
             }
 
-            coordinator.toDashboardScreen();
+            coordinator.toDashboardScreen("replace");
           }
         } catch (error: any) {
           console.log(error);

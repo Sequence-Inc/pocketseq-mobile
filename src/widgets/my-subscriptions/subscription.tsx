@@ -105,13 +105,23 @@ const Subscription = ({
   }, [subscriptionType, hasSubscription, utilizedUnits]);
 
   if (!accessToken)
-    return <Text>ログインして支払い方法をロードしてください。</Text>;
+    return (
+      <Text style={{ fontSize: 16 }}>
+        ログインして支払い方法をロードしてください。
+      </Text>
+    );
 
   if (!spaceDetail?.subcriptionPrice) {
-    return <Text>サブスクリプションはこのスペースには適用されません。</Text>;
+    return (
+      <Text style={{ fontSize: 16 }}>
+        サブスクリプションはこのスペースには適用されません。
+      </Text>
+    );
   }
   if (!hasSubscription) {
-    return <Text>サブスクリプションはありません。</Text>;
+    return (
+      <Text style={{ fontSize: 16 }}>サブスクリプションはありません。</Text>
+    );
   }
 
   if (hasSubscription?.remainingUnit < 1) {
@@ -152,7 +162,7 @@ const Subscription = ({
             onValueChange={(val) => onSelect(val)}
           />
         </View>
-        <Text style={{ fontSize: 14, color: colors.textVariant }}>
+        <Text style={{ fontSize: 16, color: colors.textVariant }}>
           サブスクリプションを適用できます。
         </Text>
       </>

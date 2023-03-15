@@ -53,6 +53,8 @@ export const AccountSubscriptionScreen: React.FC<
     );
   }
 
+  console.log(subscriptions);
+
   const _cancelSubscription = ({
     name,
     priceType,

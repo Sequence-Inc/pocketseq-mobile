@@ -29,6 +29,10 @@ import { useFetchSubscriptions } from "../../../services/graphql";
 import { Button } from "../../../widgets/button";
 
 import { Subscription } from "../../../widgets/my-subscriptions";
+import {
+  currencyFormatter,
+  hoursAsCancelPolicyDuration,
+} from "../../../utils/strings";
 
 export type ISpaceReservationConfirmationProps = {
   coordinator: SpaceCoordinator;
@@ -366,9 +370,7 @@ const ReservationConfirmation: React.FC<ISpaceReservationConfirmationProps> = ({
 
           {additionalOptionsFields?.length < 1 && (
             <View style={{ marginVertical: 12 }}>
-              <Text style={{ fontSize: 16, fontWeight: "bold" }}>
-                オプションはありません。
-              </Text>
+              <Text style={{ fontSize: 16 }}>オプションはありません。</Text>
             </View>
           )}
 
@@ -412,7 +414,9 @@ const ReservationConfirmation: React.FC<ISpaceReservationConfirmationProps> = ({
                           </Text>
                           <View style={[globalStyles.row]}>
                             <Text style={{ fontSize: 14, lineHeight: 17 }}>
-                              ￥{additionalField?.additionalPrice || ""}
+                              {currencyFormatter(
+                                additionalField?.additionalPrice
+                              ) || ""}
                             </Text>
                             <Text style={{ fontSize: 14, lineHeight: 17 }}>
                               {"/"}
@@ -525,7 +529,7 @@ const ReservationConfirmation: React.FC<ISpaceReservationConfirmationProps> = ({
             }}
           >
             <Text
-              style={{ fontSize: 18, fontWeight: "bold", marginBottom: 15 }}
+              style={{ fontSize: 20, fontWeight: "bold", marginBottom: 15 }}
             >
               料金
             </Text>
@@ -536,7 +540,8 @@ const ReservationConfirmation: React.FC<ISpaceReservationConfirmationProps> = ({
               <Text style={{ fontSize: 16, fontWeight: "700" }}>小計</Text>
               {priceData ? (
                 <Text style={{ fontSize: 16, fontWeight: "500" }}>
-                  ￥{Math.ceil(priceData?.spaceAmount / 1.1) || "..."}
+                  {currencyFormatter(Math.ceil(priceData?.spaceAmount / 1.1)) ||
+                    "..."}
                 </Text>
               ) : (
                 <></>
@@ -548,10 +553,12 @@ const ReservationConfirmation: React.FC<ISpaceReservationConfirmationProps> = ({
                 ?.filter((item: any) => !!item?.isChecked)
                 ?.map((additionalfield: any, index) => {
                   const optionsCharge =
-                    Math.ceil(
-                      (additionalfield?.additionalPrice *
-                        additionalfield?.quantity) /
-                        1.1
+                    currencyFormatter(
+                      Math.ceil(
+                        (additionalfield?.additionalPrice *
+                          additionalfield?.quantity) /
+                          1.1
+                      )
                     ) || "...";
 
                   return (
@@ -591,7 +598,7 @@ const ReservationConfirmation: React.FC<ISpaceReservationConfirmationProps> = ({
             >
               <Text style={{ fontSize: 16, fontWeight: "700" }}>税金</Text>
               <Text style={{ fontSize: 16, fontWeight: "500" }}>
-                ￥{taxCalculated || "..."}
+                {currencyFormatter(taxCalculated) || "..."}
               </Text>
             </View>
 
@@ -613,7 +620,7 @@ const ReservationConfirmation: React.FC<ISpaceReservationConfirmationProps> = ({
 
               {priceData?.total ? (
                 <Text style={{ fontSize: 20, fontWeight: "700" }}>
-                  ￥{Math.ceil(priceData?.total || "...")}
+                  {currencyFormatter(Math.ceil(priceData?.total)) || "..."}
                 </Text>
               ) : (
                 <></>
@@ -623,6 +630,64 @@ const ReservationConfirmation: React.FC<ISpaceReservationConfirmationProps> = ({
         ) : (
           <></>
         )}
+
+        <View
+          style={{
+            backgroundColor: colors.background,
+            paddingHorizontal: 12,
+            paddingVertical: 18,
+            marginVertical: 12,
+          }}
+        >
+          <Text style={{ fontSize: 20, fontWeight: "bold", marginBottom: 15 }}>
+            キャンセルポリシー
+          </Text>
+          <View>
+            {spaceDetails?.cancelPolicy && (
+              <>
+                {/* <Text style={{ fontSize: 18, color: colors.textVariant }}>
+                  {spaceDetails?.cancelPolicy?.name}
+                </Text> */}
+                <View>
+                  {[...spaceDetails?.cancelPolicy.rates]
+                    .sort((a, b) => a.beforeHours - b.beforeHours)
+                    .map((policy, index) => {
+                      return (
+                        <View
+                          key={index}
+                          style={{
+                            flexDirection: "row",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            paddingVertical: 6,
+                          }}
+                        >
+                          <Text
+                            style={{
+                              fontSize: 16,
+                              color: colors.textVariant,
+                              fontWeight: "500",
+                            }}
+                          >
+                            {hoursAsCancelPolicyDuration(policy.beforeHours)}
+                          </Text>
+                          <Text
+                            style={{
+                              fontSize: 16,
+                              color: colors.text,
+                              fontWeight: "700",
+                            }}
+                          >
+                            {policy.percentage}%
+                          </Text>
+                        </View>
+                      );
+                    })}
+                </View>
+              </>
+            )}
+          </View>
+        </View>
       </ScrollView>
       <View>
         {!selectedPayment && (

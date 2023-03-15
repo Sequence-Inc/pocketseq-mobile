@@ -72,20 +72,28 @@ const SelectPayment = ({ onSelect = noOp }: SelectPaymentProps) => {
       </Text>
     );
 
+  if (paymentMethodsLoading) {
+    return (
+      <Text style={{ fontSize: 16, color: colors.textVariant }}>
+        読み込み中...
+      </Text>
+    );
+  }
+
+  if (paymentMethodsError) {
+    return (
+      <Text style={{ fontSize: 16 }}>
+        お支払い方法の読み込み中にエラーが発生しました。
+      </Text>
+    );
+  }
+
+  if (paymentMethods?.paymentSource.length === 0) {
+    return <Text style={{ fontSize: 16 }}>お支払い方法登録してないです。</Text>;
+  }
+
   return (
     <>
-      {paymentMethodsLoading && (
-        <Text style={{ fontSize: 16, color: colors.textVariant }}>
-          読み込み中...
-        </Text>
-      )}
-
-      {!paymentMethodsLoading && paymentMethodsError && (
-        <Text style={{ fontSize: 16, color: colors.textVariant }}>
-          お支払い方法の読み込み中にエラーが発生しました。
-        </Text>
-      )}
-
       {paymentMethods?.paymentSource?.map(
         (paymentSource: any, index: number) => {
           const isSelected = selectedPayment?.id === paymentSource?.id;

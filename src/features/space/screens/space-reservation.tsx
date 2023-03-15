@@ -23,6 +23,7 @@ import {
   getEndDateTime,
   getStartDateTime,
 } from "../../../services/graphql/hooks/utility";
+import { currencyFormatter } from "../../../utils/strings";
 
 export type ISpaceReservationProps = {
   coordinator: SpaceCoordinator;
@@ -158,7 +159,7 @@ const SpaceReservation: React.FC<ISpaceReservationProps> = ({
   React.useEffect(() => {
     if (space?.settings?.length) {
       setDefaultSettings(
-        space.settings?.find((setting) => !!setting.isDefault)
+        space?.settings?.find((setting) => !!setting.isDefault)
       );
     }
   }, [space]);
@@ -286,7 +287,7 @@ const SpaceReservation: React.FC<ISpaceReservationProps> = ({
                           marginTop: 6,
                         }}
                       >
-                        ￥{amount}/{duration}
+                        {currencyFormatter(amount)}/{duration}
                         {DurationTypeString[type]}
                       </Text>
                     </View>
@@ -377,7 +378,7 @@ const SpaceReservation: React.FC<ISpaceReservationProps> = ({
                   marginRight: 14,
                 }}
               >
-                ￥{Math.ceil(taxableAmount)}
+                {currencyFormatter(Math.ceil(taxableAmount))}
               </Text>
             </View>
 
@@ -406,7 +407,7 @@ const SpaceReservation: React.FC<ISpaceReservationProps> = ({
                   marginRight: 14,
                 }}
               >
-                ￥{Math.ceil(total - taxableAmount)}
+                {currencyFormatter(Math.ceil(total - taxableAmount))}
               </Text>
             </View>
 
@@ -443,7 +444,7 @@ const SpaceReservation: React.FC<ISpaceReservationProps> = ({
                   marginRight: 14,
                 }}
               >
-                ￥{total}
+                {currencyFormatter(total)}
               </Text>
             </View>
           </View>

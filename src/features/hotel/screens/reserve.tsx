@@ -25,6 +25,10 @@ import moment from "moment";
 import { Button } from "../../../widgets/button";
 
 import { Subscription } from "../../../widgets/my-subscriptions";
+import {
+  currencyFormatter,
+  hoursAsCancelPolicyDuration,
+} from "../../../utils/strings";
 
 export type IHotelConfirmationProps = {
   coordinator: HotelCoordinator;
@@ -356,9 +360,7 @@ const ReserveHotel: React.FC<IHotelConfirmationProps> = ({ coordinator }) => {
 
           {additionalOptionsFields?.length < 1 ? (
             <View style={{ marginVertical: 12 }}>
-              <Text style={{ fontSize: 16, fontWeight: "bold" }}>
-                オプションはありません。
-              </Text>
+              <Text style={{ fontSize: 16 }}>オプションはありません。</Text>
             </View>
           ) : (
             <></>
@@ -521,7 +523,7 @@ const ReserveHotel: React.FC<IHotelConfirmationProps> = ({ coordinator }) => {
             marginTop: 12,
           }}
         >
-          <Text style={{ fontSize: 18, fontWeight: "bold", marginBottom: 15 }}>
+          <Text style={{ fontSize: 20, fontWeight: "bold", marginBottom: 15 }}>
             料金
           </Text>
 
@@ -561,7 +563,9 @@ const ReserveHotel: React.FC<IHotelConfirmationProps> = ({ coordinator }) => {
                   <Text style={{ fontSize: 16, fontWeight: "700" }}>小計</Text>
                   {priceData.planAmount ? (
                     <Text style={{ fontSize: 20, fontWeight: "700" }}>
-                      ￥{Math.ceil((priceData.planAmount || 0) / 1.1)}
+                      {currencyFormatter(
+                        Math.ceil((priceData.planAmount || 0) / 1.1)
+                      )}
                     </Text>
                   ) : (
                     <></>
@@ -572,10 +576,12 @@ const ReserveHotel: React.FC<IHotelConfirmationProps> = ({ coordinator }) => {
                   ?.filter((item: any) => !!item?.isChecked)
                   ?.map((additionalfield: any, index) => {
                     const optionsCharge =
-                      Math.ceil(
-                        (additionalfield?.additionalPrice *
-                          additionalfield?.quantity) /
-                          1.1
+                      currencyFormatter(
+                        Math.ceil(
+                          (additionalfield?.additionalPrice *
+                            additionalfield?.quantity) /
+                            1.1
+                        )
                       ) || "No Charge";
 
                     return (
@@ -604,7 +610,7 @@ const ReserveHotel: React.FC<IHotelConfirmationProps> = ({ coordinator }) => {
                           </Text>
                         </View>
                         <Text style={{ fontSize: 20, fontWeight: "700" }}>
-                          ￥{optionsCharge}
+                          {optionsCharge}
                         </Text>
                       </View>
                     );
@@ -617,7 +623,7 @@ const ReserveHotel: React.FC<IHotelConfirmationProps> = ({ coordinator }) => {
                   ]}
                 >
                   <Text style={{ fontSize: 16, fontWeight: "700" }}>税金</Text>
-                  <Text>￥{taxCalculated || 0}</Text>
+                  <Text>{currencyFormatter(taxCalculated) || 0}</Text>
                 </View>
 
                 <View
@@ -638,7 +644,9 @@ const ReserveHotel: React.FC<IHotelConfirmationProps> = ({ coordinator }) => {
 
                   {priceData?.totalAmount ? (
                     <Text style={{ fontSize: 20, fontWeight: "700" }}>
-                      ￥{Math.ceil(priceData?.totalAmount || 0)}
+                      {currencyFormatter(
+                        Math.ceil(priceData?.totalAmount || 0)
+                      )}
                     </Text>
                   ) : (
                     <></>
@@ -646,6 +654,64 @@ const ReserveHotel: React.FC<IHotelConfirmationProps> = ({ coordinator }) => {
                 </View>
               </>
             )}
+        </View>
+
+        <View
+          style={{
+            backgroundColor: colors.background,
+            paddingHorizontal: 12,
+            paddingVertical: 18,
+            marginVertical: 12,
+          }}
+        >
+          <Text style={{ fontSize: 20, fontWeight: "bold", marginBottom: 15 }}>
+            キャンセルポリシー
+          </Text>
+          <View>
+            {plan?.cancelPolicy && (
+              <>
+                {/* <Text style={{ fontSize: 18, color: colors.textVariant }}>
+                  {spaceDetails?.cancelPolicy?.name}
+                </Text> */}
+                <View>
+                  {[...plan?.cancelPolicy.rates]
+                    .sort((a, b) => a.beforeHours - b.beforeHours)
+                    .map((policy, index) => {
+                      return (
+                        <View
+                          key={index}
+                          style={{
+                            flexDirection: "row",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            paddingVertical: 6,
+                          }}
+                        >
+                          <Text
+                            style={{
+                              fontSize: 16,
+                              color: colors.textVariant,
+                              fontWeight: "500",
+                            }}
+                          >
+                            {hoursAsCancelPolicyDuration(policy.beforeHours)}
+                          </Text>
+                          <Text
+                            style={{
+                              fontSize: 16,
+                              color: colors.text,
+                              fontWeight: "700",
+                            }}
+                          >
+                            {policy.percentage}%
+                          </Text>
+                        </View>
+                      );
+                    })}
+                </View>
+              </>
+            )}
+          </View>
         </View>
       </ScrollView>
 

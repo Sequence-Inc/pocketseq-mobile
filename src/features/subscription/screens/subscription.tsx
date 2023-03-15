@@ -23,6 +23,7 @@ import { useResources } from "../../../resources";
 import { Touchable } from "../../../widgets/touchable";
 import { Button } from "../../../widgets/button";
 import { CardView } from "../../../widgets/card-view";
+import { currencyFormatter } from "../../../utils/strings";
 
 type Colors = {
   primary: string;
@@ -272,7 +273,7 @@ export const Subscription: React.FC<ISpaceReservationConfirmationProps> = ({
                       }}
                     >
                       <Text style={[styles.priceText]}>
-                        ￥{subscription.amount}
+                        {currencyFormatter(subscription.amount)}
                       </Text>
                       <Text
                         style={{
