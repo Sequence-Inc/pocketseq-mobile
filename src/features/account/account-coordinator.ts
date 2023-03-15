@@ -18,6 +18,19 @@ export default abstract class AccountCoordinator {
     this.navigation.goBack();
   }
 
+  toAccountDetailScreen(action: NavigationAction = "navigate") {
+    if (action === "replace")
+      this.navigation.dispatch(
+        StackActions.replace(this.screenName, {
+          screen: "account-detail-screen",
+        })
+      );
+    else
+      this.navigation.navigate(this.screenName, {
+        screen: "account-detail-screen",
+      });
+  }
+
   toAccountPaymentMethodScreen(action: NavigationAction = "navigate") {
     if (action === "replace")
       this.navigation.dispatch(

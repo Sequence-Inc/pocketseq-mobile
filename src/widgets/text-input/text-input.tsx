@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   StyleProp,
   StyleSheet,
@@ -8,9 +8,9 @@ import {
   TextStyle,
   View,
   ViewStyle,
-} from 'react-native';
+} from "react-native";
 
-export type ITextInputProps = Omit<TextInputProps, 'style'> & {
+export type ITextInputProps = Omit<TextInputProps, "style"> & {
   containerStyle?: StyleProp<ViewStyle>;
   error?: boolean;
   iconLeft?: () => React.ReactElement;
@@ -18,6 +18,7 @@ export type ITextInputProps = Omit<TextInputProps, 'style'> & {
   label?: string;
   textStyle?: StyleProp<TextStyle>;
   tint?: string;
+  disabled?: boolean;
 };
 
 const TextInput: React.FC<ITextInputProps> = ({
@@ -34,19 +35,25 @@ const TextInput: React.FC<ITextInputProps> = ({
     styles.defaultContainer,
     containerStyle,
     styles.container,
-    { borderColor: error ? 'red' : tint ? tint : undefined },
+    { borderColor: error ? "red" : tint ? tint : "rgba(0,0,0,0.3)" },
     iconLeft ? { paddingLeft: 0 } : { paddingLeft: 10 },
     iconRight ? { paddingRight: 0 } : { paddingRight: 10 },
   ]);
 
-  const fLabelStyle = StyleSheet.flatten([styles.label, { color: error ? 'red' : tint ? tint : undefined }]);
+  const fLabelStyle = StyleSheet.flatten([
+    styles.label,
+    { color: error ? "red" : tint ? tint : "rgba(0,0,0,0.75)" },
+  ]);
 
   return (
     <View style={fContainerStyle}>
       {label && <Text style={fLabelStyle}>{label}</Text>}
       {iconLeft && <View style={styles.iconContainer}>{iconLeft()}</View>}
       <View style={styles.textInputContainer}>
-        <RNTextInput {...textInputProps} style={[textStyle, styles.textInput]} />
+        <RNTextInput
+          {...textInputProps}
+          style={[textStyle, styles.textInput]}
+        />
       </View>
       {iconRight && <View style={styles.iconContainer}>{iconRight()}</View>}
     </View>
@@ -55,38 +62,40 @@ const TextInput: React.FC<ITextInputProps> = ({
 
 const styles = StyleSheet.create({
   defaultContainer: {
-    borderColor: 'black',
-    borderRadius: 2,
+    borderColor: "green",
+    borderRadius: 6,
     borderWidth: 1,
     height: 48,
   },
   container: {
-    alignItems: 'center',
-    flexDirection: 'row',
+    alignItems: "center",
+    flexDirection: "row",
   },
   iconContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     padding: 5,
-    height: '100%',
+    height: "100%",
     width: 48,
   },
   label: {
-    position: 'absolute',
-    top: -7,
-    left: 7,
-    backgroundColor: 'white',
-    height: 10,
-    fontSize: 10,
+    position: "absolute",
+    top: -6,
+    left: 6,
+    backgroundColor: "white",
+    height: 12,
+    fontSize: 12,
+    lineHeight: 12,
+    paddingHorizontal: 4,
   },
   textInputContainer: {
     flex: 1,
-    flexDirection: 'column',
-    height: '100%',
+    flexDirection: "column",
+    height: "100%",
   },
   textInput: {
     flex: 1,
-    width: '100%',
+    width: "100%",
   },
 });
 

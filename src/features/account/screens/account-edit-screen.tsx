@@ -6,17 +6,84 @@ import AccountCoordinator from "../account-coordinator";
 import { SessionStore } from "../../../services/storage";
 import { Touchable } from "../../../widgets/touchable";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { ScrollView, View, Text } from "react-native";
+import { ScrollView, View, Text, Alert } from "react-native";
+import {
+  ProfileUpdateInput,
+  useMyProfile,
+  useProfileUpdate,
+} from "../../../services/graphql";
+import { TextInput } from "../../../widgets/text-input";
+import { flowResult } from "mobx";
 
 export interface IAccountEditScreenProps {
   coordinator: AccountCoordinator;
 }
 
 export const AccountEditScreen: React.FC<IAccountEditScreenProps> = observer(
-  () => {
-    const [{ profile }] = useState(SessionStore);
+  ({ coordinator }) => {
+    const [{ profile, accessToken, refreshToken, saveLogin }] =
+      useState(SessionStore);
     const headerHeight = useHeaderHeight();
-    const { colors } = useResources();
+    const { colors, strings } = useResources();
+    const [form, setForm] = useState<ProfileUpdateInput>({
+      id: profile?.id || "",
+      firstName: profile?.firstName || "",
+      lastName: profile?.lastName || "",
+      firstNameKana: profile?.firstNameKana || "",
+      lastNameKana: profile?.lastNameKana || "",
+      dob: profile?.dob || "",
+    });
+
+    const [handleUpdate, { loading: updating }] = useProfileUpdate();
+    const { myProfile } = useMyProfile();
+
+    const handleFormChange = React.useCallback(
+      (val: string, fieldName: string) => {
+        setForm((prev) => ({
+          ...prev,
+          [fieldName]: val,
+        }));
+      },
+      [form]
+    );
+
+    const onUpdateProfile = React.useCallback(async () => {
+      console.log({ ...form });
+      const updated = await handleUpdate({
+        ...form,
+      });
+
+      if (updated.data) {
+        // refetch profile
+        const profile = await myProfile();
+        if (profile.data) {
+          // update store with updated profile data
+          await flowResult(
+            saveLogin({
+              accessToken,
+              refreshToken,
+              profile: profile.data?.myProfile,
+            })
+          );
+        }
+        // show alert
+        Alert.alert(`Success`, `プロフィールを更新しました。`, [
+          {
+            text: "OK",
+            style: "default",
+            onPress: () => {
+              coordinator.goBack();
+            },
+          },
+        ]);
+
+        return;
+      }
+      if (updated.errors) {
+        console.log({ error: updated.errors });
+        Alert.alert("Could not update account due to error.");
+      }
+    }, [form]);
 
     return (
       <SafeAreaView
@@ -33,161 +100,68 @@ export const AccountEditScreen: React.FC<IAccountEditScreenProps> = observer(
           <View
             style={{
               paddingHorizontal: 12,
-              paddingTop: 24,
+              paddingTop: 18,
+              paddingBottom: 6,
             }}
           >
             <Text
               style={{
                 color: colors.textVariant,
-                fontSize: 14,
+                fontSize: 18,
                 fontWeight: "700",
               }}
             >
-              メール
-            </Text>
-            <Text
-              style={{
-                flexGrow: 1,
-                color: colors.textVariant,
-                fontSize: 16,
-                marginBottom: 4,
-              }}
-            >
-              {profile?.email}
+              プロフィールを更新
             </Text>
           </View>
           <View
             style={{
               marginTop: 12,
-              paddingHorizontal: 12,
               borderTopWidth: 1,
               borderTopColor: "rgba(240,240,240,1)",
               paddingTop: 12,
             }}
           >
-            <Text
-              style={{
-                color: colors.textVariant,
-                fontSize: 14,
-                fontWeight: "700",
-              }}
-            >
-              性
-            </Text>
-            <Text
-              style={{
-                flexGrow: 1,
-                color: colors.textVariant,
-                fontSize: 16,
-                marginBottom: 4,
-              }}
-            >
-              {profile?.lastName}
-            </Text>
-          </View>
-          <View
-            style={{
-              marginTop: 12,
-              paddingHorizontal: 12,
-              borderTopWidth: 1,
-              borderTopColor: "rgba(240,240,240,1)",
-              paddingTop: 12,
-            }}
-          >
-            <Text
-              style={{
-                color: colors.textVariant,
-                fontSize: 14,
-                fontWeight: "700",
-              }}
-            >
-              名
-            </Text>
-            <Text
-              style={{
-                flexGrow: 1,
-                color: colors.textVariant,
-                fontSize: 16,
-                marginBottom: 4,
-              }}
-            >
-              {profile?.firstName}
-            </Text>
-          </View>
-          <View
-            style={{
-              marginTop: 12,
-              paddingHorizontal: 12,
-              borderTopWidth: 1,
-              borderTopColor: "rgba(240,240,240,1)",
-              paddingTop: 12,
-            }}
-          >
-            <Text
-              style={{
-                color: colors.textVariant,
-                fontSize: 14,
-                fontWeight: "700",
-              }}
-            >
-              性 (カナ)
-            </Text>
-            <Text
-              style={{
-                flexGrow: 1,
-                color: colors.textVariant,
-                fontSize: 16,
-                marginBottom: 4,
-              }}
-            >
-              {profile?.lastNameKana}
-            </Text>
-          </View>
-          <View
-            style={{
-              marginTop: 12,
-              paddingHorizontal: 12,
-              borderTopWidth: 1,
-              borderTopColor: "rgba(240,240,240,1)",
-              paddingTop: 12,
-            }}
-          >
-            <Text
-              style={{
-                color: colors.textVariant,
-                fontSize: 14,
-                fontWeight: "700",
-              }}
-            >
-              名 (カナ)
-            </Text>
-            <Text
-              style={{
-                flexGrow: 1,
-                color: colors.textVariant,
-                fontSize: 16,
-                marginBottom: 4,
-              }}
-            >
-              {profile?.firstNameKana}
-            </Text>
-          </View>
-          <View
-            style={{
-              paddingHorizontal: 12,
-              paddingTop: 12,
-              borderTopWidth: 1,
-              borderTopColor: "rgba(230,230,230,1)",
-            }}
-          >
+            <TextInput
+              disabled={updating}
+              containerStyle={{ margin: 12, opacity: updating ? 0.5 : 1 }}
+              label={`${strings("lastname")}`}
+              placeholder={`${strings("lastname")}`}
+              onChangeText={(val) => handleFormChange(val, "lastName")}
+              value={form.lastName}
+            />
+            <TextInput
+              disabled={updating}
+              containerStyle={{ margin: 12, opacity: updating ? 0.5 : 1 }}
+              label={`${strings("name")}`}
+              placeholder={`${strings("name")}`}
+              onChangeText={(val) => handleFormChange(val, "firstName")}
+              value={form.firstName}
+            />
+            <TextInput
+              disabled={updating}
+              containerStyle={{ margin: 12, opacity: updating ? 0.5 : 1 }}
+              label={`${strings("lastname_kana")}`}
+              placeholder={`${strings("lastname_kana_example")}`}
+              onChangeText={(val) => handleFormChange(val, "lastNameKana")}
+              value={form.lastNameKana}
+            />
+            <TextInput
+              disabled={updating}
+              containerStyle={{ margin: 12, opacity: updating ? 0.5 : 1 }}
+              label={`${strings("name_kana")}`}
+              placeholder={`${strings("name_kana")}`}
+              onChangeText={(val) => handleFormChange(val, "firstNameKana")}
+              value={form.firstNameKana}
+            />
+
             <Touchable
-              onPress={() => {
-                // TODO: Go to profile edit view
-              }}
+              onPress={onUpdateProfile}
               style={{
                 backgroundColor: colors.background,
                 borderWidth: 1,
                 borderColor: colors.backgroundVariant,
+                marginHorizontal: 12,
                 paddingHorizontal: 24,
                 paddingVertical: 12,
                 borderRadius: 6,
@@ -201,10 +175,18 @@ export const AccountEditScreen: React.FC<IAccountEditScreenProps> = observer(
                   textAlign: "center",
                 }}
               >
-                Edit account details
+                保存
               </Text>
             </Touchable>
           </View>
+          <View
+            style={{
+              paddingHorizontal: 12,
+              marginTop: 12,
+              borderTopWidth: 1,
+              borderTopColor: "rgba(230,230,230,1)",
+            }}
+          ></View>
         </ScrollView>
       </SafeAreaView>
     );

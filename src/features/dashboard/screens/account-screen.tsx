@@ -200,6 +200,9 @@ export const AccountScreen: React.FC<IAccountScreenProps> = observer(
                 flexDirection: "row",
                 alignItems: "center",
               }}
+              onPress={() => {
+                coordinator.toAccountEditScreen("navigate");
+              }}
             >
               <SVGImage
                 source={images.svg.cog_6_tooth}

@@ -17,6 +17,7 @@ class Session {
     lastNameKana: "",
     accountId: "",
     profilePhoto: undefined,
+    dob: undefined,
   };
 
   constructor() {

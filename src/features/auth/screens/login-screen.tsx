@@ -2,6 +2,7 @@ import {
   LoginInput,
   SocialLoginInput,
   useLogin,
+  useMyProfile,
   useSocialLogin,
 } from "../../../services/graphql";
 import { SessionStore } from "../../../services/storage";
@@ -39,6 +40,7 @@ export const LoginScreen: React.FC<ILoginScreenProps> = observer(
     const [{ saveLogin }] = React.useState(SessionStore);
     const [login, { loading }] = useLogin();
     const [socialLogin, { loading: socialLoginLoading }] = useSocialLogin();
+    const { myProfile } = useMyProfile();
 
     const [requestFB, responseFB, promptAsyncFB] = Facebook.useAuthRequest({
       clientId: "3219481098313902",
@@ -117,10 +119,19 @@ export const LoginScreen: React.FC<ILoginScreenProps> = observer(
           deviceID,
         });
         if (result.data) {
-          console.log("-".repeat(30));
-          console.log(result.data?.login);
-          console.log("-".repeat(30));
-          flowResult(saveLogin({ ...result.data?.login }));
+          await flowResult(saveLogin({ ...result.data?.login }));
+          const profile = await myProfile();
+          if (profile.data) {
+            const { accessToken, refreshToken } = result.data?.login;
+            await flowResult(
+              saveLogin({
+                accessToken,
+                refreshToken,
+                profile: profile.data?.myProfile,
+              })
+            );
+          }
+
           coordinator.toDashboardScreen();
         }
       } catch (err: any) {
@@ -142,7 +153,20 @@ export const LoginScreen: React.FC<ILoginScreenProps> = observer(
           // const deviceID = await registerNotifications();
           const result = await socialLogin(params);
           if (result.data) {
-            flowResult(saveLogin({ ...result.data?.socialLogin }));
+            await flowResult(saveLogin({ ...result.data?.socialLogin }));
+
+            const profile = await myProfile();
+            if (profile.data) {
+              const { accessToken, refreshToken } = result.data?.socialLogin;
+              await flowResult(
+                saveLogin({
+                  accessToken,
+                  refreshToken,
+                  profile: profile.data?.myProfile,
+                })
+              );
+            }
+
             coordinator.toDashboardScreen();
           }
         } catch (error: any) {

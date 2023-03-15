@@ -27,6 +27,7 @@ export default abstract class DashboardCoordinator {
     action?: NavigationAction,
     params?: any
   ): void;
+  abstract toAccountEditScreen(action?: NavigationAction, params?: any): void;
   abstract toSubscriptionsScreen(action?: NavigationAction, params?: any): void;
   abstract toUserReservationScreen(
     action?: NavigationAction,

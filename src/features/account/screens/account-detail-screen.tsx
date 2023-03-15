@@ -19,7 +19,7 @@ export interface IAccountDetailScreenParams {
 }
 
 export const AccountDetailScreen: React.FC<IAccountDetailScreenProps> =
-  observer(() => {
+  observer(({ coordinator }) => {
     const [{ profile }] = useState(SessionStore);
     const headerHeight = useHeaderHeight();
     const { colors } = useResources();
@@ -189,6 +189,7 @@ export const AccountDetailScreen: React.FC<IAccountDetailScreenProps> =
             <Touchable
               onPress={() => {
                 // TODO: Go to profile edit view
+                coordinator.toAccountEditScreen("replace");
               }}
               style={{
                 backgroundColor: colors.background,
@@ -207,7 +208,7 @@ export const AccountDetailScreen: React.FC<IAccountDetailScreenProps> =
                   textAlign: "center",
                 }}
               >
-                Edit account details
+                プロフィールを更新
               </Text>
             </Touchable>
           </View>

@@ -171,6 +171,23 @@ export class DashboardCoordinator extends IDashboardCoordinator {
         screen: "account-subscription-screen",
       });
   }
+  toAccountEditScreen(
+    action: NavigationAction = "navigate",
+    params?: void
+  ): void {
+    if (action === "replace")
+      this.navigation.dispatch(
+        StackActions.replace("account-stack", {
+          params,
+          screen: "account-edit-screen",
+        })
+      );
+    else
+      this.navigation.navigate("account-stack", {
+        params,
+        screen: "account-edit-screen",
+      });
+  }
 
   toUserReservationScreen(
     action?: NavigationAction | undefined,

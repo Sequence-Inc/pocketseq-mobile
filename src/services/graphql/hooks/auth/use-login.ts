@@ -1,7 +1,7 @@
-import { gql, useMutation } from "@apollo/client";
+import { gql, useLazyQuery, useMutation, useQuery } from "@apollo/client";
 import { Profile } from "../../../domains";
 import { isEmpty } from "lodash";
-import { MutationHook } from "../../types";
+import { MutationHook, QueryHook } from "../../types";
 
 export type LoginInput = {
   email: string;
@@ -28,6 +28,9 @@ export type LoginResult = {
     profile: Profile;
   };
 };
+export type ProfileResult = {
+  myProfile: Profile;
+};
 export type SocialLoginResult = {
   socialLogin: {
     accessToken: string;
@@ -36,10 +39,7 @@ export type SocialLoginResult = {
   };
 };
 
-const loginObject = `accessToken
-      refreshToken
-      profile {
-        ... on UserProfile {
+const profileObject = `... on UserProfile {
           id
           email
           firstName
@@ -93,7 +93,12 @@ const loginObject = `accessToken
           phoneNumber
           registrationNumber
           roles
-        }
+        }`;
+
+const loginObject = `accessToken
+      refreshToken
+      profile {
+        ${profileObject}
       }`;
 
 export const LOGIN = gql`
@@ -114,7 +119,7 @@ export const SOCIAL_LOGIN = gql`
 export const MY_PROFILE = gql`
   query MyProfile {
     myProfile {
-      ${loginObject}
+      ${profileObject}
     }
   }
 `;
@@ -156,4 +161,15 @@ export const useSocialLogin: MutationHook<
     return socialLoginResult;
   }
   return [socialLogin, result];
+};
+
+export const useMyProfile = () => {
+  const [fetchProfile] = useLazyQuery<ProfileResult>(MY_PROFILE);
+
+  const myProfile = async () => {
+    const myProfileResult = await fetchProfile({ fetchPolicy: "network-only" });
+    return myProfileResult;
+  };
+
+  return { myProfile };
 };
