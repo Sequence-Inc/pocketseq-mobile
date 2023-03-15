@@ -3,23 +3,17 @@ import React, { useState } from "react";
 import { observer } from "mobx-react";
 import { useResources } from "../../../resources";
 import AccountCoordinator from "../account-coordinator";
-import { Profile } from "../../../services/domains";
 import { SessionStore } from "../../../services/storage";
 import { Touchable } from "../../../widgets/touchable";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ScrollView, View, Text } from "react-native";
 
-export interface IAccountDetailScreenProps {
+export interface IAccountEditScreenProps {
   coordinator: AccountCoordinator;
 }
 
-export interface IAccountDetailScreenParams {
-  profile: Profile;
-  accessToken: string;
-}
-
-export const AccountDetailScreen: React.FC<IAccountDetailScreenProps> =
-  observer(() => {
+export const AccountEditScreen: React.FC<IAccountEditScreenProps> = observer(
+  () => {
     const [{ profile }] = useState(SessionStore);
     const headerHeight = useHeaderHeight();
     const { colors } = useResources();
@@ -214,4 +208,5 @@ export const AccountDetailScreen: React.FC<IAccountDetailScreenProps> =
         </ScrollView>
       </SafeAreaView>
     );
-  });
+  }
+);

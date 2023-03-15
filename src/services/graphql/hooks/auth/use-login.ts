@@ -36,79 +36,92 @@ export type SocialLoginResult = {
   };
 };
 
-const LOGIN = gql`
-  mutation Login($input: LoginInput!) {
-    login(input: $input) {
-      accessToken
+const loginObject = `accessToken
       refreshToken
       profile {
-        __typename
         ... on UserProfile {
           id
-          accountId
           email
-          emailVerified
           firstName
           lastName
           firstNameKana
           lastNameKana
           phoneNumber
           roles
-          address {
-            id
-            addressLine1
-          }
           profilePhoto {
             id
+            mime
+            type
+            thumbnail {
+              width
+              height
+              url
+            }
+            small {
+              width
+              height
+              url
+            }
             medium {
               width
               height
               url
             }
           }
+          address {
+            id
+            addressLine1
+            addressLine2
+            city
+            longitude
+            latitude
+            postalCode
+            prefecture {
+              id
+              name
+              nameKana
+              nameRomaji
+              available
+            }
+          }
         }
-      }
+        ... on CompanyProfile {
+          id
+          email
+          name
+          nameKana
+          phoneNumber
+          registrationNumber
+          roles
+        }
+      }`;
+
+export const LOGIN = gql`
+  mutation Login($input: LoginInput!) {
+    login(input: $input) {
+      ${loginObject}
     }
   }
 `;
-const SOCIAL_LOGIN = gql`
+export const SOCIAL_LOGIN = gql`
   mutation socialLogin($input: SocialLoginInput!) {
     socialLogin(input: $input) {
-      accessToken
-      refreshToken
-      profile {
-        __typename
-        ... on UserProfile {
-          id
-          accountId
-          email
-          emailVerified
-          firstName
-          lastName
-          firstNameKana
-          lastNameKana
-          phoneNumber
-          roles
-          address {
-            id
-            addressLine1
-          }
-          profilePhoto {
-            id
-            medium {
-              width
-              height
-              url
-            }
-          }
-        }
-      }
+      ${loginObject}
+    }
+  }
+`;
+
+export const MY_PROFILE = gql`
+  query MyProfile {
+    myProfile {
+      ${loginObject}
     }
   }
 `;
 
 export const useLogin: MutationHook<LoginResult, LoginInput> = () => {
   let [mutation, result] = useMutation<LoginResult, LoginVariables>(LOGIN);
+
   async function login({ email, password, deviceID }: LoginInput) {
     if (isEmpty(email) || isEmpty(password))
       throw new Error("Both email and password are required!!");
@@ -119,6 +132,7 @@ export const useLogin: MutationHook<LoginResult, LoginInput> = () => {
 
     return loginResult;
   }
+
   return [login, result];
 };
 

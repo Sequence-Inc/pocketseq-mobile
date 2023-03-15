@@ -172,6 +172,34 @@ export const AccountScreen: React.FC<IAccountScreenProps> = observer(
                 flexDirection: "row",
                 alignItems: "center",
               }}
+              onPress={() => {
+                coordinator.toAccountSubscriptionScreen("navigate", {});
+              }}
+            >
+              <SVGImage
+                source={images.svg.calendar_days}
+                color={colors.textVariant}
+                style={{ width: 20, height: 20, marginRight: 24 }}
+              />
+              <Text
+                style={{
+                  color: colors.textVariant,
+                  fontSize: 16,
+                  fontWeight: "500",
+                }}
+              >
+                サブスクリップション
+              </Text>
+            </Touchable>
+            <Touchable
+              style={{
+                paddingHorizontal: 24,
+                borderTopWidth: 1,
+                borderTopColor: "rgba(230,230,230,1)",
+                paddingVertical: 18,
+                flexDirection: "row",
+                alignItems: "center",
+              }}
             >
               <SVGImage
                 source={images.svg.cog_6_tooth}

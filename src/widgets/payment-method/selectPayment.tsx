@@ -4,7 +4,7 @@ import { useResources } from "../../resources";
 
 import { observer } from "mobx-react";
 import { styleStore, SessionStore } from "../../services/storage";
-import { useFetchPaymentMethods } from "../../services/graphql";
+import { usePaymentMethods } from "../../services/graphql";
 
 const noOp = (data: any) => data;
 export type SelectPaymentProps = {
@@ -44,7 +44,7 @@ const SelectPayment = ({ onSelect = noOp }: SelectPaymentProps) => {
     paymentMethods,
     paymentMethodsLoading,
     paymentMethodsError,
-  } = useFetchPaymentMethods();
+  } = usePaymentMethods();
 
   React.useEffect(() => {
     if (!accessToken) return;

@@ -15,6 +15,8 @@ class Session {
     firstNameKana: "",
     lastName: "",
     lastNameKana: "",
+    accountId: "",
+    profilePhoto: undefined,
   };
 
   constructor() {
@@ -30,9 +32,9 @@ class Session {
   }
 
   *initializeStore() {
-    console.log("initialize store running");
     const { accessToken, refreshToken, profile } =
       yield AsyncStorage.getInitialData();
+
     this.accessToken = accessToken ? JSON.parse(accessToken) : "";
     this.refreshToken = refreshToken ? JSON.parse(refreshToken) : "";
     this.profile = profile ? JSON.parse(profile) : "";

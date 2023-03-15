@@ -11,6 +11,8 @@ import { Subscription } from "expo-modules-core";
 import { Notification } from "expo-notifications";
 import { registerNotifications } from "./utils/notification";
 import { CONFIG } from "./utils/config";
+import { StripeProvider } from "@stripe/stripe-react-native";
+import * as Linking from "expo-linking";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -64,10 +66,15 @@ export function Application() {
     <AppClientProvider client={appClient}>
       <AlgoliaProvider apiKey={algoliaApiKey} appId={algoliaAppId}>
         <ResourcesProvider language="en">
-          <StatusBar style="light" />
-          <AuthContextProvider>
-            <AppNavigation />
-          </AuthContextProvider>
+          <StripeProvider
+            publishableKey={config.stripePublishableKey}
+            urlScheme={Linking.createURL("pocketseq")}
+          >
+            <StatusBar style="light" />
+            <AuthContextProvider>
+              <AppNavigation />
+            </AuthContextProvider>
+          </StripeProvider>
         </ResourcesProvider>
       </AlgoliaProvider>
     </AppClientProvider>

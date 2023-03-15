@@ -64,11 +64,6 @@ export const LoginScreen: React.FC<ILoginScreenProps> = observer(
           )
             .then((response) => response.json())
             .then((data) => {
-              console.log(
-                "HERE!",
-                data.id,
-                responseFB?.authentication?.accessToken
-              );
               onSocialLogin({
                 provider: "facebook",
                 providerAccountId: data.id,
@@ -122,6 +117,9 @@ export const LoginScreen: React.FC<ILoginScreenProps> = observer(
           deviceID,
         });
         if (result.data) {
+          console.log("-".repeat(30));
+          console.log(result.data?.login);
+          console.log("-".repeat(30));
           flowResult(saveLogin({ ...result.data?.login }));
           coordinator.toDashboardScreen();
         }

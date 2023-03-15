@@ -44,22 +44,12 @@ const newAuthLink = () => {
 const newErrorLink = (uri: string) => {
   return onError(({ forward, operation, graphQLErrors, networkError }) => {
     if (graphQLErrors) {
-      console.log("-".repeat(25) + "Graphql Error" + "-".repeat(25));
       for (const error of graphQLErrors) {
         const gqlError = error as unknown as GqlError;
-        console.log(error);
         const { action, code, info, message } = gqlError;
-        // const { locations, path, stacktrace } = info;
-        console.log(`code:       ${code}`);
-        console.log(`message:    ${message}`);
-        console.log(`action:     ${action}`);
-        // console.log(`location:   ${locations?.map((location) => location)}`);
-        // console.log(`path:       ${path}`);
-        // console.log(`stacktrace: ${stacktrace}`);
         if (action === "logout") SessionStore.clearToken();
         if (action === "refresh-token") {
           const refreshToken = SessionStore.refreshToken;
-          console.log("refresh-token: ", refreshToken);
           return new Observable((observer) => {
             (async () => {
               try {
@@ -74,8 +64,6 @@ const newErrorLink = (uri: string) => {
                 });
                 const responseJson = await response.json();
                 const newAccessToken = responseJson.data.refreshToken;
-                console.log(`[SUCCESSFULL]: Refresh Token`);
-                console.log("access-token: ", newAccessToken);
 
                 // save new access token
                 await setKey(KEYS.ACCESS_TOKEN, newAccessToken);
@@ -94,15 +82,12 @@ const newErrorLink = (uri: string) => {
                   complete: observer.complete.bind(observer),
                 });
               } catch (error) {
-                console.log(`[FAILED]: Refresh Token`);
-                console.log(error);
                 observer.error(error);
               }
             })();
           });
         }
       }
-      console.log("-".repeat(25) + "Graphql Error" + "-".repeat(25));
     }
     if (networkError) console.log(`[Network error]: ${networkError}`);
     return;

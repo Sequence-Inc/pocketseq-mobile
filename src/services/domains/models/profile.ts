@@ -18,5 +18,5 @@ export interface Profile extends UserProfile, CompanyProfile {
   email: string;
   emailVerified: boolean;
   phoneNumber: string;
-  profilePhoto: Photo;
+  profilePhoto?: Photo;
 }

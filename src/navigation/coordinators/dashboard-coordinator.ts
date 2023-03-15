@@ -1,7 +1,4 @@
-import {
-  IAccountDetailScreenParams,
-  IAccountPaymentMethodScreenParams,
-} from "../../features/account/screens";
+import { IAccountDetailScreenParams } from "../../features/account/screens";
 import { DashboardCoordinator as IDashboardCoordinator } from "../../features/dashboard";
 import { NavigationAction } from "../../features/dashboard/dashboard-coordinator";
 import {
@@ -141,7 +138,7 @@ export class DashboardCoordinator extends IDashboardCoordinator {
   }
   toAccountPaymentMethodScreen(
     action: NavigationAction = "navigate",
-    params: IAccountPaymentMethodScreenParams
+    params?: void
   ): void {
     if (action === "replace")
       this.navigation.dispatch(
@@ -154,6 +151,24 @@ export class DashboardCoordinator extends IDashboardCoordinator {
       this.navigation.navigate("account-stack", {
         params,
         screen: "account-payment-method-screen",
+      });
+  }
+
+  toAccountSubscriptionScreen(
+    action: NavigationAction = "navigate",
+    params?: void
+  ): void {
+    if (action === "replace")
+      this.navigation.dispatch(
+        StackActions.replace("account-stack", {
+          params,
+          screen: "account-subscription-screen",
+        })
+      );
+    else
+      this.navigation.navigate("account-stack", {
+        params,
+        screen: "account-subscription-screen",
       });
   }
 
