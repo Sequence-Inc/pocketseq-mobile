@@ -14,9 +14,9 @@ class Subscrption {
   *fetchSubscriptions() {
     console.log("flow");
 
-    const { subscription } = useFetchSubscriptions();
+    // const { subscription } = useFetchSubscriptions();
 
-    console.log({ subscription });
+    // console.log({ subscription });
   }
 }
 

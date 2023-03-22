@@ -16,7 +16,7 @@
         "WRITE_EXTERNAL_STORAGE",
         "AD_ID"
       ],
-      "versionCode": 16,
+      "versionCode": 19,
       "config": {
         "googleMaps": {
           "apiKey": "AIzaSyD2fBfh5KYKd4Mcyw_iN90EQCfGT917fKE"
@@ -34,10 +34,14 @@
     "icon": "./assets/images/ic_app.png",
     "ios": {
       "bundleIdentifier": "com.sequence.pocketseq",
-      "buildNumber": "25",
+      "buildNumber": "40",
       "supportsTablet": false,
       "infoPlist": {
-        "NSLocationUsageDescription": "Allow location access so that we can help you find spaces near you."
+        "NSLocationUsageDescription": "位置情報へのアクセスを許可して、近くの施設を見つけられるようにします。",
+        "CFBundleLocalizations": [
+          "ja"
+        ],
+        "CFBundleDevelopmentRegion": "ja"
       },
       "config": {
         "googleMapsApiKey": "AIzaSyDijYEeUIa9FCakUPipxEUAKjKaAv1DsXo"
@@ -50,7 +54,7 @@
       [
         "expo-image-picker",
         {
-          "photosPermission": "The app accesses your photos to let you share them with your friends."
+          "photosPermission": "アプリは写真にアクセスします。"
         }
       ],
       [
@@ -59,7 +63,20 @@
           "color": "#ffffff"
         }
       ],
-      "sentry-expo"
+      "sentry-expo",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "compileSdkVersion": 31,
+            "targetSdkVersion": 31,
+            "buildToolsVersion": "31.0.0"
+          },
+          "ios": {
+            "deploymentTarget": "13.0"
+          }
+        }
+      ]
     ],
     "slug": "pocketseq",
     "splash": {

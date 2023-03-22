@@ -1,9 +1,9 @@
 import { registerRootComponent } from "expo";
-import { activateKeepAwake } from "expo-keep-awake";
+import { activateKeepAwakeAsync } from "expo-keep-awake";
 import { Application } from "./src/application";
 import * as Sentry from "sentry-expo";
 
-if (__DEV__) activateKeepAwake();
+if (__DEV__) activateKeepAwakeAsync();
 
 Sentry.init({
   dsn: "https://635a9ab5c0854bb5b51fa3f48f1b7c3c@o4504074031661056.ingest.sentry.io/4504074046865408",
