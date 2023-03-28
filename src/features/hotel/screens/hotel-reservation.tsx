@@ -25,7 +25,7 @@ export const HotelReservation: React.FC<IHotelReservationProps> = ({
 }) => {
   const route: RouteProp<{ params: IHotelScreenParams }> = useRoute();
   const headerHeight = useHeaderHeight();
-  const { colors, images, strings } = useResources();
+  const { colors, images } = useResources();
   const { hotelId } = route.params;
   const [selectedPlan, setSelectedPlan] = useState(null);
 

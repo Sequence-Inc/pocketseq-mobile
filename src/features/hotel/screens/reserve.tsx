@@ -37,7 +37,7 @@ export type IHotelConfirmationProps = {
 const ReserveHotel: React.FC<IHotelConfirmationProps> = ({ coordinator }) => {
   const { params }: RouteProp<{ params: ReserveHotelParams }> = useRoute();
   const headerHeight = useHeaderHeight();
-  const { colors, images, strings } = useResources();
+  const { colors, images } = useResources();
 
   const [selectedPayment, setPaymentSource] = React.useState<null | any>(null);
 

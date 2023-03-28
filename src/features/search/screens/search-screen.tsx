@@ -623,6 +623,7 @@ const SpaceSearchForm = ({
                 updateParams({
                   checkInDate: moment(date).format("YYYY-MM-DD"),
                 });
+                setShowDate(false);
               }}
             />
           </View>
@@ -948,6 +949,7 @@ const HotelSearchForm = ({
                 updateParams({
                   checkInDate: moment(date).format("YYYY-MM-DD"),
                 });
+                setShowCheckInDate(false);
               }}
             />
           </View>
@@ -1012,6 +1014,7 @@ const HotelSearchForm = ({
                 updateParams({
                   checkOutDate: moment(date).format("YYYY-MM-DD"),
                 });
+                setShowCheckOutDate(false);
               }}
             />
           </View>

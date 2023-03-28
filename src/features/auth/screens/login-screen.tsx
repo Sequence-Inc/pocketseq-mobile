@@ -35,7 +35,7 @@ WebBrowser.maybeCompleteAuthSession();
 
 export const LoginScreen: React.FC<ILoginScreenProps> = observer(
   ({ coordinator }) => {
-    const { colors, images, strings } = useResources();
+    const { colors, images } = useResources();
     const [input, setInput] = React.useState<Partial<LoginInput>>({});
     const [{ saveLogin }] = React.useState(SessionStore);
     const [login, { loading }] = useLogin();
@@ -201,24 +201,24 @@ export const LoginScreen: React.FC<ILoginScreenProps> = observer(
                 textAlign: "center",
               }}
             >
-              {strings("login")}
+              ログイン
             </Text>
             <TextInput
               containerStyle={{ margin: 12 }}
               editable={!loading || !socialLoginLoading}
               keyboardType="email-address"
-              label={`${strings("mail_address")}`}
+              label={`メールアドレス`}
               onChangeText={React.useCallback(
                 (email) => setInput({ ...input, email }),
                 [input]
               )}
-              placeholder={`${strings("mail_address_hint")}`}
+              placeholder={`例）taro@mail.com`}
             />
             <TextInput
               containerStyle={{ margin: 12 }}
               editable={!loading || !socialLoginLoading}
-              label={`${strings("password")}`}
-              placeholder={`${strings("password_hint")}`}
+              label={`パスワード`}
+              placeholder={`パスワード`}
               onChangeText={React.useCallback(
                 (password) => setInput({ ...input, password }),
                 [input]
@@ -235,7 +235,7 @@ export const LoginScreen: React.FC<ILoginScreenProps> = observer(
                 alignSelf: "flex-end",
               }}
             >
-              {strings("forgot_password")}
+              パスワードをお忘れですか
             </Text>
             <Button
               containerStyle={{ backgroundColor: colors.primary, margin: 12 }}
@@ -244,7 +244,7 @@ export const LoginScreen: React.FC<ILoginScreenProps> = observer(
               }
               onPress={onLoginPress}
               titleStyle={{ color: colors.background }}
-              title={`${strings("do_login")}`}
+              title={`ログインする`}
             />
             <Button
               containerStyle={{ backgroundColor: "#4285F4", margin: 12 }}
@@ -304,7 +304,7 @@ export const LoginScreen: React.FC<ILoginScreenProps> = observer(
                     paddingHorizontal: 8,
                   }}
                 >
-                  {strings("do_you_have_acc")}
+                  アカウントをお持ちではありませんか？
                 </Text>
               </View>
             </View>
@@ -316,12 +316,12 @@ export const LoginScreen: React.FC<ILoginScreenProps> = observer(
               disabled={loading}
               onPress={onSignupPress}
               titleStyle={{ color: colors.background }}
-              title={`${strings("create_acc")}`}
+              title={`アカウントを作成する`}
             />
             <Text
               style={{ color: colors.text, margin: 28, textAlign: "center" }}
             >
-              {strings("copyright")}
+              © copyright PocketseQ 2023.
             </Text>
           </View>
         </ScrollView>

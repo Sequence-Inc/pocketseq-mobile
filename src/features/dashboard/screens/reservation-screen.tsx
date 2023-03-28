@@ -135,7 +135,7 @@ const SpaceReservationItem: React.FC<ISpaceReservationItemProps> = ({
 export const ReservationScreen: React.FC<IReservationScreenProps> = ({
   coordinator,
 }) => {
-  const { colors, images, strings } = useResources();
+  const { colors, images } = useResources();
   const [myReservations, reservations] = useUserReservation();
 
   const screenWidth = Dimensions.get("window").width;

@@ -31,7 +31,7 @@ export const UserReservationScreen: React.FC<IUserReservationScreenProps> = ({
   coordinator,
 }) => {
   const headerHeight = useHeaderHeight();
-  const { colors, images, strings } = useResources();
+  const { colors, images } = useResources();
 
   const route: RouteProp<{ params: IUserReservationScreenParams }> = useRoute();
   const { type, data } = route.params;

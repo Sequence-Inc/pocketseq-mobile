@@ -16,7 +16,7 @@
         "WRITE_EXTERNAL_STORAGE",
         "AD_ID"
       ],
-      "versionCode": 19,
+      "versionCode": 26,
       "config": {
         "googleMaps": {
           "apiKey": "AIzaSyD2fBfh5KYKd4Mcyw_iN90EQCfGT917fKE"
@@ -47,7 +47,7 @@
         "googleMapsApiKey": "AIzaSyDijYEeUIa9FCakUPipxEUAKjKaAv1DsXo"
       }
     },
-    "name": "PocketSeq",
+    "name": "PocketseQ",
     "orientation": "portrait",
     "owner": "jrgavinash",
     "plugins": [
@@ -68,9 +68,10 @@
         "expo-build-properties",
         {
           "android": {
-            "compileSdkVersion": 31,
-            "targetSdkVersion": 31,
-            "buildToolsVersion": "31.0.0"
+            "compileSdkVersion": 33,
+            "targetSdkVersion": 33,
+            "buildToolsVersion": "33.0.0",
+            "enableProguardInReleaseBuilds": true
           },
           "ios": {
             "deploymentTarget": "13.0"

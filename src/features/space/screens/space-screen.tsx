@@ -73,7 +73,7 @@ export const SpaceScreen: React.FC<ISpaceScreenProps> = ({ coordinator }) => {
 
   const route: RouteProp<{ params: ISpaceScreenParams }> = useRoute();
   const headerHeight = useHeaderHeight();
-  const { colors, images, strings } = useResources();
+  const { colors, images } = useResources();
 
   const { spaceById } = useSpace();
   const { spaceId } = route.params;

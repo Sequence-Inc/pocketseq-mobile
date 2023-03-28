@@ -47,8 +47,8 @@ type DurationType = "DAILY" | "HOURLY" | "MINUTES";
 const DurationTypeString = { DAILY: "日", HOURLY: "時間", MINUTES: "分" };
 
 const options = {
-  DAILY: Array.from({ length: 30 }).map((_, index) => index + 1),
-  HOURLY: Array.from({ length: 24 }).map((_, index) => index + 1),
+  DAILY: Array.from({ length: 10 }).map((_, index) => index + 1),
+  HOURLY: Array.from({ length: 12 }).map((_, index) => index + 1),
   MINUTES: [5, 10, 15, 30, 45],
 };
 
@@ -65,7 +65,7 @@ const SpaceReservation: React.FC<ISpaceReservationProps> = ({
     error,
     data: space,
   } = useSpace();
-  const { colors, strings } = useResources();
+  const { colors } = useResources();
   const [{ globalStyles }] = React.useState(styleStore);
   const headerHeight = useHeaderHeight();
   const [start, setStart] = useState<Moment>(moment(new Date()));
@@ -77,9 +77,9 @@ const SpaceReservation: React.FC<ISpaceReservationProps> = ({
   const [defaultSettings, setDefaultSettings] = useState<TDefaultSettings>();
   const [availableHours, setAvailableHours] = useState<number[]>();
 
-  const [duration, setDuration] = useState(options["DAILY"][0]);
-  const [durationType, setDurationType] = useState<DurationType>("DAILY");
-  const [durationOptions, setDurationOptions] = useState(options["DAILY"]);
+  const [duration, setDuration] = useState(options["HOURLY"][0]);
+  const [durationType, setDurationType] = useState<DurationType>("HOURLY");
+  const [durationOptions, setDurationOptions] = useState(options["HOURLY"]);
 
   const [showCheckInTime, setShowCheckInTime] = useState(false);
 
@@ -576,6 +576,7 @@ const SpaceReservation: React.FC<ISpaceReservationProps> = ({
               {
                 marginBottom: 12,
                 flexDirection: "row",
+                alignItems: "center",
               },
             ]}
           >
@@ -586,11 +587,18 @@ const SpaceReservation: React.FC<ISpaceReservationProps> = ({
                 color: colors.textVariant,
                 marginRight: 14,
                 flex: 1,
+                flexDirection: "row",
               }}
             >
               チェックイン:
             </Text>
-            <View style={{ flex: 1 }}>
+            <View
+              style={{
+                flex: 1,
+                flexDirection: "row",
+                justifyContent: "flex-end",
+              }}
+            >
               <DatePicker
                 mode="date"
                 onChange={(val: any) => setStart(val)}
@@ -613,7 +621,7 @@ const SpaceReservation: React.FC<ISpaceReservationProps> = ({
             </Text>
             <View style={[globalStyles.row]}>
               <Picker
-                style={[globalStyles.col_3]}
+                style={[globalStyles.col_4]}
                 mode="dialog"
                 placeholder="Select Category"
                 selectedValue={duration}
@@ -621,13 +629,19 @@ const SpaceReservation: React.FC<ISpaceReservationProps> = ({
                   setDuration(itemValue);
                 }}
               >
-                {durationOptions.map((_) => {
-                  return <Picker.Item key={_} label={_.toString()} value={_} />;
+                {durationOptions.map((option) => {
+                  return (
+                    <Picker.Item
+                      key={`key_${option}`}
+                      label={option.toString()}
+                      value={option}
+                    />
+                  );
                 })}
               </Picker>
 
               <Picker
-                style={[globalStyles.col_6]}
+                style={[globalStyles.col_4]}
                 mode="dialog"
                 placeholder="Select Category"
                 selectedValue={durationType}
@@ -658,7 +672,7 @@ const SpaceReservation: React.FC<ISpaceReservationProps> = ({
               <View style={[globalStyles.row]}>
                 <>
                   <Picker
-                    style={[globalStyles.col_3]}
+                    style={[globalStyles.col_4]}
                     mode="dialog"
                     placeholder="Select Category"
                     selectedValue={hour}

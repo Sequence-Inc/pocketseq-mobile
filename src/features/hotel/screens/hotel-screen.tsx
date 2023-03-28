@@ -77,7 +77,7 @@ export const HotelScreen: React.FC<ISpaceScreenProps> = ({ coordinator }) => {
 
   const route: RouteProp<{ params: IHotelScreenParams }> = useRoute();
   const headerHeight = useHeaderHeight();
-  const { colors, images, strings } = useResources();
+  const { colors, images } = useResources();
 
   const { hotelById } = useHotel();
   const { hotelId } = route.params;

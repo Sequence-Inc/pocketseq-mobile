@@ -128,7 +128,7 @@ const EmptyMessageComponent: React.FC = () => {
 export const MessagesScreen: React.FC<IMessagesScreenProps> = ({
   coordinator,
 }) => {
-  const { colors, images, strings } = useResources();
+  const { colors, images } = useResources();
 
   const [myChatsQuery, myChatsResult] = useMyChats();
 

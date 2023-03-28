@@ -4,6 +4,7 @@ import DateTimePicker, {
   DateTimePickerAndroid,
 } from "@react-native-community/datetimepicker";
 import moment, { Moment } from "moment";
+import { useResources } from "../../resources";
 
 export type DatePickerprops = {
   mode: "date" | "time";
@@ -14,9 +15,10 @@ export type DatePickerprops = {
 };
 
 const DatePicker = (props: DatePickerprops) => {
-  const mode = "date";
   const [show, setShow] = React.useState(false);
+  const { colors } = useResources();
 
+  const mode = "date";
   const onChange = (event: any, selectedDate: any) => {
     const currentDate = selectedDate;
     props.onChange && props.onChange(moment(currentDate));
@@ -35,8 +37,18 @@ const DatePicker = (props: DatePickerprops) => {
   return (
     <View>
       {Platform.OS === "android" && (
-        <Text onPress={() => showMode()}>
-          {moment(props?.date || new Date()).format("YYYY-MM-DD")}
+        <Text
+          onPress={() => showMode()}
+          style={{
+            fontSize: 16,
+            color: colors.textVariant,
+            paddingHorizontal: 8,
+            paddingVertical: 3,
+            backgroundColor: "rgba(0,0,0,0.08)",
+            borderRadius: 5,
+          }}
+        >
+          {moment(props?.date || new Date()).format("YYYY年MM月DD日")}
         </Text>
       )}
 
@@ -50,6 +62,7 @@ const DatePicker = (props: DatePickerprops) => {
           onChange={onChange}
           minimumDate={props.minimumValue}
           maximumDate={props?.maximumValue}
+          locale="ja"
         />
       )}
     </View>

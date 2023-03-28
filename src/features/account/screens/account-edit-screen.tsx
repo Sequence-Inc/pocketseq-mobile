@@ -24,7 +24,7 @@ export const AccountEditScreen: React.FC<IAccountEditScreenProps> = observer(
     const [{ profile, accessToken, refreshToken, saveLogin }] =
       useState(SessionStore);
     const headerHeight = useHeaderHeight();
-    const { colors, strings } = useResources();
+    const { colors } = useResources();
     const [form, setForm] = useState<ProfileUpdateInput>({
       id: profile?.id || "",
       firstName: profile?.firstName || "",
@@ -125,32 +125,32 @@ export const AccountEditScreen: React.FC<IAccountEditScreenProps> = observer(
             <TextInput
               disabled={updating}
               containerStyle={{ margin: 12, opacity: updating ? 0.5 : 1 }}
-              label={`${strings("lastname")}`}
-              placeholder={`${strings("lastname")}`}
+              label={`性`}
+              placeholder={`性`}
               onChangeText={(val) => handleFormChange(val, "lastName")}
               value={form.lastName}
             />
             <TextInput
               disabled={updating}
               containerStyle={{ margin: 12, opacity: updating ? 0.5 : 1 }}
-              label={`${strings("name")}`}
-              placeholder={`${strings("name")}`}
+              label={`名`}
+              placeholder={`名`}
               onChangeText={(val) => handleFormChange(val, "firstName")}
               value={form.firstName}
             />
             <TextInput
               disabled={updating}
               containerStyle={{ margin: 12, opacity: updating ? 0.5 : 1 }}
-              label={`${strings("lastname_kana")}`}
-              placeholder={`${strings("lastname_kana_example")}`}
+              label={`性（カナ）`}
+              placeholder={`例）ヤマダ`}
               onChangeText={(val) => handleFormChange(val, "lastNameKana")}
               value={form.lastNameKana}
             />
             <TextInput
               disabled={updating}
               containerStyle={{ margin: 12, opacity: updating ? 0.5 : 1 }}
-              label={`${strings("name_kana")}`}
-              placeholder={`${strings("name_kana")}`}
+              label={`名（カナ）`}
+              placeholder={`名（カナ）`}
               onChangeText={(val) => handleFormChange(val, "firstNameKana")}
               value={form.firstNameKana}
             />
