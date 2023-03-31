@@ -112,7 +112,8 @@ export const LoginScreen: React.FC<ILoginScreenProps> = observer(
         if (loading) return;
         const { email, password } = input;
         if (isEmpty(email) || isEmpty(password)) console.log("Empty fields");
-        const deviceID = await registerNotifications();
+        // const deviceID = await registerNotifications();
+        const deviceID = "";
         const result = await login({
           email: email!!,
           password: password!!,

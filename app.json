@@ -3,6 +3,7 @@
     "scheme": "pocketseq",
     "userInterfaceStyle": "light",
     "android": {
+      "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/ic_adaptive.png",
         "backgroundColor": "#FFFFFF"
@@ -16,7 +17,7 @@
         "WRITE_EXTERNAL_STORAGE",
         "AD_ID"
       ],
-      "versionCode": 26,
+      "versionCode": 29,
       "config": {
         "googleMaps": {
           "apiKey": "AIzaSyD2fBfh5KYKd4Mcyw_iN90EQCfGT917fKE"
