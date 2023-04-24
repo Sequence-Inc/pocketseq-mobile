@@ -81,6 +81,7 @@ const SelectPayment = ({ onSelect = noOp }: SelectPaymentProps) => {
   }
 
   if (paymentMethodsError) {
+    console.log(paymentMethodsError);
     return (
       <Text style={{ fontSize: 16 }}>
         お支払い方法の読み込み中にエラーが発生しました。

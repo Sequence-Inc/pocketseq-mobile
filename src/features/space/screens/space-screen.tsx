@@ -37,35 +37,6 @@ const COVER_IMAGE_HEIGHT = Math.floor(COVER_IMAGE_WIDTH / 1.7);
 const MAP_WIDTH = width - 24;
 const MAP_HEIGHT = Math.floor(MAP_WIDTH / 1.7);
 
-const DEMO_REVIEW = [
-  {
-    name: "Yusaku",
-    photo: {
-      url: "https://dev.pocketseq.com/review.jpg",
-    },
-    createdAt: "2021年6月",
-    comment: "立地も良く､清潔感のある宿で満足できるかと思います!",
-  },
-  {
-    name: "Takayuki",
-    photo: {
-      url: "https://dev.pocketseq.com/review.jpg",
-    },
-    createdAt: "2021年6月",
-    comment:
-      "施設はとても綺麗で､ｷｯﾁﾝやｱﾒﾆﾃｨも充実しています｡ ｿﾌﾄﾊﾞﾝｸ携帯の電波が入らない点が難点でしたが､滞在はとても満足しています｡",
-  },
-  {
-    name: "高橋",
-    photo: {
-      url: "https://dev.pocketseq.com/review.jpg",
-    },
-    createdAt: "2021年6月",
-    comment:
-      "非常に満足です｡ 対応も設備も文句なし｡ 素晴らしい非日常を味わうことができました｡ 何も不自由することなく楽しめましたので 是非利用してみてください｡",
-  },
-];
-
 export const SpaceScreen: React.FC<ISpaceScreenProps> = ({ coordinator }) => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>();

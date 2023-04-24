@@ -33,6 +33,8 @@ import {
   currencyFormatter,
   hoursAsCancelPolicyDuration,
 } from "../../../utils/strings";
+import { Touchable } from "../../../widgets/touchable";
+import { AccountCoordinator } from "../../account";
 
 export type ISpaceReservationConfirmationProps = {
   coordinator: SpaceCoordinator;
@@ -513,10 +515,47 @@ const ReservationConfirmation: React.FC<ISpaceReservationConfirmationProps> = ({
             marginTop: 12,
           }}
         >
-          <Text style={{ fontSize: 20, fontWeight: "bold", marginBottom: 15 }}>
-            お支払方法
-          </Text>
-          <SelectPayment onSelect={setPaymentSource} />
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+            }}
+          >
+            <Text
+              style={{
+                fontSize: 20,
+                fontWeight: "bold",
+                flexGrow: 1,
+              }}
+            >
+              お支払方法
+            </Text>
+            <View>
+              <Touchable
+                onPress={() => {
+                  // check if logged in
+                  if (!accessToken) {
+                    Alert.alert("ログインしてください。");
+                  } else {
+                    coordinator.toPaymentMethodScreen();
+                  }
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: 16,
+                    fontWeight: "bold",
+                    color: colors.primary,
+                  }}
+                >
+                  カード追加
+                </Text>
+              </Touchable>
+            </View>
+          </View>
+          <View style={{ marginTop: 15 }}>
+            <SelectPayment onSelect={setPaymentSource} />
+          </View>
         </View>
 
         {priceData ? (

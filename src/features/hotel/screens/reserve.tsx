@@ -29,6 +29,7 @@ import {
   currencyFormatter,
   hoursAsCancelPolicyDuration,
 } from "../../../utils/strings";
+import { Touchable } from "../../../widgets/touchable";
 
 export type IHotelConfirmationProps = {
   coordinator: HotelCoordinator;
@@ -509,10 +510,41 @@ const ReserveHotel: React.FC<IHotelConfirmationProps> = ({ coordinator }) => {
             marginTop: 12,
           }}
         >
-          <Text style={{ fontSize: 20, fontWeight: "bold", marginBottom: 15 }}>
-            お支払方法
-          </Text>
-          <SelectPayment onSelect={setPaymentSource} />
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "center",
+            }}
+          >
+            <Text style={{ fontSize: 20, fontWeight: "bold", flexGrow: 1 }}>
+              お支払方法
+            </Text>
+            <View>
+              <Touchable
+                onPress={() => {
+                  // check if logged in
+                  if (!accessToken) {
+                    Alert.alert("ログインしてください。");
+                  } else {
+                    coordinator.toPaymentMethodScreen();
+                  }
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: 16,
+                    fontWeight: "bold",
+                    color: colors.primary,
+                  }}
+                >
+                  カード追加
+                </Text>
+              </Touchable>
+            </View>
+          </View>
+          <View style={{ marginTop: 15 }}>
+            <SelectPayment onSelect={setPaymentSource} />
+          </View>
         </View>
 
         <View

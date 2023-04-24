@@ -54,7 +54,7 @@ export const AccountScreen: React.FC<IAccountScreenProps> = observer(
               fontWeight: "bold",
             }}
           >
-            アカウント <Text style={{ fontWeight: "400" }}>(Account)</Text>
+            アカウント
           </Text>
         </View>
 

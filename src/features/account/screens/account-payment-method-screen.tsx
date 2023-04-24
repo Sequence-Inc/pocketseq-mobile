@@ -12,9 +12,11 @@ import { usePaymentSheet } from "@stripe/stripe-react-native";
 import * as Linking from "expo-linking";
 import Constants from "expo-constants";
 import { PaymentMethodItem } from "../../../widgets/payment-method-item";
+import { SpaceCoordinator } from "../../space";
+import { HotelCoordinator } from "../../hotel";
 
 export interface IAccountPaymentMethodScreenProps {
-  coordinator: AccountCoordinator;
+  coordinator: AccountCoordinator | SpaceCoordinator | HotelCoordinator;
 }
 
 const returnURL =

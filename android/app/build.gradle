@@ -118,7 +118,7 @@ android {
         applicationId 'com.sequence.pocketseq'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 29
+        versionCode 32
         versionName "1.0.0"
     }
 

@@ -8,11 +8,13 @@ import {
 } from "./screens";
 import { useResources } from "../../resources";
 import { HeaderLeftButton } from "../../widgets/header-left-button";
+import { AccountPaymentMethodScreen } from "../account/screens";
 
 type SpaceStackParamList = {
   "space-screen": undefined;
   "space-reservation": undefined;
   "confirm-space-reservation": undefined;
+  "payment-method": undefined;
 };
 
 type SpaceStackProps = {
@@ -67,6 +69,18 @@ export default function SpaceStack({
               {...props}
               coordinator={coordinator}
             />
+          )}
+        </Screen>
+        <Screen
+          name="payment-method"
+          options={{
+            presentation: "modal",
+            headerLeft: () => null,
+            title: "お支払い方法管理",
+          }}
+        >
+          {(props) => (
+            <AccountPaymentMethodScreen {...props} coordinator={coordinator} />
           )}
         </Screen>
       </Group>

@@ -165,7 +165,7 @@ export const MessagesScreen: React.FC<IMessagesScreenProps> = ({
             fontWeight: "bold",
           }}
         >
-          メッセージ <Text style={{ fontWeight: "400" }}>(Messages)</Text>
+          メッセージ
         </Text>
       </View>
       <FlatList

@@ -196,7 +196,7 @@ export const ReservationScreen: React.FC<IReservationScreenProps> = ({
             fontWeight: "bold",
           }}
         >
-          予約 <Text style={{ fontWeight: "400" }}>(Reservation)</Text>
+          予約
         </Text>
       </View>
       <View

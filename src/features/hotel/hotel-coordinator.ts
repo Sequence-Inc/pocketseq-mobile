@@ -29,20 +29,50 @@ export default abstract class HotelCoordinator {
 
   abstract toDashboardScreen(action?: NavigationAction): void;
   abstract toAuthScreen(action?: NavigationAction): void;
-  abstract toChatScreen(action?: NavigationAction, params?: { recipientId: string; recipientName: string }): void;
+  abstract toChatScreen(
+    action?: NavigationAction,
+    params?: { recipientId: string; recipientName: string }
+  ): void;
 
   goBack(): void {
     this.navigation.goBack();
   }
 
-  toHotelReservation(action: NavigationAction = "navigate", params: TTO_HOTEL_RESERVAION_PROPS) {
+  toHotelReservation(
+    action: NavigationAction = "navigate",
+    params: TTO_HOTEL_RESERVAION_PROPS
+  ) {
     if (action === "replace")
-      this.navigation.dispatch(StackActions.replace(this.screenName, { screen: "hotel-reservation", params }));
-    else this.navigation.navigate(this.screenName, { screen: "hotel-reservation" });
+      this.navigation.dispatch(
+        StackActions.replace(this.screenName, {
+          screen: "hotel-reservation",
+          params,
+        })
+      );
+    else
+      this.navigation.navigate(this.screenName, {
+        screen: "hotel-reservation",
+      });
   }
-  toHotelReserveConfirm(action: NavigationAction = "navigate", params: ReserveHotelParams) {
+  toHotelReserveConfirm(
+    action: NavigationAction = "navigate",
+    params: ReserveHotelParams
+  ) {
     if (action === "replace")
-      this.navigation.dispatch(StackActions.replace(this.screenName, { screen: "confirm-hotel-reservation", params }));
-    else this.navigation.navigate(this.screenName, { screen: "confirm-hotel-reservation" });
+      this.navigation.dispatch(
+        StackActions.replace(this.screenName, {
+          screen: "confirm-hotel-reservation",
+          params,
+        })
+      );
+    else
+      this.navigation.navigate(this.screenName, {
+        screen: "confirm-hotel-reservation",
+      });
+  }
+  toPaymentMethodScreen() {
+    this.navigation.navigate(this.screenName, {
+      screen: "payment-method",
+    });
   }
 }

@@ -38,6 +38,12 @@ export default abstract class DashboardCoordinator {
     params?: { chatObject: ChatObject }
   ): void;
 
+  toDashboardScreen() {
+    this.navigation.dispatch(
+      TabActions.jumpTo(this.screenName, { screen: "home-screen" })
+    );
+  }
+
   toHomeScreen() {
     this.navigation.dispatch(
       TabActions.jumpTo(this.screenName, { screen: "home-screen" })

@@ -1,14 +1,6 @@
-import { RouteProp, useRoute } from "@react-navigation/native";
 import { useHeaderHeight } from "@react-navigation/elements";
 import React, { useEffect, useState, useRef, useCallback } from "react";
-import {
-  View,
-  Platform,
-  Text,
-  Dimensions,
-  Alert,
-  StyleSheet,
-} from "react-native";
+import { View, Text, Dimensions, Alert, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useResources } from "../../../resources";
 import { Touchable } from "../../../widgets/touchable";
@@ -23,6 +15,7 @@ import { FullScreenActivityIndicator } from "../../../widgets/full-screen-activi
 import { FullScreenErrorView } from "../../../widgets/full-screen-error-view";
 import { useAlgolia } from "../../../services/algolia";
 import { currencyFormatter } from "../../../utils/strings";
+import { SVGImage } from "../../../widgets/svg-image";
 
 export const getBoungindBox = (center: Region) => {
   let northeast = {
@@ -41,15 +34,15 @@ export const getBoungindBox = (center: Region) => {
   ];
 };
 
-const { width, height } = Dimensions.get("window");
+const { width } = Dimensions.get("window");
 
 export const SearchMapScreen: React.FC<ISearchScreenProps> = ({
   coordinator,
+  isTabScreen,
 }) => {
   const [params, setParams] = useState<ISearchScreenParams>({
     searchType: "SPACE",
   });
-
   const [loading, setLoading] = useState<boolean>(true);
   const [location, setLocation] = useState<Location.LocationObject>();
   const [errorMessage, setErrorMessage] = useState<string>();
@@ -65,26 +58,7 @@ export const SearchMapScreen: React.FC<ISearchScreenProps> = ({
   let map = useRef<MapView>(null);
 
   useEffect(() => {
-    (async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        setErrorMessage("Permission to access location was denied");
-        setLoading(false);
-        return;
-      }
-
-      let location = await Location.getCurrentPositionAsync();
-      setLocation(location);
-      updateParams({
-        geoloc: {
-          latitude: location.coords.latitude,
-          longitude: location.coords.longitude,
-          latitudeDelta: 0.00922,
-          longitudeDelta: 0.00421,
-        },
-      });
-      setLoading(false);
-    })();
+    getLocation();
   }, []);
 
   // trigger handle change
@@ -92,7 +66,6 @@ export const SearchMapScreen: React.FC<ISearchScreenProps> = ({
     if (!params.boundingBox) {
       (async () => {
         const boundingBox = await getCurrentBoundary();
-
         if (boundingBox.length > 0) {
           updateParams({
             boundingBox,
@@ -127,6 +100,28 @@ export const SearchMapScreen: React.FC<ISearchScreenProps> = ({
         Alert.alert(error.message);
     }
   }, [params]);
+
+  const getLocation = async () => {
+    setLoading(true);
+    let { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== "granted") {
+      setErrorMessage("location-access-not-granted");
+      setLoading(false);
+      return;
+    }
+
+    let location = await Location.getCurrentPositionAsync();
+    setLocation(location);
+    updateParams({
+      geoloc: {
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+        latitudeDelta: 0.00922,
+        longitudeDelta: 0.00421,
+      },
+    });
+    setLoading(false);
+  };
 
   const getCurrentBoundary = async (): Promise<number[]> => {
     const boundry = await map?.current?.getMapBoundaries();
@@ -168,27 +163,129 @@ export const SearchMapScreen: React.FC<ISearchScreenProps> = ({
 
   if (loading) return <FullScreenActivityIndicator />;
 
-  if (errorMessage) return <FullScreenErrorView />;
+  if (errorMessage)
+    return (
+      <FullScreenErrorView>
+        <View
+          style={{
+            paddingHorizontal: 24,
+            flex: 1,
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          {errorMessage === "location-access-not-granted" && (
+            <>
+              <Text
+                style={{
+                  color: colors.textVariant,
+                  fontSize: 16,
+                  textAlign: "center",
+                }}
+              >
+                PocketseQ には、あなたの位置情報にアクセスする権限がありません。
+                このアプリの位置情報へのアクセスを許可してください。
+              </Text>
+            </>
+          )}
+          {errorMessage !== "location-access-not-granted" && (
+            <>
+              <Text
+                style={{
+                  color: colors.textVariant,
+                  fontSize: 16,
+                  textAlign: "center",
+                }}
+              >
+                {errorMessage}
+              </Text>
+            </>
+          )}
+        </View>
+      </FullScreenErrorView>
+    );
 
   if (!location) {
-    return <FullScreenActivityIndicator />;
+    console.log("Location vetayena!");
+    return (
+      <FullScreenErrorView>
+        <View
+          style={{
+            paddingHorizontal: 24,
+            flex: 1,
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Text
+            style={{
+              color: colors.textVariant,
+              fontSize: 16,
+              textAlign: "center",
+            }}
+          >
+            アドレスの読み込み中にエラーが発生しました。
+          </Text>
+          <Touchable onPress={getLocation}>
+            <Text
+              style={{
+                color: colors.textVariant,
+                fontSize: 16,
+                textAlign: "center",
+                marginTop: 8,
+              }}
+            >
+              リロード
+            </Text>
+          </Touchable>
+        </View>
+      </FullScreenErrorView>
+    );
   }
-
   return (
     <SafeAreaView
-      edges={["bottom", "left", "right"]}
+      edges={isTabScreen ? ["left", "right"] : ["bottom", "left", "right"]}
       style={{
         backgroundColor: colors.backgroundVariant,
         paddingTop: headerHeight,
         flex: 1,
       }}
     >
+      {isTabScreen && (
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            paddingVertical: 18,
+            paddingHorizontal: 12,
+            backgroundColor: colors.primary,
+          }}
+        >
+          <SVGImage
+            source={images.svg.map_pin}
+            color={colors.background}
+            style={{ width: 24, height: 24, marginRight: 12 }}
+          />
+          <Text
+            style={{
+              color: colors.background,
+              fontSize: 18,
+              fontWeight: "bold",
+            }}
+          >
+            現在地から探す
+          </Text>
+        </View>
+      )}
       <View style={{ position: "relative", flex: 1 }}>
         <MapView
           provider={PROVIDER_GOOGLE}
           ref={map}
           style={{ ...StyleSheet.absoluteFillObject }}
           initialRegion={params?.geoloc}
+          key={`map_key_${location?.timestamp | 1}`}
           showsUserLocation
           onRegionChangeComplete={(region) => {
             handleRegionChange(region);
