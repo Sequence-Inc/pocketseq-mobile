@@ -35,7 +35,7 @@
     "icon": "./assets/images/ic_app.png",
     "ios": {
       "bundleIdentifier": "com.sequence.pocketseq",
-      "buildNumber": "43",
+      "buildNumber": "44",
       "supportsTablet": false,
       "infoPlist": {
         "NSLocationUsageDescription": "位置情報へのアクセスを許可して、近くの施設を見つけられるようにします。",

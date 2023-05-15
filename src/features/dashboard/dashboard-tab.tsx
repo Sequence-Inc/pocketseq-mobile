@@ -49,6 +49,7 @@ export default function DashboardTab({
           tabBarInactiveTintColor: colors.backgroundVariant,
           tabBarItemStyle: { paddingVertical: 10, height: 56 },
           tabBarStyle: { height: 56, backgroundColor: colors.primary },
+          tabBarHideOnKeyboard: false,
         }}
       >
         <Screen
