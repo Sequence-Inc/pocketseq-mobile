@@ -107,15 +107,15 @@ const ReservationConfirmation: React.FC<ISpaceReservationConfirmationProps> = ({
     reservingSpace,
   } = useReserveSpace(reservationData?.spaceId);
 
-  const { subscription } = useFetchSubscriptions();
+  const { subscriptions } = useFetchSubscriptions();
 
   const hasSpaceSubscriptions = React.useMemo(() => {
-    if (subscription?.mySubscriptions?.length) {
-      return subscription?.mySubscriptions?.find(
+    if (subscriptions?.mySubscriptions?.length) {
+      return subscriptions?.mySubscriptions?.find(
         (subscription: any) => subscription?.type === "rental-space"
       );
     }
-  }, [subscription]);
+  }, [subscriptions]);
 
   const {
     fetchCalculatedPrice,
@@ -165,22 +165,28 @@ const ReservationConfirmation: React.FC<ISpaceReservationConfirmationProps> = ({
   }, []);
 
   const handleReservation = React.useCallback(async () => {
-    const input = {
-      ...reservationData,
-      paymentSourceId: selectedPayment?.id,
-      additionalOptions: additionalOptionsFields?.map((option: any) => ({
-        optionId: option?.id,
-        quantity: option?.quantity || 1,
-      })),
-      useSubscription: !!reservationData?.useSubscription,
-    };
-    const data = await handleSpaceReservation(input);
-
-    if (data.data) {
-      Alert.alert("Successfully reserved space");
-    }
-    if (data.errors) {
-      Alert.alert("Could not reserve space");
+    try {
+      const input = {
+        ...reservationData,
+        paymentSourceId: selectedPayment?.id,
+        additionalOptions: additionalOptionsFields?.map((option: any) => ({
+          optionId: option?.id,
+          quantity: option?.quantity || 1,
+        })),
+        useSubscription: !!reservationData?.useSubscription,
+      };
+      const { data } = await handleSpaceReservation(input);
+      console.log(data);
+      if (data) {
+        Alert.alert("Successfully reserved space");
+        coordinator.toReservationTab("replace", {
+          type: "space",
+          data: data?.reserveSpace,
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      Alert.alert(error.message || "Error!");
     }
   }, [selectedPayment, reservationData]);
 

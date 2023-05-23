@@ -127,6 +127,12 @@ export const SpaceScreen: React.FC<ISpaceScreenProps> = ({ coordinator }) => {
     return planTypes.filter((plan) => plan.title === type)[0].label;
   };
 
+  let photos = space?.photos || [];
+  const mainPhoto = photos.find((photo) => photo.isDefault);
+  if (mainPhoto) {
+    photos = [mainPhoto, ...photos.filter(({ isDefault }) => !isDefault)];
+  }
+
   return (
     <SafeAreaView
       edges={["bottom", "left", "right"]}
@@ -162,7 +168,7 @@ export const SpaceScreen: React.FC<ISpaceScreenProps> = ({ coordinator }) => {
               { useNativeDriver: true }
             )}
           >
-            {space?.photos.map((photo, index) => {
+            {photos?.map((photo, index) => {
               return (
                 <View
                   key={photo.id}

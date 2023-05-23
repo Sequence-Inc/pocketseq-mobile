@@ -454,6 +454,12 @@ const SpaceReservation: React.FC<ISpaceReservationProps> = ({
     return content;
   };
 
+  let photos = space?.photos || [];
+  const mainPhoto = photos.find((photo) => photo.isDefault);
+  if (mainPhoto) {
+    photos = [mainPhoto, ...photos.filter(({ isDefault }) => !isDefault)];
+  }
+
   return (
     <SafeAreaView
       edges={["bottom", "left", "right"]}
@@ -482,7 +488,7 @@ const SpaceReservation: React.FC<ISpaceReservationProps> = ({
             flex: 1,
           }}
         >
-          {space?.photos.map((photo) => {
+          {photos?.map((photo) => {
             return (
               <View
                 key={photo.id}

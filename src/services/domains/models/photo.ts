@@ -2,6 +2,7 @@ import { IMAGE, Image, ImageType } from "./image";
 
 export const PHOTO = `
   id
+  isDefault
   mime
   type
   thumbnail {
@@ -20,6 +21,7 @@ export const PHOTO = `
 
 export interface Photo {
   id: string;
+  isDefault?: boolean;
   mime: string;
   type: ImageType;
   thumbnail: Image;
