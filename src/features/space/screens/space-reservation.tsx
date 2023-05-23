@@ -189,7 +189,7 @@ const SpaceReservation: React.FC<ISpaceReservationProps> = ({
 
   const toConfirmation = React.useCallback(
     () =>
-      coordinator.toSpaceReserveConfirm("replace", {
+      coordinator.toSpaceReserveConfirm("navigate", {
         spaceId,
         duration,
         durationType,
@@ -291,7 +291,7 @@ const SpaceReservation: React.FC<ISpaceReservationProps> = ({
                         {DurationTypeString[type]}
                       </Text>
                     </View>
-                    <Text
+                    {/* <Text
                       style={{
                         color: colors.primary,
                         fontWeight: "700",
@@ -299,7 +299,7 @@ const SpaceReservation: React.FC<ISpaceReservationProps> = ({
                       }}
                     >
                       {appliedTimes}回
-                    </Text>
+                    </Text> */}
                   </View>
                 </View>
               );

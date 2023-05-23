@@ -63,7 +63,7 @@ export const SpaceScreen: React.FC<ISpaceScreenProps> = ({ coordinator }) => {
   }, []);
 
   const toReservation = React.useCallback(
-    () => coordinator.toSpaceReservation("replace", { spaceId }),
+    () => coordinator.toSpaceReservation("navigate", { spaceId }),
     [spaceId]
   );
 

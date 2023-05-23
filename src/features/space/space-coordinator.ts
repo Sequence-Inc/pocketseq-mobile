@@ -47,6 +47,7 @@ export default abstract class SpaceCoordinator {
     else
       this.navigation.navigate(this.screenName, {
         screen: "space-reservation",
+        params,
       });
   }
 
@@ -64,6 +65,7 @@ export default abstract class SpaceCoordinator {
     else
       this.navigation.navigate(this.screenName, {
         screen: "confirm-space-reservation",
+        params,
       });
   }
   toPaymentMethodScreen() {
