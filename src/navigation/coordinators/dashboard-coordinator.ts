@@ -188,6 +188,23 @@ export class DashboardCoordinator extends IDashboardCoordinator {
         screen: "account-edit-screen",
       });
   }
+  toAccountPasswordChangeScreen(
+    action: NavigationAction = "navigate",
+    params?: void
+  ): void {
+    if (action === "replace")
+      this.navigation.dispatch(
+        StackActions.replace("account-stack", {
+          params,
+          screen: "account-password-change-screen",
+        })
+      );
+    else
+      this.navigation.navigate("account-stack", {
+        params,
+        screen: "account-password-change-screen",
+      });
+  }
 
   toUserReservationScreen(
     action?: NavigationAction | undefined,

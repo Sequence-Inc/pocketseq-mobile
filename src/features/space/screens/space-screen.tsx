@@ -22,6 +22,7 @@ import MapView, {
 import { Button } from "../../../widgets/button";
 import { SVGImage } from "../../../widgets/svg-image";
 import { currencyFormatter } from "../../../utils/strings";
+import Animated from "react-native-reanimated";
 
 export type ISpaceScreenProps = {
   coordinator: SpaceCoordinator;
@@ -45,6 +46,8 @@ export const SpaceScreen: React.FC<ISpaceScreenProps> = ({ coordinator }) => {
   const route: RouteProp<{ params: ISpaceScreenParams }> = useRoute();
   const headerHeight = useHeaderHeight();
   const { colors, images } = useResources();
+
+  const scrollX = React.useRef(new Animated.Value(0)).current;
 
   const { spaceById } = useSpace();
   const { spaceId } = route.params;
@@ -138,30 +141,87 @@ export const SpaceScreen: React.FC<ISpaceScreenProps> = ({ coordinator }) => {
         keyboardDismissMode="on-drag"
       >
         {/* Cover Images Carousel */}
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          pagingEnabled
-          style={{ width: COVER_IMAGE_WIDTH, height: COVER_IMAGE_HEIGHT }}
+        <View
+          style={{
+            width: COVER_IMAGE_WIDTH,
+            height: COVER_IMAGE_HEIGHT,
+            position: "relative",
+          }}
         >
-          {space?.photos.map((photo) => {
-            return (
-              <View
-                key={photo.id}
-                style={{ backgroundColor: colors.backgroundVariant }}
-              >
-                <Image
-                  source={{ uri: photo.large.url }}
+          <Animated.ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            pagingEnabled
+            style={{
+              width: COVER_IMAGE_WIDTH,
+              height: COVER_IMAGE_HEIGHT,
+            }}
+            scrollEventThrottle={16}
+            onScroll={Animated.event(
+              [{ nativeEvent: { contentOffset: { x: scrollX } } }],
+              { useNativeDriver: true }
+            )}
+          >
+            {space?.photos.map((photo, index) => {
+              return (
+                <View
+                  key={photo.id}
                   style={{
+                    backgroundColor: colors.backgroundVariant,
                     width: COVER_IMAGE_WIDTH,
                     height: COVER_IMAGE_HEIGHT,
                   }}
-                />
-              </View>
-            );
-          })}
-        </ScrollView>
+                >
+                  <Image
+                    source={{ uri: photo.large.url }}
+                    style={{
+                      width: COVER_IMAGE_WIDTH,
+                      height: COVER_IMAGE_HEIGHT,
+                    }}
+                  />
+                </View>
+              );
+            })}
+          </Animated.ScrollView>
+          <View
+            style={{
+              width: COVER_IMAGE_WIDTH,
+              height: 6,
+              position: "absolute",
+              bottom: 6,
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            {space?.photos.map((_, index) => {
+              const inputRange = [
+                (index - 1) * COVER_IMAGE_WIDTH,
+                index * COVER_IMAGE_WIDTH,
+                (index + 1) * COVER_IMAGE_WIDTH,
+              ];
 
+              const opacity = scrollX.interpolate({
+                inputRange,
+                outputRange: [0.8, 1, 0.8],
+              });
+
+              return (
+                <Animated.View
+                  key={index}
+                  style={{
+                    width: 8,
+                    height: 8,
+                    backgroundColor: colors.background,
+                    borderRadius: 8,
+                    marginHorizontal: 4,
+                    opacity,
+                  }}
+                ></Animated.View>
+              );
+            })}
+          </View>
+        </View>
         {/* Title and information */}
         <View
           style={{

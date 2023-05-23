@@ -28,6 +28,10 @@ export default abstract class DashboardCoordinator {
     params?: any
   ): void;
   abstract toAccountEditScreen(action?: NavigationAction, params?: any): void;
+  abstract toAccountPasswordChangeScreen(
+    action?: NavigationAction,
+    params?: any
+  ): void;
   abstract toSubscriptionsScreen(action?: NavigationAction, params?: any): void;
   abstract toUserReservationScreen(
     action?: NavigationAction,

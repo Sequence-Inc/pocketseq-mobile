@@ -6,3 +6,4 @@ export * from "./use-signup";
 export * from "./use-account-verification";
 export * from "./use-reset-password";
 export * from "./use-account-update";
+export * from "./use-account-password-update";

@@ -219,6 +219,34 @@ export const AccountScreen: React.FC<IAccountScreenProps> = observer(
                 設定
               </Text>
             </Touchable>
+            <Touchable
+              style={{
+                paddingHorizontal: 24,
+                borderTopWidth: 1,
+                borderTopColor: "rgba(230,230,230,1)",
+                paddingVertical: 18,
+                flexDirection: "row",
+                alignItems: "center",
+              }}
+              onPress={() => {
+                coordinator.toAccountPasswordChangeScreen("navigate");
+              }}
+            >
+              <SVGImage
+                source={images.svg.cog_6_tooth}
+                color={colors.textVariant}
+                style={{ width: 20, height: 20, marginRight: 24 }}
+              />
+              <Text
+                style={{
+                  color: colors.textVariant,
+                  fontSize: 16,
+                  fontWeight: "500",
+                }}
+              >
+                パスワード修正
+              </Text>
+            </Touchable>
             <View
               style={{
                 paddingHorizontal: 12,

@@ -623,8 +623,8 @@ export const HotelScreen: React.FC<ISpaceScreenProps> = ({ coordinator }) => {
               })
             }
             source={images.svg.ic_message}
-            width={50}
             style={{ height: 50, width: 50 }}
+            color={colors.primary}
           />
         </View>
 

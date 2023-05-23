@@ -10,12 +10,14 @@ import {
 import { useResources } from "../../resources";
 import { Profile } from "../../services/domains";
 import { HeaderLeftButton } from "../../widgets/header-left-button";
+import { AccountPasswordChangeScreen } from "./screens/account-password-change-screen";
 
 type AccountStackParamList = {
   "account-detail-screen": undefined;
   "account-payment-method-screen": undefined;
   "account-subscription-screen": undefined;
   "account-edit-screen": undefined;
+  "account-password-change-screen": undefined;
 };
 
 type AccountStackProps = {
@@ -89,6 +91,16 @@ export default function AccountStack({
         >
           {(props) => (
             <AccountEditScreen {...props} coordinator={coordinator} />
+          )}
+        </Screen>
+        <Screen
+          name="account-password-change-screen"
+          options={{
+            title: "Password Change",
+          }}
+        >
+          {(props) => (
+            <AccountPasswordChangeScreen {...props} coordinator={coordinator} />
           )}
         </Screen>
       </Group>
