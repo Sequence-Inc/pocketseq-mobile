@@ -76,7 +76,7 @@ export default function AccountStack({
         <Screen
           name="account-subscription-screen"
           options={{
-            title: "サブスクリップション",
+            title: "サブスクリプション",
           }}
         >
           {(props) => (

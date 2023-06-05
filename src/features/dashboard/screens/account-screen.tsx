@@ -188,7 +188,7 @@ export const AccountScreen: React.FC<IAccountScreenProps> = observer(
                   fontWeight: "500",
                 }}
               >
-                サブスクリップション
+                サブスクリプション
               </Text>
             </Touchable>
             <Touchable
