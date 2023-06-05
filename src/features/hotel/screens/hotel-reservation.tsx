@@ -32,7 +32,7 @@ export const HotelReservation: React.FC<IHotelReservationProps> = ({
   const { fetchHotelById, loading, error, hotel } = useHotelQuery();
 
   const reserve = (data: ReserveHotelParams) =>
-    coordinator.toHotelReserveConfirm("replace", { ...data });
+    coordinator.toHotelReserveConfirm("navigate", { ...data });
 
   useFocusEffect(
     React.useCallback(() => {

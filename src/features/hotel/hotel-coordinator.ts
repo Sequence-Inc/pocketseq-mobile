@@ -50,9 +50,12 @@ export default abstract class HotelCoordinator {
         })
       );
     else
-      this.navigation.navigate(this.screenName, {
-        screen: "hotel-reservation",
-      });
+      this.navigation.dispatch(
+        StackActions.push(this.screenName, {
+          screen: "hotel-reservation",
+          params,
+        })
+      );
   }
   toHotelReserveConfirm(
     action: NavigationAction = "navigate",
@@ -66,9 +69,15 @@ export default abstract class HotelCoordinator {
         })
       );
     else
-      this.navigation.navigate(this.screenName, {
-        screen: "confirm-hotel-reservation",
-      });
+      this.navigation.dispatch(
+        StackActions.push(this.screenName, {
+          screen: "confirm-hotel-reservation",
+          params,
+        })
+      );
+    // this.navigation.navigate(this.screenName, {
+    //   screen: "confirm-hotel-reservation",
+    // });
   }
   toPaymentMethodScreen() {
     this.navigation.navigate(this.screenName, {

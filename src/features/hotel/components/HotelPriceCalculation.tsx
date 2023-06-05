@@ -274,8 +274,7 @@ export const HotelPriceCalculation = ({
                 setStartDate(val?.startOf("day"));
               }}
               date={startDate}
-              // minimumValue={moment().endOf("day").toDate()}
-              // maximumValue={endDate.toDate()}
+              minimumValue={moment().add(1, "day").endOf("day").toDate()}
             />
           </View>
 
@@ -297,7 +296,11 @@ export const HotelPriceCalculation = ({
                 setEndDate(val?.endOf("day"));
               }}
               date={endDate}
-              // minimumValue={startDate.add(1, "day").endOf("day").toDate()}
+              minimumValue={
+                startDate
+                  ? moment(startDate).add(1, "day").endOf("day").toDate()
+                  : moment().add(2, "days").endOf("day").toDate()
+              }
             />
           </View>
         </View>

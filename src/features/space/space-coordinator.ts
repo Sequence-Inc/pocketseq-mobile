@@ -1,5 +1,6 @@
 import { NavigationProp, StackActions } from "@react-navigation/native";
 import { Moment } from "moment";
+import { ReservationScreen } from "../dashboard/screens";
 
 export type NavigationAction = "replace" | "navigate";
 
@@ -44,11 +45,14 @@ export default abstract class SpaceCoordinator {
           params,
         })
       );
-    else
-      this.navigation.navigate(this.screenName, {
-        screen: "space-reservation",
-        params,
-      });
+    else {
+      this.navigation.dispatch(
+        StackActions.push(this.screenName, {
+          screen: "space-reservation",
+          params,
+        })
+      );
+    }
   }
 
   toSpaceReserveConfirm(
@@ -63,10 +67,12 @@ export default abstract class SpaceCoordinator {
         })
       );
     else
-      this.navigation.navigate(this.screenName, {
-        screen: "confirm-space-reservation",
-        params,
-      });
+      this.navigation.dispatch(
+        StackActions.push(this.screenName, {
+          screen: "confirm-space-reservation",
+          params,
+        })
+      );
   }
   toPaymentMethodScreen() {
     this.navigation.navigate(this.screenName, {

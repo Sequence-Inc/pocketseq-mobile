@@ -97,7 +97,7 @@ export const HotelScreen: React.FC<ISpaceScreenProps> = ({ coordinator }) => {
   }, []);
 
   const toReservation = React.useCallback(
-    () => coordinator.toHotelReservation("replace", { hotelId }),
+    () => coordinator.toHotelReservation("navigate", { hotelId }),
     [hotelId]
   );
 
