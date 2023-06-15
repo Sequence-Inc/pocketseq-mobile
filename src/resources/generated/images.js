@@ -1,6 +1,7 @@
 const images = {
   jpeg: {
-
+    sub_banner_hotel: require('../../../assets/images/sub_banner_hotel.jpg'),
+    sub_banner_space: require('../../../assets/images/sub_banner_space.jpg'),
   },
   png: {
     ic_adaptive: require('../../../assets/images/ic_adaptive.png'),

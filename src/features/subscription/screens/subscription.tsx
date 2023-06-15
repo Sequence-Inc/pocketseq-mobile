@@ -25,6 +25,8 @@ import { Button } from "../../../widgets/button";
 import { CardView } from "../../../widgets/card-view";
 import { currencyFormatter } from "../../../utils/strings";
 
+const { width, height } = Dimensions.get("window");
+
 type Colors = {
   primary: string;
   primaryVariant: string;
@@ -53,8 +55,6 @@ export type TUseCalculateSpacePriceProps = {
 };
 
 export type SubscriptionCategoryType = "A" | "B" | "C";
-
-const { height } = Dimensions.get("window");
 
 const SUBSCRIPTION_CATEGORIES: Record<string, SubscriptionCategoryType> = {
   A: "A",
@@ -169,71 +169,47 @@ export const Subscription: React.FC<ISpaceReservationConfirmationProps> = ({
         flex: 1,
       }}
     >
-      <View style={[styles.categoryWrapper(colors)]}>
-        <Touchable
-          onPress={() => setSubscriptionCategory(SUBSCRIPTION_CATEGORIES.A)}
-          style={[
-            styles.categoryPill(
-              colors,
-              subscriptionCategory === SUBSCRIPTION_CATEGORIES.A
-            ),
-          ]}
-        >
-          <Text
-            style={[
-              styles.categoryText(
-                colors,
-                subscriptionCategory === SUBSCRIPTION_CATEGORIES.A
-              ),
-            ]}
-          >
-            カテゴリーA
-          </Text>
-        </Touchable>
-        <Touchable
-          onPress={() => setSubscriptionCategory(SUBSCRIPTION_CATEGORIES.B)}
-          style={[
-            styles.categoryPill(
-              colors,
-              subscriptionCategory === SUBSCRIPTION_CATEGORIES.B
-            ),
-          ]}
-        >
-          <Text
-            style={[
-              styles.categoryText(
-                colors,
-                subscriptionCategory === SUBSCRIPTION_CATEGORIES.B
-              ),
-            ]}
-          >
-            カテゴリーB
-          </Text>
-        </Touchable>
-        <Touchable
-          onPress={() => setSubscriptionCategory(SUBSCRIPTION_CATEGORIES.C)}
-          style={[
-            styles.categoryPill(
-              colors,
-              subscriptionCategory === SUBSCRIPTION_CATEGORIES.C
-            ),
-          ]}
-        >
-          <Text
-            style={[
-              styles.categoryText(
-                colors,
-                subscriptionCategory === SUBSCRIPTION_CATEGORIES.C
-              ),
-            ]}
-          >
-            カテゴリーC
-          </Text>
-        </Touchable>
-      </View>
-      <ScrollView
-        style={{ backgroundColor: colors.background, borderRadius: 10 }}
+      <View
+        style={[
+          styles.categoryWrapper,
+          {
+            backgroundColor: colors.backgroundVariant,
+          },
+        ]}
       >
+        {Object.keys(SUBSCRIPTION_CATEGORIES).map((key) => {
+          const selected =
+            subscriptionCategory === SUBSCRIPTION_CATEGORIES[key];
+          return (
+            <Touchable
+              key={key}
+              onPress={() =>
+                setSubscriptionCategory(SUBSCRIPTION_CATEGORIES[key])
+              }
+              style={[
+                styles.categoryPill,
+                {
+                  backgroundColor: selected
+                    ? colors.primaryVariant
+                    : colors.background,
+                },
+              ]}
+            >
+              <Text
+                style={[
+                  styles.categoryText,
+                  {
+                    color: selected ? colors.background : colors.textVariant,
+                  },
+                ]}
+              >
+                カテゴリー{SUBSCRIPTION_CATEGORIES[key]}
+              </Text>
+            </Touchable>
+          );
+        })}
+      </View>
+      <ScrollView style={{ backgroundColor: colors.background }}>
         <View>
           {fetchingAllSubscriptions ? <Text>読み込み中...</Text> : <></>}
           {!fetchingAllSubscriptions && fetchingAllSubscriptionError ? (
@@ -255,10 +231,20 @@ export const Subscription: React.FC<ISpaceReservationConfirmationProps> = ({
                   style={[styles.planCardWrapper]}
                 >
                   <View style={[styles.planCardTitleSection]}>
-                    <Text style={[styles.planCardHeader]}>
+                    <Text
+                      style={[
+                        styles.planCardHeader,
+                        { color: colors.primaryVariant },
+                      ]}
+                    >
                       {subscription.categoryName}
                     </Text>
-                    <Text style={[styles.planCardDesc]}>
+                    <Text
+                      style={[
+                        styles.planCardDesc,
+                        { color: colors.textVariant },
+                      ]}
+                    >
                       毎月{subscription.unit}
                       {subscriptionUnit}を使う
                     </Text>
@@ -269,41 +255,46 @@ export const Subscription: React.FC<ISpaceReservationConfirmationProps> = ({
                         flexDirection: "row",
                         width: "100%",
                         justifyContent: "center",
-                        alignItems: "center",
+                        alignItems: "flex-end",
                       }}
                     >
-                      <Text style={[styles.priceText]}>
+                      <Text style={[styles.priceText, { color: colors.text }]}>
                         {currencyFormatter(subscription.amount)}
                       </Text>
                       <Text
                         style={{
-                          fontWeight: "200",
-                          fontSize: 16,
-                          marginLeft: 5,
+                          fontWeight: "400",
+                          fontSize: 18,
+                          marginLeft: 6,
+                          marginBottom: 7,
+                          color: colors.textVariant,
                         }}
                       >
                         /月
                       </Text>
                     </View>
-
-                    <Button
-                      title={`${subscription.categoryName}を買う`}
-                      titleStyle={{ color: colors.background }}
-                      loading={
-                        creatingSubscription &&
-                        selectedPriceId === subscription.id
-                      }
-                      disabled={
-                        !!creatingSubscription &&
-                        selectedPriceId !== subscription.id
-                      }
-                      containerStyle={{
-                        margin: 20,
-                        backgroundColor: colors.primaryVariant,
-                      }}
-                      onPress={() => hadleBuySubscription(subscription.id)}
-                    />
                   </View>
+                  <Button
+                    title={`${subscription.categoryName}を買う`}
+                    titleStyle={{
+                      color: colors.background,
+                      fontSize: 16,
+                      fontWeight: "900",
+                    }}
+                    loading={
+                      creatingSubscription &&
+                      selectedPriceId === subscription.id
+                    }
+                    disabled={
+                      !!creatingSubscription &&
+                      selectedPriceId !== subscription.id
+                    }
+                    containerStyle={
+                      (styles.priceButtonContainer,
+                      { backgroundColor: colors.primaryVariant })
+                    }
+                    onPress={() => hadleBuySubscription(subscription.id)}
+                  />
                 </CardView>
               )
             )
@@ -317,69 +308,54 @@ export const Subscription: React.FC<ISpaceReservationConfirmationProps> = ({
 };
 
 const styles = StyleSheet.create({
-  categoryWrapper: (color: Colors) => ({
+  categoryWrapper: {
     justifyContent: "space-evenly",
-    height: height / 15,
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
-    padding: 5,
-    marginBottom: 10,
-    backgroundColor: color.backgroundVariant,
-  }),
-  categoryPill: (color: Colors, selected: boolean) => ({
-    borderWidth: selected ? 1.5 : 0,
-    height: "100%",
-    display: "flex",
-    flex: 1 / 3.5,
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    marginHorizontal: 5,
-    borderRadius: 10,
-    borderColor: selected ? color.primaryVariant : "rgba(120,120,120,0.2)",
-    backgroundColor: selected ? color.background : color.backgroundVariant,
-    elevation: 3,
-  }),
-  categoryText: (colors: Colors, selected: boolean) => ({
+    padding: 12,
+  },
+  categoryPill: {
+    borderRadius: 50,
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+  },
+  categoryText: {
     fontWeight: "700",
-    color: selected ? colors.text : colors.textVariant,
-  }),
+  },
   planCardWrapper: {
-    display: "flex",
-    height: height / 4,
+    width: width - 12 * 2,
     borderWidth: 1,
-    margin: 10,
-    borderRadius: 12,
-    padding: 10,
+    margin: 12,
+    borderRadius: 6,
+    padding: 12,
     alignItems: "center",
-    borderColor: "rgba(125,125,125,0.2)",
+    borderColor: "rgba(0,0,0,0.1)",
     backgroundColor: "rgba(255,255,255,1)",
   },
   planCardTitleSection: {
     alignItems: "center",
-    marginBottom: 20,
+    marginTop: 6,
   },
   planCardHeader: {
     fontWeight: "bold",
     fontSize: 22,
-    lineHeight: 30,
   },
   planCardDesc: {
-    fontWeight: "200",
-    fontSize: 17,
-    lineHeight: 30,
+    fontWeight: "300",
+    fontSize: 18,
+    marginTop: 6,
   },
   planCardPrice: {
-    flexGrow: 1,
     width: "100%",
+    marginVertical: 24,
     justifyContent: "center",
-    // alignItems: "flex-end",
-    // justifyContent: "center",
-    // flexDirection: "row",
   },
   priceText: {
     fontSize: 32,
     fontWeight: "700",
+  },
+  priceButtonContainer: {
+    borderRadius: 6,
   },
 });
