@@ -15,9 +15,15 @@ import {
   HotelPackagePlanRoomType,
   PaymentTerm,
 } from "../../../services/domains";
-import MapView, { Marker, LatLng, Region } from "react-native-maps";
+import MapView, {
+  Marker,
+  LatLng,
+  Region,
+  PROVIDER_GOOGLE,
+} from "react-native-maps";
 import { Button } from "../../../widgets/button";
 import { SVGImage } from "../../../widgets/svg-image";
+import { currencyFormatter } from "../../../utils/strings";
 
 export type ISpaceScreenProps = {
   coordinator: HotelCoordinator;
@@ -71,7 +77,7 @@ export const HotelScreen: React.FC<ISpaceScreenProps> = ({ coordinator }) => {
 
   const route: RouteProp<{ params: IHotelScreenParams }> = useRoute();
   const headerHeight = useHeaderHeight();
-  const { colors, images, strings } = useResources();
+  const { colors, images } = useResources();
 
   const { hotelById } = useHotel();
   const { hotelId } = route.params;
@@ -91,7 +97,7 @@ export const HotelScreen: React.FC<ISpaceScreenProps> = ({ coordinator }) => {
   }, []);
 
   const toReservation = React.useCallback(
-    () => coordinator.toHotelReservation("replace", { hotelId }),
+    () => coordinator.toHotelReservation("navigate", { hotelId }),
     [hotelId]
   );
 
@@ -121,11 +127,6 @@ export const HotelScreen: React.FC<ISpaceScreenProps> = ({ coordinator }) => {
     longitude: addressCoordinates.longitude,
     latitudeDelta: 0.009991524946315167,
     longitudeDelta: 0.02093397080898285,
-  };
-
-  const currencyFormatter = (amount: number): string => {
-    // return new Intl.NumberFormat("ja-JP", { style: "currency", currency: "JPY" }).format(amount);
-    return amount.toString();
   };
 
   const renderHotelBuildingType = (type: HotelBuildingType | undefined) => {
@@ -349,7 +350,7 @@ export const HotelScreen: React.FC<ISpaceScreenProps> = ({ coordinator }) => {
                         fontWeight: "700",
                       }}
                     >
-                      {plan.id}
+                      {plan.name}
                     </Text>
                     <Text
                       numberOfLines={1}
@@ -362,7 +363,6 @@ export const HotelScreen: React.FC<ISpaceScreenProps> = ({ coordinator }) => {
                         color: colors.textVariant,
                         fontSize: 20,
                         fontWeight: "700",
-                        marginBottom: 12,
                       }}
                     >
                       {currencyFormatter(
@@ -372,7 +372,7 @@ export const HotelScreen: React.FC<ISpaceScreenProps> = ({ coordinator }) => {
                         /泊
                       </Text>
                     </Text>
-                    <Touchable>
+                    {/* <Touchable>
                       <View
                         style={{
                           backgroundColor: colors.primary,
@@ -392,7 +392,7 @@ export const HotelScreen: React.FC<ISpaceScreenProps> = ({ coordinator }) => {
                           予約
                         </Text>
                       </View>
-                    </Touchable>
+                    </Touchable> */}
                   </View>
                 </View>
               );
@@ -543,12 +543,11 @@ export const HotelScreen: React.FC<ISpaceScreenProps> = ({ coordinator }) => {
           {/* Google map */}
           <View>
             <MapView
+              provider={PROVIDER_GOOGLE}
               minZoomLevel={0}
               maxZoomLevel={20}
               region={mapCenter}
               style={{ width: MAP_WIDTH, height: MAP_HEIGHT, borderRadius: 8 }}
-              provider="google"
-              onRegionChangeComplete={(region) => {}}
             >
               <Marker
                 key={hotel?.id}
@@ -589,7 +588,11 @@ export const HotelScreen: React.FC<ISpaceScreenProps> = ({ coordinator }) => {
           }}
         >
           <Image
-            source={{ uri: "https://dev.pocketseq.com/review.jpg" }}
+            source={{
+              uri: hotel?.host.profilePhoto?.medium?.url
+                ? hotel?.host.profilePhoto?.medium?.url
+                : `https://avatars.dicebear.com/api/identicon/${hotel?.host.id}.png`,
+            }}
             style={{
               width: 50,
               height: 50,
@@ -607,7 +610,7 @@ export const HotelScreen: React.FC<ISpaceScreenProps> = ({ coordinator }) => {
                 marginBottom: 4,
               }}
             >
-              {hotel?.name}
+              {hotel?.host.name}
             </Text>
             <Text style={{ color: colors.textVariant }}>本人確認済み</Text>
           </View>
@@ -620,13 +623,13 @@ export const HotelScreen: React.FC<ISpaceScreenProps> = ({ coordinator }) => {
               })
             }
             source={images.svg.ic_message}
-            width={50}
             style={{ height: 50, width: 50 }}
+            color={colors.primary}
           />
         </View>
 
         {/* Review */}
-        <View
+        {/* <View
           style={{
             backgroundColor: colors.background,
             paddingHorizontal: 12,
@@ -699,7 +702,7 @@ export const HotelScreen: React.FC<ISpaceScreenProps> = ({ coordinator }) => {
               );
             })}
           </View>
-        </View>
+        </View> */}
       </ScrollView>
 
       <Button
@@ -713,11 +716,10 @@ export const HotelScreen: React.FC<ISpaceScreenProps> = ({ coordinator }) => {
         onPress={toReservation}
         titleStyle={{
           color: colors.background,
-          fontSize: 19,
+          fontSize: 18,
           fontWeight: "600",
-          letterSpacing: 4,
         }}
-        title={`${strings("reserve")}`}
+        title="予約"
       />
     </SafeAreaView>
   );

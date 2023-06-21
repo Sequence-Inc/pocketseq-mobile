@@ -20,8 +20,8 @@ import {
 import { useSpace } from "../../services/graphql";
 import { FullScreenActivityIndicator } from "../full-screen-activity-indicator";
 import { FullScreenErrorView } from "../full-screen-error-view";
-import { currencyFormatter } from "../search-list-item/search-list-item";
 import Slider from "@react-native-community/slider";
+import { currencyFormatter } from "../../utils/strings";
 
 type SearchHeaderItemProps = {
   filters: SpaceSearchFilterOptions & HotelSearchFilterOptions;

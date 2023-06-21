@@ -23,6 +23,15 @@ export default abstract class DashboardCoordinator {
     action?: NavigationAction,
     params?: any
   ): void;
+  abstract toAccountSubscriptionScreen(
+    action?: NavigationAction,
+    params?: any
+  ): void;
+  abstract toAccountEditScreen(action?: NavigationAction, params?: any): void;
+  abstract toAccountPasswordChangeScreen(
+    action?: NavigationAction,
+    params?: any
+  ): void;
   abstract toSubscriptionsScreen(action?: NavigationAction, params?: any): void;
   abstract toUserReservationScreen(
     action?: NavigationAction,
@@ -32,6 +41,12 @@ export default abstract class DashboardCoordinator {
     action?: NavigationAction,
     params?: { chatObject: ChatObject }
   ): void;
+
+  toDashboardScreen() {
+    this.navigation.dispatch(
+      TabActions.jumpTo(this.screenName, { screen: "home-screen" })
+    );
+  }
 
   toHomeScreen() {
     this.navigation.dispatch(

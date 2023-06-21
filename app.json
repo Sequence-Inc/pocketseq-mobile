@@ -1,6 +1,9 @@
 {
   "expo": {
+    "scheme": "pocketseq",
+    "userInterfaceStyle": "light",
     "android": {
+      "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/ic_adaptive.png",
         "backgroundColor": "#FFFFFF"
@@ -11,11 +14,19 @@
         "READ_EXTERNAL_STORAGE",
         "RECEIVE_BOOT_COMPLETED",
         "SCHEDULE_EXACT_ALARM",
-        "WRITE_EXTERNAL_STORAGE"
+        "WRITE_EXTERNAL_STORAGE",
+        "AD_ID"
       ],
-      "versionCode": 1
+      "versionCode": 35,
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyD2fBfh5KYKd4Mcyw_iN90EQCfGT917fKE"
+        }
+      }
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "extra": {
       "eas": {
         "projectId": "0d25da57-059d-4fd1-ad34-23d9debffae5"
@@ -24,26 +35,48 @@
     "icon": "./assets/images/ic_app.png",
     "ios": {
       "bundleIdentifier": "com.sequence.pocketseq",
-      "buildNumber": "6",
+      "buildNumber": "49",
       "supportsTablet": false,
       "infoPlist": {
-        "NSLocationUsageDescription": "Allow location access so that we can help you find spaces near you."
+        "NSLocationUsageDescription": "位置情報へのアクセスを許可して、近くの施設を見つけられるようにします。",
+        "CFBundleLocalizations": [
+          "ja"
+        ],
+        "CFBundleDevelopmentRegion": "ja"
+      },
+      "config": {
+        "googleMapsApiKey": "AIzaSyDijYEeUIa9FCakUPipxEUAKjKaAv1DsXo"
       }
     },
-    "name": "PocketSeq",
+    "name": "PocketseQ",
     "orientation": "portrait",
     "owner": "jrgavinash",
     "plugins": [
       [
         "expo-image-picker",
         {
-          "photosPermission": "The app accesses your photos to let you share them with your friends."
+          "photosPermission": "アプリは写真にアクセスします。"
         }
       ],
       [
         "expo-notifications",
         {
           "color": "#ffffff"
+        }
+      ],
+      "sentry-expo",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "compileSdkVersion": 33,
+            "targetSdkVersion": 33,
+            "buildToolsVersion": "33.0.0",
+            "enableProguardInReleaseBuilds": true
+          },
+          "ios": {
+            "deploymentTarget": "13.0"
+          }
         }
       ]
     ],

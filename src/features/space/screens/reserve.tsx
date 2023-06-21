@@ -29,6 +29,12 @@ import { useFetchSubscriptions } from "../../../services/graphql";
 import { Button } from "../../../widgets/button";
 
 import { Subscription } from "../../../widgets/my-subscriptions";
+import {
+  currencyFormatter,
+  hoursAsCancelPolicyDuration,
+} from "../../../utils/strings";
+import { Touchable } from "../../../widgets/touchable";
+import { AccountCoordinator } from "../../account";
 
 export type ISpaceReservationConfirmationProps = {
   coordinator: SpaceCoordinator;
@@ -101,15 +107,15 @@ const ReservationConfirmation: React.FC<ISpaceReservationConfirmationProps> = ({
     reservingSpace,
   } = useReserveSpace(reservationData?.spaceId);
 
-  const { subscription } = useFetchSubscriptions();
+  const { subscriptions } = useFetchSubscriptions();
 
   const hasSpaceSubscriptions = React.useMemo(() => {
-    if (subscription?.mySubscriptions?.length) {
-      return subscription?.mySubscriptions?.find(
+    if (subscriptions?.mySubscriptions?.length) {
+      return subscriptions?.mySubscriptions?.find(
         (subscription: any) => subscription?.type === "rental-space"
       );
     }
-  }, [subscription]);
+  }, [subscriptions]);
 
   const {
     fetchCalculatedPrice,
@@ -159,22 +165,28 @@ const ReservationConfirmation: React.FC<ISpaceReservationConfirmationProps> = ({
   }, []);
 
   const handleReservation = React.useCallback(async () => {
-    const input = {
-      ...reservationData,
-      paymentSourceId: selectedPayment?.id,
-      additionalOptions: additionalOptionsFields?.map((option: any) => ({
-        optionId: option?.id,
-        quantity: option?.quantity || 1,
-      })),
-      useSubscription: !!reservationData?.useSubscription,
-    };
-    const data = await handleSpaceReservation(input);
-
-    if (data.data) {
-      Alert.alert("Successfully reserved space");
-    }
-    if (data.errors) {
-      Alert.alert("Could not reserve space");
+    try {
+      const input = {
+        ...reservationData,
+        paymentSourceId: selectedPayment?.id,
+        additionalOptions: additionalOptionsFields?.map((option: any) => ({
+          optionId: option?.id,
+          quantity: option?.quantity || 1,
+        })),
+        useSubscription: !!reservationData?.useSubscription,
+      };
+      const { data } = await handleSpaceReservation(input);
+      console.log(data);
+      if (data) {
+        Alert.alert("Successfully reserved space");
+        coordinator.toReservationTab("replace", {
+          type: "space",
+          data: data?.reserveSpace,
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      Alert.alert(error.message || "Error!");
     }
   }, [selectedPayment, reservationData]);
 
@@ -217,19 +229,17 @@ const ReservationConfirmation: React.FC<ISpaceReservationConfirmationProps> = ({
           style={{
             backgroundColor: colors.background,
             paddingHorizontal: 12,
-            paddingVertical: 18,
+            paddingVertical: 12,
           }}
         >
-          <Text style={{ fontSize: 30, fontWeight: "bold" }}>
-            Reserve Space
-          </Text>
+          <Text style={{ fontSize: 22, fontWeight: "bold" }}>予約</Text>
         </View>
         <View
           style={{
             backgroundColor: colors.background,
             paddingHorizontal: 12,
-            paddingVertical: 18,
-            marginBottom: 12,
+            paddingVertical: 12,
+            marginBottom: 8,
           }}
         >
           <View
@@ -243,10 +253,8 @@ const ReservationConfirmation: React.FC<ISpaceReservationConfirmationProps> = ({
               },
             ]}
           >
-            <Text>Name</Text>
-            <Text style={{ fontSize: 18, fontWeight: "bold" }}>
-              {spaceDetails?.name || ""}
-            </Text>
+            <Text style={{ fontWeight: "700" }}>スペース名</Text>
+            <Text style={{ fontSize: 16 }}>{spaceDetails?.name || ""}</Text>
             {/* <SelectPayment /> */}
           </View>
           <View
@@ -261,8 +269,8 @@ const ReservationConfirmation: React.FC<ISpaceReservationConfirmationProps> = ({
               },
             ]}
           >
-            <Text>Type</Text>
-            <Text style={{ fontSize: 18, fontWeight: "bold" }}>Space</Text>
+            <Text style={{ fontWeight: "700" }}>タイプ</Text>
+            <Text style={{ fontSize: 16 }}>スペース</Text>
           </View>
           <View
             style={[
@@ -276,10 +284,8 @@ const ReservationConfirmation: React.FC<ISpaceReservationConfirmationProps> = ({
               },
             ]}
           >
-            <Text>Address</Text>
-            <Text style={{ fontSize: 18, fontWeight: "bold" }}>
-              {addressText}
-            </Text>
+            <Text style={{ fontWeight: "700" }}>住所</Text>
+            <Text style={{ fontSize: 16 }}>{addressText}</Text>
           </View>
 
           <View
@@ -294,67 +300,71 @@ const ReservationConfirmation: React.FC<ISpaceReservationConfirmationProps> = ({
               },
             ]}
           >
-            <Text>Check In At</Text>
-            <Text style={{ fontSize: 18, fontWeight: "bold" }}>
+            <Text style={{ fontWeight: "700" }}>チェックイン</Text>
+            <Text style={{ fontSize: 16 }}>
               {reservationData?.fromDateTime &&
-                moment(reservationData?.fromDateTime).format("YYYY-MM-DD")}
+                moment(reservationData?.fromDateTime).format("YYYY年MM月DD日")}
               ,{" "}
               {reservationData?.fromDateTime &&
-                moment(reservationData?.fromDateTime).format("hh:mm a")}
+                moment(reservationData?.fromDateTime).format("HH:mm")}
             </Text>
           </View>
         </View>
-        <View
-          style={{
-            backgroundColor: colors.background,
-            paddingHorizontal: 12,
-            paddingVertical: 18,
-            marginBottom: 12,
-          }}
-        >
-          <Text style={{ fontSize: 20, fontWeight: "bold", marginBottom: 15 }}>
-            Included Options
-          </Text>
 
-          {includedOptions?.length < 1 && (
-            <View style={{ marginVertical: 12 }}>
-              <Text style={{ fontSize: 16, fontWeight: "bold" }}>
-                No options included
-              </Text>
-            </View>
-          )}
-          {includedOptions?.length > 0 &&
-            includedOptions.map((options: OptionsType, index: number) => {
-              return (
-                <View
-                  key={index}
-                  style={{
-                    flex: 1,
-                    borderBottomColor: colors.secondaryVariant,
-                    borderBottomWidth: StyleSheet.hairlineWidth,
-                    padding: 10,
-                    marginBottom: 10,
-                  }}
-                >
-                  <Text
+        {includedOptions?.length > 0 && (
+          <View
+            style={{
+              backgroundColor: colors.background,
+              paddingHorizontal: 12,
+              paddingVertical: 18,
+              marginBottom: 12,
+            }}
+          >
+            <Text
+              style={{ fontSize: 20, fontWeight: "bold", marginBottom: 15 }}
+            >
+              付属オプション
+            </Text>
+
+            {includedOptions?.length < 1 && (
+              <View style={{ marginVertical: 12 }}>
+                <Text style={{ fontSize: 16, fontWeight: "bold" }}>
+                  オプションはありません。
+                </Text>
+              </View>
+            )}
+            {includedOptions?.length > 0 &&
+              includedOptions.map((options: OptionsType, index: number) => {
+                return (
+                  <View
+                    key={index}
                     style={{
-                      color: colors.primary,
-                      fontSize: 16,
-                      fontWeight: "600",
+                      flex: 1,
+                      borderBottomColor: colors.secondaryVariant,
+                      borderBottomWidth: StyleSheet.hairlineWidth,
+                      padding: 10,
+                      marginBottom: 10,
                     }}
                   >
-                    {options?.name || ""}
-                  </Text>
-                  <Text
-                    style={{ fontSize: 12, letterSpacing: 1, lineHeight: 17 }}
-                  >
-                    {options?.description || ""}
-                  </Text>
-                </View>
-              );
-            })}
-        </View>
-
+                    <Text
+                      style={{
+                        color: colors.primary,
+                        fontSize: 16,
+                        fontWeight: "600",
+                      }}
+                    >
+                      {options?.name || ""}
+                    </Text>
+                    <Text
+                      style={{ fontSize: 12, letterSpacing: 1, lineHeight: 17 }}
+                    >
+                      {options?.description || ""}
+                    </Text>
+                  </View>
+                );
+              })}
+          </View>
+        )}
         <View
           style={{
             backgroundColor: colors.background,
@@ -362,15 +372,13 @@ const ReservationConfirmation: React.FC<ISpaceReservationConfirmationProps> = ({
             paddingVertical: 18,
           }}
         >
-          <Text style={{ fontSize: 20, fontWeight: "bold", marginBottom: 15 }}>
-            Additional Options
+          <Text style={{ fontSize: 18, fontWeight: "bold", marginBottom: 8 }}>
+            オプションの追加
           </Text>
 
           {additionalOptionsFields?.length < 1 && (
             <View style={{ marginVertical: 12 }}>
-              <Text style={{ fontSize: 16, fontWeight: "bold" }}>
-                No options included
-              </Text>
+              <Text style={{ fontSize: 16 }}>オプションはありません。</Text>
             </View>
           )}
 
@@ -414,7 +422,9 @@ const ReservationConfirmation: React.FC<ISpaceReservationConfirmationProps> = ({
                           </Text>
                           <View style={[globalStyles.row]}>
                             <Text style={{ fontSize: 14, lineHeight: 17 }}>
-                              {additionalField?.additionalPrice || ""}
+                              {currencyFormatter(
+                                additionalField?.additionalPrice
+                              ) || ""}
                             </Text>
                             <Text style={{ fontSize: 14, lineHeight: 17 }}>
                               {"/"}
@@ -452,7 +462,7 @@ const ReservationConfirmation: React.FC<ISpaceReservationConfirmationProps> = ({
                             );
                           })}
                         </Picker>
-                        {paymentTerm && (
+                        {/* {paymentTerm && (
                           <Text
                             style={[
                               globalStyles.col_12,
@@ -469,9 +479,9 @@ const ReservationConfirmation: React.FC<ISpaceReservationConfirmationProps> = ({
                               { justifyContent: "flex-end" },
                             ]}
                           >
-                            No additional charge
+                            追加料金なし
                           </Text>
-                        )}
+                        )} */}
                       </View>
                     </View>
                   </View>
@@ -488,8 +498,8 @@ const ReservationConfirmation: React.FC<ISpaceReservationConfirmationProps> = ({
             marginTop: 12,
           }}
         >
-          <Text style={{ fontSize: 20, fontWeight: "bold" }}>
-            Applicable Subscriptions
+          <Text style={{ fontSize: 20, fontWeight: "bold", marginBottom: 16 }}>
+            利用可能サブスクリプション
           </Text>
 
           <Subscription
@@ -511,10 +521,47 @@ const ReservationConfirmation: React.FC<ISpaceReservationConfirmationProps> = ({
             marginTop: 12,
           }}
         >
-          <Text style={{ fontSize: 20, fontWeight: "bold", marginBottom: 15 }}>
-            Payment Source
-          </Text>
-          <SelectPayment onSelect={setPaymentSource} />
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+            }}
+          >
+            <Text
+              style={{
+                fontSize: 20,
+                fontWeight: "bold",
+                flexGrow: 1,
+              }}
+            >
+              お支払方法
+            </Text>
+            <View>
+              <Touchable
+                onPress={() => {
+                  // check if logged in
+                  if (!accessToken) {
+                    Alert.alert("ログインしてください。");
+                  } else {
+                    coordinator.toPaymentMethodScreen();
+                  }
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: 16,
+                    fontWeight: "bold",
+                    color: colors.primary,
+                  }}
+                >
+                  カード追加
+                </Text>
+              </Touchable>
+            </View>
+          </View>
+          <View style={{ marginTop: 15 }}>
+            <SelectPayment onSelect={setPaymentSource} />
+          </View>
         </View>
 
         {priceData ? (
@@ -529,16 +576,17 @@ const ReservationConfirmation: React.FC<ISpaceReservationConfirmationProps> = ({
             <Text
               style={{ fontSize: 20, fontWeight: "bold", marginBottom: 15 }}
             >
-              Fee details
+              料金
             </Text>
 
             <View
               style={[globalStyles.row, { justifyContent: "space-between" }]}
             >
-              <Text style={{ fontSize: 16, fontWeight: "700" }}>Space Fee</Text>
+              <Text style={{ fontSize: 16, fontWeight: "700" }}>小計</Text>
               {priceData ? (
-                <Text style={{ fontSize: 20, fontWeight: "700" }}>
-                  {Math.ceil(priceData?.spaceAmount / 1.1) || "No charge"}
+                <Text style={{ fontSize: 16, fontWeight: "500" }}>
+                  {currencyFormatter(Math.ceil(priceData?.spaceAmount / 1.1)) ||
+                    "..."}
                 </Text>
               ) : (
                 <></>
@@ -550,11 +598,13 @@ const ReservationConfirmation: React.FC<ISpaceReservationConfirmationProps> = ({
                 ?.filter((item: any) => !!item?.isChecked)
                 ?.map((additionalfield: any, index) => {
                   const optionsCharge =
-                    Math.ceil(
-                      (additionalfield?.additionalPrice *
-                        additionalfield?.quantity) /
-                        1.1
-                    ) || "No Charge";
+                    currencyFormatter(
+                      Math.ceil(
+                        (additionalfield?.additionalPrice *
+                          additionalfield?.quantity) /
+                          1.1
+                      )
+                    ) || "...";
 
                   return (
                     <View
@@ -591,8 +641,10 @@ const ReservationConfirmation: React.FC<ISpaceReservationConfirmationProps> = ({
                 { justifyContent: "space-between", marginVertical: 10 },
               ]}
             >
-              <Text style={{ fontSize: 16, fontWeight: "700" }}>Tax</Text>
-              <Text>{taxCalculated || "No tax"}</Text>
+              <Text style={{ fontSize: 16, fontWeight: "700" }}>税金</Text>
+              <Text style={{ fontSize: 16, fontWeight: "500" }}>
+                {currencyFormatter(taxCalculated) || "..."}
+              </Text>
             </View>
 
             <View
@@ -602,17 +654,18 @@ const ReservationConfirmation: React.FC<ISpaceReservationConfirmationProps> = ({
                   justifyContent: "space-between",
                   marginVertical: 10,
                   borderTopWidth: 1,
-                  borderTopColor: colors.secondaryVariant,
+                  borderTopColor: colors.surfaceVariant,
+                  paddingTop: 12,
                 },
               ]}
             >
               <Text style={{ fontSize: 16, fontWeight: "700" }}>
-                Total (tax included)
+                合計 (税込)
               </Text>
 
               {priceData?.total ? (
                 <Text style={{ fontSize: 20, fontWeight: "700" }}>
-                  {Math.ceil(priceData?.total || 0)}
+                  {currencyFormatter(Math.ceil(priceData?.total)) || "..."}
                 </Text>
               ) : (
                 <></>
@@ -622,6 +675,64 @@ const ReservationConfirmation: React.FC<ISpaceReservationConfirmationProps> = ({
         ) : (
           <></>
         )}
+
+        <View
+          style={{
+            backgroundColor: colors.background,
+            paddingHorizontal: 12,
+            paddingVertical: 18,
+            marginVertical: 12,
+          }}
+        >
+          <Text style={{ fontSize: 20, fontWeight: "bold", marginBottom: 15 }}>
+            キャンセルポリシー
+          </Text>
+          <View>
+            {spaceDetails?.cancelPolicy && (
+              <>
+                {/* <Text style={{ fontSize: 18, color: colors.textVariant }}>
+                  {spaceDetails?.cancelPolicy?.name}
+                </Text> */}
+                <View>
+                  {[...spaceDetails?.cancelPolicy.rates]
+                    .sort((a, b) => a.beforeHours - b.beforeHours)
+                    .map((policy, index) => {
+                      return (
+                        <View
+                          key={index}
+                          style={{
+                            flexDirection: "row",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            paddingVertical: 6,
+                          }}
+                        >
+                          <Text
+                            style={{
+                              fontSize: 16,
+                              color: colors.textVariant,
+                              fontWeight: "500",
+                            }}
+                          >
+                            {hoursAsCancelPolicyDuration(policy.beforeHours)}
+                          </Text>
+                          <Text
+                            style={{
+                              fontSize: 16,
+                              color: colors.text,
+                              fontWeight: "700",
+                            }}
+                          >
+                            {policy.percentage}%
+                          </Text>
+                        </View>
+                      );
+                    })}
+                </View>
+              </>
+            )}
+          </View>
+        </View>
       </ScrollView>
       <View>
         {!selectedPayment && (
@@ -629,29 +740,30 @@ const ReservationConfirmation: React.FC<ISpaceReservationConfirmationProps> = ({
             style={[
               globalStyles.row,
               {
-                height: 50,
-                backgroundColor: colors.primaryVariant,
-                padding: 10,
+                backgroundColor: colors.surfaceVariant,
+                paddingVertical: 14,
                 justifyContent: "center",
                 alignItems: "center",
               },
             ]}
           >
-            <Text style={{ color: "#fff" }}>Please select payment method</Text>
+            <Text style={{ color: "#fff", fontSize: 18, fontWeight: "bold" }}>
+              お支払方法を選択してください
+            </Text>
           </View>
         )}
         {selectedPayment && (
           <Button
-            title="Confirm"
+            title="予約"
             titleStyle={{
               color: "#fff",
-              fontSize: 19,
-              letterSpacing: 4,
+              fontSize: 18,
             }}
             loading={reservingSpace}
             onPress={handleReservation}
             containerStyle={{
               backgroundColor: colors.primary,
+              borderRadius: 0,
             }}
           />
         )}

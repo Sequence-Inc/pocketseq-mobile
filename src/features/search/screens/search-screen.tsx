@@ -1,7 +1,14 @@
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { useHeaderHeight } from "@react-navigation/elements";
 import React, { useEffect, useState } from "react";
-import { Text, View, ScrollView, TextInput, Alert } from "react-native";
+import {
+  Text,
+  View,
+  ScrollView,
+  TextInput,
+  Alert,
+  Dimensions,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useResources } from "../../../resources";
 import {
@@ -15,6 +22,18 @@ import { Touchable } from "../../../widgets/touchable";
 import { SVGImage } from "../../../widgets/svg-image";
 import moment from "moment";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import { gql, useQuery } from "@apollo/client";
+
+const GET_SEARCH_AREA = gql`
+  query GetSearchArea($type: SearchAreaType!) {
+    getSearchArea(type: $type) {
+      prefecture
+      city
+    }
+  }
+`;
+
+const { height: ScreenHeight } = Dimensions.get("screen");
 
 export const areaList: string[] = [
   "千代田区",
@@ -251,6 +270,111 @@ const SpaceSearchForm = ({
     onSearch();
   };
 
+  const {
+    data: searchAreaList,
+    loading: searchAreaLoading,
+    error: searchAreaError,
+  } = useQuery(GET_SEARCH_AREA, { variables: { type: "space" } });
+
+  const renderSearchArea = () => {
+    if (searchAreaLoading)
+      return (
+        <View
+          style={{
+            height: parseInt(`${ScreenHeight * 0.3 - 12}`),
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Text style={{ color: colors.surfaceVariant }}>Loading...</Text>
+        </View>
+      );
+    if (searchAreaError)
+      return (
+        <View
+          style={{
+            height: parseInt(`${ScreenHeight * 0.3 - 12}`),
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Text style={{ color: colors.surfaceVariant }}>Error!</Text>
+        </View>
+      );
+
+    if (searchAreaList.getSearchArea.length > 0) {
+      return (
+        <>
+          {searchAreaList.getSearchArea.map(
+            (prefecture: { prefecture: string; city: [string] }) => {
+              return (
+                <View key={prefecture.prefecture}>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      paddingVertical: 6,
+                      paddingHorizontal: 12,
+                      alignItems: "center",
+                    }}
+                  >
+                    <Text
+                      style={{
+                        fontSize: 16,
+                        color: colors.text,
+                        fontWeight: "600",
+                      }}
+                    >
+                      {prefecture.prefecture}
+                    </Text>
+                  </View>
+                  {prefecture.city.length > 0 && (
+                    <View>
+                      {prefecture.city.map((city: string) => {
+                        return (
+                          <Touchable
+                            key={`${prefecture.prefecture}-${city}`}
+                            onPress={() => {
+                              handleAreaSelection(city);
+                            }}
+                            style={{
+                              flexDirection: "row",
+                              paddingVertical: 6,
+                              paddingHorizontal: 12,
+                              paddingLeft: 24,
+                              alignItems: "center",
+                            }}
+                          >
+                            <Text
+                              style={{
+                                fontSize: 16,
+                                color: colors.textVariant,
+                              }}
+                            >
+                              {city}
+                            </Text>
+                            {params?.city === city && (
+                              <SVGImage
+                                style={{ width: 16, height: 16, marginLeft: 6 }}
+                                color={colors.primary}
+                                source={images.svg.check_circle}
+                              />
+                            )}
+                          </Touchable>
+                        );
+                      })}
+                    </View>
+                  )}
+                </View>
+              );
+            }
+          )}
+        </>
+      );
+    } else {
+      return null;
+    }
+  };
+
   return (
     <View style={{ backgroundColor: colors.background, paddingHorizontal: 12 }}>
       {/* Area */}
@@ -304,13 +428,14 @@ const SpaceSearchForm = ({
         {showAreaList && (
           <ScrollView
             style={{
-              height: "40%",
+              height: parseInt(`${ScreenHeight * 0.3}`),
               borderBottomWidth: 1,
               borderBottomColor: "rgba(0,0,0,0.1)",
             }}
             contentContainerStyle={{ paddingVertical: 6 }}
           >
-            {areaList.map((city) => {
+            {renderSearchArea()}
+            {/* {areaList.map((city) => {
               return (
                 <Touchable
                   key={city}
@@ -336,7 +461,7 @@ const SpaceSearchForm = ({
                   )}
                 </Touchable>
               );
-            })}
+            })} */}
           </ScrollView>
         )}
       </View>
@@ -498,6 +623,7 @@ const SpaceSearchForm = ({
                 updateParams({
                   checkInDate: moment(date).format("YYYY-MM-DD"),
                 });
+                setShowDate(false);
               }}
             />
           </View>
@@ -573,6 +699,111 @@ const HotelSearchForm = ({
     onSearch();
   };
 
+  const {
+    data: searchAreaList,
+    loading: searchAreaLoading,
+    error: searchAreaError,
+  } = useQuery(GET_SEARCH_AREA, { variables: { type: "hotel" } });
+
+  const renderSearchArea = () => {
+    if (searchAreaLoading)
+      return (
+        <View
+          style={{
+            height: parseInt(`${ScreenHeight * 0.3 - 12}`),
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Text style={{ color: colors.surfaceVariant }}>Loading...</Text>
+        </View>
+      );
+    if (searchAreaError)
+      return (
+        <View
+          style={{
+            height: parseInt(`${ScreenHeight * 0.3 - 12}`),
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Text style={{ color: colors.surfaceVariant }}>Error!</Text>
+        </View>
+      );
+
+    if (searchAreaList.getSearchArea.length > 0) {
+      return (
+        <>
+          {searchAreaList.getSearchArea.map(
+            (prefecture: { prefecture: string; city: [string] }) => {
+              return (
+                <View key={prefecture.prefecture}>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      paddingVertical: 6,
+                      paddingHorizontal: 12,
+                      alignItems: "center",
+                    }}
+                  >
+                    <Text
+                      style={{
+                        fontSize: 16,
+                        color: colors.text,
+                        fontWeight: "600",
+                      }}
+                    >
+                      {prefecture.prefecture}
+                    </Text>
+                  </View>
+                  {prefecture.city.length > 0 && (
+                    <View>
+                      {prefecture.city.map((city: string) => {
+                        return (
+                          <Touchable
+                            key={`${prefecture.prefecture}-${city}`}
+                            onPress={() => {
+                              handleAreaSelection(city);
+                            }}
+                            style={{
+                              flexDirection: "row",
+                              paddingVertical: 6,
+                              paddingHorizontal: 12,
+                              paddingLeft: 24,
+                              alignItems: "center",
+                            }}
+                          >
+                            <Text
+                              style={{
+                                fontSize: 16,
+                                color: colors.textVariant,
+                              }}
+                            >
+                              {city}
+                            </Text>
+                            {params?.city === city && (
+                              <SVGImage
+                                style={{ width: 16, height: 16, marginLeft: 6 }}
+                                color={colors.primary}
+                                source={images.svg.check_circle}
+                              />
+                            )}
+                          </Touchable>
+                        );
+                      })}
+                    </View>
+                  )}
+                </View>
+              );
+            }
+          )}
+        </>
+      );
+    } else {
+      return null;
+    }
+  };
+
   return (
     <View style={{ backgroundColor: colors.background, paddingHorizontal: 12 }}>
       {/* Area */}
@@ -626,13 +857,14 @@ const HotelSearchForm = ({
         {showAreaList && (
           <ScrollView
             style={{
-              height: "40%",
+              height: parseInt(`${ScreenHeight * 0.3}`),
               borderBottomWidth: 1,
               borderBottomColor: "rgba(0,0,0,0.1)",
             }}
             contentContainerStyle={{ paddingVertical: 6 }}
           >
-            {areaList.map((city) => {
+            {renderSearchArea()}
+            {/* {areaList.map((city) => {
               return (
                 <Touchable
                   key={city}
@@ -658,7 +890,7 @@ const HotelSearchForm = ({
                   )}
                 </Touchable>
               );
-            })}
+            })} */}
           </ScrollView>
         )}
       </View>
@@ -691,7 +923,7 @@ const HotelSearchForm = ({
                 marginBottom: 4,
               }}
             >
-              利用日
+              チェックイン
             </Text>
             <Text style={{ fontSize: 14, color: colors.textVariant }}>
               {params?.checkInDate
@@ -717,6 +949,7 @@ const HotelSearchForm = ({
                 updateParams({
                   checkInDate: moment(date).format("YYYY-MM-DD"),
                 });
+                setShowCheckInDate(false);
               }}
             />
           </View>
@@ -751,7 +984,7 @@ const HotelSearchForm = ({
                 marginBottom: 4,
               }}
             >
-              利用日
+              チェックアウト
             </Text>
             <Text style={{ fontSize: 14, color: colors.textVariant }}>
               {params?.checkOutDate
@@ -781,6 +1014,7 @@ const HotelSearchForm = ({
                 updateParams({
                   checkOutDate: moment(date).format("YYYY-MM-DD"),
                 });
+                setShowCheckOutDate(false);
               }}
             />
           </View>

@@ -13,9 +13,16 @@ import {
   SpacePricePlan,
   SpacePricePlanType,
 } from "../../../services/domains";
-import MapView, { Marker, LatLng, Region } from "react-native-maps";
+import MapView, {
+  Marker,
+  LatLng,
+  Region,
+  PROVIDER_GOOGLE,
+} from "react-native-maps";
 import { Button } from "../../../widgets/button";
 import { SVGImage } from "../../../widgets/svg-image";
+import { currencyFormatter } from "../../../utils/strings";
+import Animated from "react-native-reanimated";
 
 export type ISpaceScreenProps = {
   coordinator: SpaceCoordinator;
@@ -31,35 +38,6 @@ const COVER_IMAGE_HEIGHT = Math.floor(COVER_IMAGE_WIDTH / 1.7);
 const MAP_WIDTH = width - 24;
 const MAP_HEIGHT = Math.floor(MAP_WIDTH / 1.7);
 
-const DEMO_REVIEW = [
-  {
-    name: "Yusaku",
-    photo: {
-      url: "https://dev.pocketseq.com/review.jpg",
-    },
-    createdAt: "2021年6月",
-    comment: "立地も良く､清潔感のある宿で満足できるかと思います!",
-  },
-  {
-    name: "Takayuki",
-    photo: {
-      url: "https://dev.pocketseq.com/review.jpg",
-    },
-    createdAt: "2021年6月",
-    comment:
-      "施設はとても綺麗で､ｷｯﾁﾝやｱﾒﾆﾃｨも充実しています｡ ｿﾌﾄﾊﾞﾝｸ携帯の電波が入らない点が難点でしたが､滞在はとても満足しています｡",
-  },
-  {
-    name: "高橋",
-    photo: {
-      url: "https://dev.pocketseq.com/review.jpg",
-    },
-    createdAt: "2021年6月",
-    comment:
-      "非常に満足です｡ 対応も設備も文句なし｡ 素晴らしい非日常を味わうことができました｡ 何も不自由することなく楽しめましたので 是非利用してみてください｡",
-  },
-];
-
 export const SpaceScreen: React.FC<ISpaceScreenProps> = ({ coordinator }) => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>();
@@ -67,7 +45,9 @@ export const SpaceScreen: React.FC<ISpaceScreenProps> = ({ coordinator }) => {
 
   const route: RouteProp<{ params: ISpaceScreenParams }> = useRoute();
   const headerHeight = useHeaderHeight();
-  const { colors, images, strings } = useResources();
+  const { colors, images } = useResources();
+
+  const scrollX = React.useRef(new Animated.Value(0)).current;
 
   const { spaceById } = useSpace();
   const { spaceId } = route.params;
@@ -83,7 +63,7 @@ export const SpaceScreen: React.FC<ISpaceScreenProps> = ({ coordinator }) => {
   }, []);
 
   const toReservation = React.useCallback(
-    () => coordinator.toSpaceReservation("replace", { spaceId }),
+    () => coordinator.toSpaceReservation("navigate", { spaceId }),
     [spaceId]
   );
 
@@ -147,10 +127,11 @@ export const SpaceScreen: React.FC<ISpaceScreenProps> = ({ coordinator }) => {
     return planTypes.filter((plan) => plan.title === type)[0].label;
   };
 
-  const currencyFormatter = (amount: number): string => {
-    // return new Intl.NumberFormat("ja-JP", { style: "currency", currency: "JPY" }).format(amount);
-    return amount.toString();
-  };
+  let photos = space?.photos || [];
+  const mainPhoto = photos.find((photo) => photo.isDefault);
+  if (mainPhoto) {
+    photos = [mainPhoto, ...photos.filter(({ isDefault }) => !isDefault)];
+  }
 
   return (
     <SafeAreaView
@@ -166,30 +147,87 @@ export const SpaceScreen: React.FC<ISpaceScreenProps> = ({ coordinator }) => {
         keyboardDismissMode="on-drag"
       >
         {/* Cover Images Carousel */}
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          pagingEnabled
-          style={{ width: COVER_IMAGE_WIDTH, height: COVER_IMAGE_HEIGHT }}
+        <View
+          style={{
+            width: COVER_IMAGE_WIDTH,
+            height: COVER_IMAGE_HEIGHT,
+            position: "relative",
+          }}
         >
-          {space?.photos.map((photo) => {
-            return (
-              <View
-                key={photo.id}
-                style={{ backgroundColor: colors.backgroundVariant }}
-              >
-                <Image
-                  source={{ uri: photo.large.url }}
+          <Animated.ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            pagingEnabled
+            style={{
+              width: COVER_IMAGE_WIDTH,
+              height: COVER_IMAGE_HEIGHT,
+            }}
+            scrollEventThrottle={16}
+            onScroll={Animated.event(
+              [{ nativeEvent: { contentOffset: { x: scrollX } } }],
+              { useNativeDriver: true }
+            )}
+          >
+            {photos?.map((photo, index) => {
+              return (
+                <View
+                  key={photo.id}
                   style={{
+                    backgroundColor: colors.backgroundVariant,
                     width: COVER_IMAGE_WIDTH,
                     height: COVER_IMAGE_HEIGHT,
                   }}
-                />
-              </View>
-            );
-          })}
-        </ScrollView>
+                >
+                  <Image
+                    source={{ uri: photo.large.url }}
+                    style={{
+                      width: COVER_IMAGE_WIDTH,
+                      height: COVER_IMAGE_HEIGHT,
+                    }}
+                  />
+                </View>
+              );
+            })}
+          </Animated.ScrollView>
+          <View
+            style={{
+              width: COVER_IMAGE_WIDTH,
+              height: 6,
+              position: "absolute",
+              bottom: 6,
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            {space?.photos.map((_, index) => {
+              const inputRange = [
+                (index - 1) * COVER_IMAGE_WIDTH,
+                index * COVER_IMAGE_WIDTH,
+                (index + 1) * COVER_IMAGE_WIDTH,
+              ];
 
+              const opacity = scrollX.interpolate({
+                inputRange,
+                outputRange: [0.8, 1, 0.8],
+              });
+
+              return (
+                <Animated.View
+                  key={index}
+                  style={{
+                    width: 8,
+                    height: 8,
+                    backgroundColor: colors.background,
+                    borderRadius: 8,
+                    marginHorizontal: 4,
+                    opacity,
+                  }}
+                ></Animated.View>
+              );
+            })}
+          </View>
+        </View>
         {/* Title and information */}
         <View
           style={{
@@ -323,11 +361,11 @@ export const SpaceScreen: React.FC<ISpaceScreenProps> = ({ coordinator }) => {
 
           <View>
             <MapView
+              provider={PROVIDER_GOOGLE}
               minZoomLevel={14}
               maxZoomLevel={20}
               region={mapCenter}
               style={{ width: MAP_WIDTH, height: MAP_HEIGHT, borderRadius: 8 }}
-              provider="google"
             >
               <Marker
                 key={space?.id}
@@ -368,7 +406,11 @@ export const SpaceScreen: React.FC<ISpaceScreenProps> = ({ coordinator }) => {
           }}
         >
           <Image
-            source={{ uri: "https://dev.pocketseq.com/review.jpg" }}
+            source={{
+              uri: space?.host.profilePhoto?.medium?.url
+                ? space?.host.profilePhoto?.medium?.url
+                : `https://avatars.dicebear.com/api/identicon/${space?.host.id}.png`,
+            }}
             style={{
               width: 50,
               height: 50,
@@ -399,161 +441,169 @@ export const SpaceScreen: React.FC<ISpaceScreenProps> = ({ coordinator }) => {
               })
             }
             source={images.svg.ic_message}
-            width={50}
             style={{ height: 50, width: 50 }}
+            color={colors.primary}
           />
         </View>
 
-        <View
-          style={{
-            backgroundColor: colors.background,
-            paddingHorizontal: 12,
-            paddingTop: 18,
-            paddingBottom: 5,
-            marginBottom: 12,
-          }}
-        >
-          <Text
+        {pricePlansMinutes.length > 0 && (
+          <View
             style={{
-              fontSize: 16,
-              fontWeight: "700",
-              color: colors.textVariant,
-              marginBottom: 18,
+              backgroundColor: colors.background,
+              paddingHorizontal: 12,
+              paddingTop: 18,
+              paddingBottom: 5,
+              marginBottom: 12,
             }}
           >
-            分対料金プラン
-          </Text>
-          <View style={{}}>
-            {pricePlansMinutes.map((plan, index) => {
-              return (
-                <View
-                  style={{
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                    paddingVertical: 12,
-                    borderTopWidth: 1,
-                    borderTopColor: "rgba(0,0,0,0.1)",
-                  }}
-                  key={`${plan.id}-${index}`}
-                >
-                  <Text style={{ fontSize: 18, color: colors.textVariant }}>
-                    {plan.id}
-                  </Text>
-                  <Text style={{ fontSize: 18, color: colors.textVariant }}>
-                    <Text style={{ fontWeight: "700" }}>
-                      {currencyFormatter(plan.amount)}
+            <Text
+              style={{
+                fontSize: 16,
+                fontWeight: "700",
+                color: colors.textVariant,
+                marginBottom: 18,
+              }}
+            >
+              分対料金プラン
+            </Text>
+            <View style={{}}>
+              {pricePlansMinutes.map((plan, index) => {
+                return (
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      paddingVertical: 12,
+                      borderTopWidth: 1,
+                      borderTopColor: "rgba(0,0,0,0.1)",
+                    }}
+                    key={`${plan.id}-${index}`}
+                  >
+                    <Text style={{ fontSize: 18, color: colors.textVariant }}>
+                      {plan.title}
                     </Text>
-                    <Text style={{ fontSize: 14 }}>
-                      /{plan.duration}
-                      {durationSuffix(plan.type)}
+                    <Text style={{ fontSize: 18, color: colors.textVariant }}>
+                      <Text style={{ fontWeight: "700" }}>
+                        {currencyFormatter(plan.amount)}
+                      </Text>
+                      <Text style={{ fontSize: 14 }}>
+                        /{plan.duration}
+                        {durationSuffix(plan.type)}
+                      </Text>
                     </Text>
-                  </Text>
-                </View>
-              );
-            })}
+                  </View>
+                );
+              })}
+            </View>
           </View>
-        </View>
-        <View
-          style={{
-            backgroundColor: colors.background,
-            paddingHorizontal: 12,
-            paddingTop: 18,
-            paddingBottom: 5,
-            marginBottom: 12,
-          }}
-        >
-          <Text
+        )}
+
+        {pricePlansHourly.length > 0 && (
+          <View
             style={{
-              fontSize: 16,
-              fontWeight: "700",
-              color: colors.textVariant,
-              marginBottom: 18,
+              backgroundColor: colors.background,
+              paddingHorizontal: 12,
+              paddingTop: 18,
+              paddingBottom: 5,
+              marginBottom: 12,
             }}
           >
-            時間対料金プラン
-          </Text>
-          <View style={{}}>
-            {pricePlansHourly.map((plan, index) => {
-              return (
-                <View
-                  style={{
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                    paddingVertical: 12,
-                    borderTopWidth: 1,
-                    borderTopColor: "rgba(0,0,0,0.1)",
-                  }}
-                  key={`${plan.id}-${index}`}
-                >
-                  <Text style={{ fontSize: 18, color: colors.textVariant }}>
-                    {plan.id}
-                  </Text>
-                  <Text style={{ fontSize: 18, color: colors.textVariant }}>
-                    <Text style={{ fontWeight: "700" }}>
-                      {currencyFormatter(plan.amount)}
+            <Text
+              style={{
+                fontSize: 16,
+                fontWeight: "700",
+                color: colors.textVariant,
+                marginBottom: 18,
+              }}
+            >
+              時間対料金プラン
+            </Text>
+            <View style={{}}>
+              {pricePlansHourly.map((plan, index) => {
+                return (
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      paddingVertical: 12,
+                      borderTopWidth: 1,
+                      borderTopColor: "rgba(0,0,0,0.1)",
+                    }}
+                    key={`${plan.id}-${index}`}
+                  >
+                    <Text style={{ fontSize: 18, color: colors.textVariant }}>
+                      {plan.title}
                     </Text>
-                    <Text style={{ fontSize: 14 }}>
-                      /{plan.duration}
-                      {durationSuffix(plan.type)}
+                    <Text style={{ fontSize: 18, color: colors.textVariant }}>
+                      <Text style={{ fontWeight: "700" }}>
+                        {currencyFormatter(plan.amount)}
+                      </Text>
+                      <Text style={{ fontSize: 14 }}>
+                        /{plan.duration}
+                        {durationSuffix(plan.type)}
+                      </Text>
                     </Text>
-                  </Text>
-                </View>
-              );
-            })}
+                  </View>
+                );
+              })}
+            </View>
           </View>
-        </View>
-        <View
-          style={{
-            backgroundColor: colors.background,
-            paddingHorizontal: 12,
-            paddingTop: 18,
-            paddingBottom: 5,
-            marginBottom: 12,
-          }}
-        >
-          <Text
+        )}
+
+        {pricePlansDaily.length > 0 && (
+          <View
             style={{
-              fontSize: 16,
-              fontWeight: "700",
-              color: colors.textVariant,
-              marginBottom: 18,
+              backgroundColor: colors.background,
+              paddingHorizontal: 12,
+              paddingTop: 18,
+              paddingBottom: 5,
+              marginBottom: 12,
             }}
           >
-            日対料金プラン
-          </Text>
-          <View style={{}}>
-            {pricePlansDaily.map((plan, index) => {
-              return (
-                <View
-                  style={{
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                    paddingVertical: 12,
-                    borderTopWidth: 1,
-                    borderTopColor: "rgba(0,0,0,0.1)",
-                  }}
-                  key={`${plan.id}-${index}`}
-                >
-                  <Text style={{ fontSize: 18, color: colors.textVariant }}>
-                    {plan.id}
-                  </Text>
-                  <Text style={{ fontSize: 18, color: colors.textVariant }}>
-                    <Text style={{ fontWeight: "700" }}>
-                      {currencyFormatter(plan.amount)}
+            <Text
+              style={{
+                fontSize: 16,
+                fontWeight: "700",
+                color: colors.textVariant,
+                marginBottom: 18,
+              }}
+            >
+              日対料金プラン
+            </Text>
+            <View style={{}}>
+              {pricePlansDaily.map((plan, index) => {
+                return (
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      paddingVertical: 12,
+                      borderTopWidth: 1,
+                      borderTopColor: "rgba(0,0,0,0.1)",
+                    }}
+                    key={`${plan.id}-${index}`}
+                  >
+                    <Text style={{ fontSize: 18, color: colors.textVariant }}>
+                      {plan.title}
                     </Text>
-                    <Text style={{ fontSize: 14 }}>
-                      /{plan.duration}
-                      {durationSuffix(plan.type)}
+                    <Text style={{ fontSize: 18, color: colors.textVariant }}>
+                      <Text style={{ fontWeight: "700" }}>
+                        {currencyFormatter(plan.amount)}
+                      </Text>
+                      <Text style={{ fontSize: 14 }}>
+                        /{plan.duration}
+                        {durationSuffix(plan.type)}
+                      </Text>
                     </Text>
-                  </Text>
-                </View>
-              );
-            })}
+                  </View>
+                );
+              })}
+            </View>
           </View>
-        </View>
+        )}
 
         {/* Review */}
-        <View
+        {/* <View
           style={{
             backgroundColor: colors.background,
             paddingHorizontal: 12,
@@ -626,7 +676,7 @@ export const SpaceScreen: React.FC<ISpaceScreenProps> = ({ coordinator }) => {
               );
             })}
           </View>
-        </View>
+        </View> */}
       </ScrollView>
       <Button
         containerStyle={{
@@ -639,11 +689,10 @@ export const SpaceScreen: React.FC<ISpaceScreenProps> = ({ coordinator }) => {
         onPress={toReservation}
         titleStyle={{
           color: colors.background,
-          fontSize: 19,
+          fontSize: 18,
           fontWeight: "600",
-          letterSpacing: 4,
         }}
-        title={`${strings("reserve")}`}
+        title="予約"
       />
     </SafeAreaView>
   );

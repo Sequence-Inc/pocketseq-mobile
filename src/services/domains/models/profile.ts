@@ -10,6 +10,7 @@ interface UserProfile {
 interface CompanyProfile {
   name: string;
   nameKana: string;
+  registrationNumber?: string;
 }
 
 export interface Profile extends UserProfile, CompanyProfile {
@@ -18,5 +19,6 @@ export interface Profile extends UserProfile, CompanyProfile {
   email: string;
   emailVerified: boolean;
   phoneNumber: string;
-  profilePhoto: Photo;
+  profilePhoto?: Photo;
+  dob?: string;
 }

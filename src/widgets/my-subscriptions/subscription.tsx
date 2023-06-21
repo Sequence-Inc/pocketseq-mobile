@@ -5,6 +5,7 @@ import { Checkbox } from "../checkbox";
 
 import { observer } from "mobx-react";
 import { styleStore, SessionStore } from "../../services/storage";
+import { useResources } from "../../resources";
 
 const noOp = (data: any) => data;
 export type SubscriptionProps = {
@@ -26,6 +27,7 @@ const Subscription = ({
   useSubscription,
   hasSubscription,
 }: SubscriptionProps) => {
+  const { colors } = useResources();
   const [{ globalStyles }] = React.useState(styleStore);
 
   const [{ accessToken }] = React.useState(() => SessionStore);
@@ -50,48 +52,75 @@ const Subscription = ({
         <View
           style={[
             globalStyles.row,
-            { justifyContent: "space-between", marginVertical: 10 },
+            { justifyContent: "space-between", marginBottom: 16 },
           ]}
         >
-          <Text style={[globalStyles.row]}>
+          <Text
+            style={[
+              globalStyles.row,
+              { fontSize: 16, color: colors.textVariant, fontWeight: "700" },
+            ]}
+          >
             {subscriptionType === "hotel" ? "宿泊" : "レンタルスペース"}
             {" - "}
             {hasSubscription?.name || ""} {hasSubscription?.priceType || ""}
           </Text>
 
-          <Text style={{ fontWeight: "bold" }}>
+          {/* <Text style={{ fontWeight: "bold" }}>
             {hasSubscription?.amount || ""}
             /月
+          </Text> */}
+          <Text
+            style={{
+              fontWeight: "600",
+              fontSize: 16,
+              color: colors.textVariant,
+            }}
+          >
+            {utilizedUnits}/{hasSubscription.unit}{" "}
+            {subscriptionType === "rental-space" ? "泊" : "時間"}
           </Text>
         </View>
 
-        <View
+        {/* <View
           style={[
             globalStyles.row,
-            { justifyContent: "space-between", marginVertical: 10 },
+            {
+              justifyContent: "space-between",
+            },
           ]}
         >
-          <Text>Subscription units used</Text>
-          <Text style={{ fontWeight: "bold" }}>
-            {utilizedUnits}/{hasSubscription.unit}
-            <Text style={{ marginLeft: 10 }}>
-              {" "}
-              {subscriptionType === "rental-space" ? "泊" : "時間"}
-            </Text>
+          <Text
+            style={{
+              fontSize: 16,
+              color: colors.textVariant,
+            }}
+          >
+            Subscription units used
           </Text>
-        </View>
+          
+        </View> */}
       </>
     );
   }, [subscriptionType, hasSubscription, utilizedUnits]);
 
-  if (!accessToken) return <Text>Please login to load payment source.</Text>;
+  if (!accessToken)
+    return (
+      <Text style={{ fontSize: 16 }}>
+        ログインして支払い方法をロードしてください。
+      </Text>
+    );
 
   if (!spaceDetail?.subcriptionPrice) {
-    return <Text>Subscription not applicable to this hotel room.</Text>;
+    return (
+      <Text style={{ fontSize: 16 }}>
+        サブスクリプションはこのスペースには適用されません。
+      </Text>
+    );
   }
   if (!hasSubscription) {
     return (
-      <Text>You currently are not subscribed to any subscription plan.</Text>
+      <Text style={{ fontSize: 16 }}>サブスクリプションはありません。</Text>
     );
   }
 
@@ -100,7 +129,7 @@ const Subscription = ({
       <>
         {/* Subscription card here */}
         {commonSubscriptionCard}
-        <Text>You subscription is already fully utilized.</Text>;\
+        <Text>サブスクリプションをフル活用。</Text>;\
       </>
     );
   }
@@ -118,8 +147,14 @@ const Subscription = ({
               hasHotelSubscriptions={hasHotelSubscriptions}
           /> */}
         <View style={[globalStyles.row, { justifyContent: "space-between" }]}>
-          <Text style={{ fontSize: 16, fontWeight: "bold" }}>
-            Use Subscription
+          <Text
+            style={{
+              fontSize: 16,
+              fontWeight: "bold",
+              color: colors.textVariant,
+            }}
+          >
+            サブスクリプションを使用する
           </Text>
 
           <Checkbox
@@ -127,7 +162,9 @@ const Subscription = ({
             onValueChange={(val) => onSelect(val)}
           />
         </View>
-        <Text>Your subscription can be applied.</Text>
+        <Text style={{ fontSize: 16, color: colors.textVariant }}>
+          サブスクリプションを適用できます。
+        </Text>
       </>
     );
   }
@@ -138,14 +175,24 @@ const Subscription = ({
         {commonSubscriptionCard}
 
         <View style={[globalStyles.row, { justifyContent: "space-between" }]}>
-          <Text>Use Subscription</Text>
+          <Text
+            style={{
+              fontSize: 16,
+              fontWeight: "bold",
+              color: colors.textVariant,
+            }}
+          >
+            サブスクリプションを使用する
+          </Text>
 
           <Checkbox
             value={useSubscription}
             onValueChange={(val) => onSelect(val)}
           />
         </View>
-        <Text>Your subscription does not cover for this space.</Text>
+        <Text style={{ fontSize: 14, color: colors.textVariant }}>
+          あなたのサブスクリプションにはこのスペースが含まれていません。
+        </Text>
       </>
     );
   }

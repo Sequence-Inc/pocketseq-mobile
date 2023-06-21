@@ -10,6 +10,9 @@ import { AuthContextProvider } from "./contexts/auth";
 import { Subscription } from "expo-modules-core";
 import { Notification } from "expo-notifications";
 import { registerNotifications } from "./utils/notification";
+import { CONFIG } from "./utils/config";
+import { StripeProvider } from "@stripe/stripe-react-native";
+import * as Linking from "expo-linking";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -20,10 +23,12 @@ Notifications.setNotificationHandler({
 });
 
 export function Application() {
-  const algoliaApiKey = "6c2c5bb09c6f0da1002a51d1995969bd";
-  const algoliaAppId = "K2PIS0458U";
+  const config = CONFIG[CONFIG.mode];
 
-  const apiUri = "https://dev-api.pocketseq.com/dev/graphql";
+  const algoliaApiKey = config.algoliaApiKey;
+  const algoliaAppId = config.algoliaAppId;
+
+  const apiUri = config.api;
   const appCache = new AppCache({ storage: AsyncStorage });
   const appClient = new AppClient({ cache: appCache, uri: apiUri });
 
@@ -61,10 +66,15 @@ export function Application() {
     <AppClientProvider client={appClient}>
       <AlgoliaProvider apiKey={algoliaApiKey} appId={algoliaAppId}>
         <ResourcesProvider language="en">
-          <StatusBar style="light" />
-          <AuthContextProvider>
-            <AppNavigation />
-          </AuthContextProvider>
+          <StripeProvider
+            publishableKey={config.stripePublishableKey}
+            urlScheme={Linking.createURL("pocketseq")}
+          >
+            <StatusBar style="light" />
+            <AuthContextProvider>
+              <AppNavigation />
+            </AuthContextProvider>
+          </StripeProvider>
         </ResourcesProvider>
       </AlgoliaProvider>
     </AppClientProvider>

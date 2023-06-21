@@ -7,6 +7,7 @@ import React, { useMemo, useState } from "react";
 import { useResources } from "../../resources";
 import ChatCoordinator from "./chat-coordinator";
 import { ChatScreen } from "./screens";
+import { HeaderLeftButton } from "../../widgets/header-left-button";
 
 type ChatStackParamList = {
   "chat-screen": undefined;
@@ -62,8 +63,20 @@ export default function ChatStack({ chatCoordinator }: ChatStackProps) {
     <Navigator
       initialRouteName="chat-screen"
       screenOptions={{
-        headerBackTitleVisible: false,
+        // headerBackTitleVisible: false,
+        // headerTitleAlign: "center",
+        headerBackTitleVisible: true,
+        headerStyle: { backgroundColor: colors.primary },
         headerTitleAlign: "center",
+        headerTitleStyle: { color: colors.background },
+        headerLeft: (props) => {
+          return (
+            <HeaderLeftButton
+              headerButtonProps={props}
+              coordinator={coordinator}
+            />
+          );
+        },
       }}
     >
       <Group

@@ -20,7 +20,7 @@ export type IResetPasswordScreenProps = {
 export const ResetPasswordScreen: React.FC<IResetPasswordScreenProps> = ({
   coordinator,
 }) => {
-  const { colors, images, strings } = useResources();
+  const { colors, images } = useResources();
   const route: RouteProp<{ params: { email: string; code: string } }> =
     useRoute();
 
@@ -84,12 +84,12 @@ export const ResetPasswordScreen: React.FC<IResetPasswordScreenProps> = ({
               textAlign: "center",
             }}
           >
-            {strings("reset_password")}
+            パスワードをリセットする
           </Text>
           <TextInput
             containerStyle={{ margin: 12 }}
-            label={`${strings("password")}`}
-            placeholder={`${strings("password_hint")}`}
+            label={`パスワード`}
+            placeholder={`パスワード`}
             secureTextEntry={true}
             onChangeText={(val) =>
               setForm((prev) => ({
@@ -100,8 +100,8 @@ export const ResetPasswordScreen: React.FC<IResetPasswordScreenProps> = ({
           />
           <TextInput
             containerStyle={{ margin: 12 }}
-            label={`${strings("confirm_password")}`}
-            placeholder={`${strings("confirm_password_hint")}`}
+            label={`パスワード認証`}
+            placeholder={`パスワード認証`}
             secureTextEntry={true}
             onChangeText={(val) => setConfirmPassword(val)}
           />
@@ -110,7 +110,7 @@ export const ResetPasswordScreen: React.FC<IResetPasswordScreenProps> = ({
             onPress={onResetPassword}
             loading={resetingPassword}
             titleStyle={{ color: colors.background }}
-            title={`${strings("reset")}`}
+            title={`リセットする`}
           />
           <Button
             containerStyle={{
@@ -120,7 +120,7 @@ export const ResetPasswordScreen: React.FC<IResetPasswordScreenProps> = ({
             onPress={onCancelPasswordPress}
             disabled={resetingPassword}
             titleStyle={{ color: colors.background }}
-            title={`${strings("cancel")}`}
+            title={`キャンセル`}
           />
 
           {errorMessage ? (
@@ -133,7 +133,7 @@ export const ResetPasswordScreen: React.FC<IResetPasswordScreenProps> = ({
             <></>
           )}
           <Text style={{ color: colors.text, margin: 28, textAlign: "center" }}>
-            {strings("copyright")}
+            © copyright PocketseQ 2023.
           </Text>
         </View>
       </ScrollView>

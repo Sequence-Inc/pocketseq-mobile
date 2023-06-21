@@ -4,7 +4,7 @@ import { useResources } from "../../resources";
 
 import { observer } from "mobx-react";
 import { styleStore, SessionStore } from "../../services/storage";
-import { useFetchPaymentMethods } from "../../services/graphql";
+import { usePaymentMethods } from "../../services/graphql";
 
 const noOp = (data: any) => data;
 export type SelectPaymentProps = {
@@ -44,7 +44,7 @@ const SelectPayment = ({ onSelect = noOp }: SelectPaymentProps) => {
     paymentMethods,
     paymentMethodsLoading,
     paymentMethodsError,
-  } = useFetchPaymentMethods();
+  } = usePaymentMethods();
 
   React.useEffect(() => {
     if (!accessToken) return;
@@ -65,16 +65,36 @@ const SelectPayment = ({ onSelect = noOp }: SelectPaymentProps) => {
     onSelect && onSelect(null);
   }, [onSelect]);
 
-  if (!accessToken) return <Text>Please login to load payment source.</Text>;
+  if (!accessToken)
+    return (
+      <Text style={{ fontSize: 16, color: colors.textVariant }}>
+        ログインして支払い方法をロードしてください。
+      </Text>
+    );
+
+  if (paymentMethodsLoading) {
+    return (
+      <Text style={{ fontSize: 16, color: colors.textVariant }}>
+        読み込み中...
+      </Text>
+    );
+  }
+
+  if (paymentMethodsError) {
+    console.log(paymentMethodsError);
+    return (
+      <Text style={{ fontSize: 16 }}>
+        お支払い方法の読み込み中にエラーが発生しました。
+      </Text>
+    );
+  }
+
+  if (paymentMethods?.paymentSource.length === 0) {
+    return <Text style={{ fontSize: 16 }}>お支払い方法登録してないです。</Text>;
+  }
 
   return (
     <>
-      {paymentMethodsLoading && <Text>Payment methods loading ...</Text>}
-
-      {!paymentMethodsLoading && paymentMethodsError && (
-        <Text>Could not load payment methods</Text>
-      )}
-
       {paymentMethods?.paymentSource?.map(
         (paymentSource: any, index: number) => {
           const isSelected = selectedPayment?.id === paymentSource?.id;

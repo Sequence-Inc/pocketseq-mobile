@@ -5,6 +5,7 @@ import { Touchable } from "../touchable";
 import { SVGImage } from "../svg-image";
 import { SearchResult } from "../../features/search/search-helpers";
 import { SearchCoordinator } from "../../features/search";
+import { currencyFormatter } from "../../utils/strings";
 
 type SearchListItemProps = {
   coordinator: SearchCoordinator;
@@ -13,11 +14,6 @@ type SearchListItemProps = {
 
 const THUMBNAIL_WIDTH = 100;
 const THUMBNAIL_HEIGHT = parseInt(`${THUMBNAIL_WIDTH / 1.3}`, 10);
-
-export const currencyFormatter = (amount: number): string => {
-  // return new Intl.NumberFormat("ja-JP", { style: "currency", currency: "JPY" }).format(amount);
-  return `¥${amount}`;
-};
 
 const SearchListItem: React.FC<SearchListItemProps> = ({
   coordinator,

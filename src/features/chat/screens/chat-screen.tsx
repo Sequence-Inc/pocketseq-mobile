@@ -13,6 +13,8 @@ import React, { useCallback, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   Image,
+  KeyboardAvoidingView,
+  Platform,
   RefreshControl,
   Text,
   View,
@@ -20,6 +22,7 @@ import {
 import { FlatList } from "react-native-gesture-handler";
 import { useResources } from "../../../resources";
 import ChatCoordinator from "../chat-coordinator";
+import { useHeaderHeight } from "@react-navigation/elements";
 
 export type IChatScreenProps = {
   coordinator: ChatCoordinator;
@@ -158,14 +161,14 @@ export const ChatScreen: React.FC<IChatScreenProps> = ({
 
   const sendMessage = useCallback(async () => {
     if (newMessage && newMessage.length > 0) {
-      console.log(chatId, recepientId);
+      // console.log(chatId, recepientId);
 
       if (chatId) {
         const result = await sendMessageMutation({
           chatId,
           message: newMessage,
         });
-        console.log(result.data);
+        // console.log(result.data);
 
         if (result.data?.sendMessage.delivered) {
           setNewMessage(undefined);
@@ -176,7 +179,7 @@ export const ChatScreen: React.FC<IChatScreenProps> = ({
           recipientIds: [recepientId],
           message: newMessage,
         });
-        console.log(result.data);
+        // console.log(result.data);
 
         if (result.data?.createNewChat.delivered) {
           setNewMessage(undefined);
@@ -190,70 +193,87 @@ export const ChatScreen: React.FC<IChatScreenProps> = ({
     if (chatId) await messagesByChatQuery({ chatId });
   }, [chatId]);
 
+  const myHeaderHeight = useHeaderHeight();
+
   if (accessToken && profile) {
     return (
-      <View style={{ backgroundColor: colors.backgroundVariant, flex: 1 }}>
-        <FlatList
-          ItemSeparatorComponent={ItemSeperator}
-          data={messages}
-          renderItem={({ item }) => (
-            <MessageItem
-              coordinator={coordinator}
-              messageObject={item}
-              currentProfile={profile}
-            />
-          )}
-          refreshControl={
-            <RefreshControl
-              refreshing={messagesByChatResult.loading}
-              onRefresh={messagesByChat}
-            />
-          }
-        />
-        <View
-          style={{
-            flexDirection: "row",
-            padding: 12,
-            backgroundColor: colors.background,
-          }}
-        >
-          <TextInput
-            containerStyle={{
-              flex: 1,
-              borderRadius: 25,
-              backgroundColor: colors.backgroundVariant,
-            }}
-            value={newMessage}
-            editable={!sendMessageResult.loading}
-            placeholder={"Type a message here"}
-            onChangeText={(text) => {
-              text && setNewMessage(text.trim());
-            }}
-            tint={colors.background}
-          />
-          <Touchable
-            style={{ justifyContent: "center", paddingHorizontal: 10 }}
-            onPress={sendMessage}
-          >
-            {sendMessageResult.loading ? (
-              <ActivityIndicator
-                color={colors.background}
-                style={{
-                  borderRadius: 17,
-                  backgroundColor: colors.surfaceVariant,
-                  width: 34,
-                  height: 34,
-                }}
-              />
-            ) : (
-              <SVGImage
-                source={images.svg.ic_send}
-                style={{ width: 34, height: 34 }}
+      <>
+        <View style={{ backgroundColor: colors.backgroundVariant, flex: 1 }}>
+          <FlatList
+            ItemSeparatorComponent={ItemSeperator}
+            data={messages}
+            renderItem={({ item }) => (
+              <MessageItem
+                coordinator={coordinator}
+                messageObject={item}
+                currentProfile={profile}
               />
             )}
-          </Touchable>
+            refreshControl={
+              <RefreshControl
+                refreshing={messagesByChatResult.loading}
+                onRefresh={messagesByChat}
+              />
+            }
+          />
         </View>
-      </View>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "position" : "height"}
+          style={{ backgroundColor: colors.background }}
+          keyboardVerticalOffset={myHeaderHeight - 5}
+        >
+          <View
+            style={{
+              flexDirection: "row",
+              padding: 12,
+              backgroundColor: colors.background,
+            }}
+          >
+            <TextInput
+              containerStyle={{
+                flex: 1,
+                borderRadius: 25,
+                backgroundColor: colors.backgroundVariant,
+              }}
+              value={newMessage}
+              editable={!sendMessageResult.loading}
+              placeholder={"Type a message here..."}
+              onChangeText={(text) => {
+                text && setNewMessage(text.trim());
+              }}
+              tint={colors.background}
+            />
+            <Touchable
+              style={{
+                justifyContent: "center",
+                paddingHorizontal: 12,
+                backgroundColor: colors.primary,
+                borderRadius: 100,
+                marginLeft: 12,
+              }}
+              onPress={sendMessage}
+            >
+              {sendMessageResult.loading ? (
+                <ActivityIndicator
+                  color={colors.primary}
+                  style={{
+                    borderRadius: 17,
+                    backgroundColor: colors.background,
+                    width: 34,
+                    height: 34,
+                  }}
+                />
+              ) : (
+                <SVGImage
+                  source={images.svg.ic_message}
+                  style={{ width: 34, height: 34 }}
+                  color={colors.background}
+                />
+              )}
+            </Touchable>
+          </View>
+        </KeyboardAvoidingView>
+      </>
     );
   }
 

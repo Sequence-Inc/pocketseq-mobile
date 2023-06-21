@@ -1,4 +1,3 @@
-import { RouteProp, useRoute } from "@react-navigation/native";
 import { useHeaderHeight } from "@react-navigation/elements";
 import React, { useState } from "react";
 import { observer } from "mobx-react";
@@ -21,14 +20,9 @@ export interface IAccountDetailScreenParams {
 
 export const AccountDetailScreen: React.FC<IAccountDetailScreenProps> =
   observer(({ coordinator }) => {
-    const [{ clearToken, accessToken, refreshToken, profile }] =
-      useState(SessionStore);
-    const route: RouteProp<{ params: IAccountDetailScreenParams }> = useRoute();
+    const [{ profile }] = useState(SessionStore);
     const headerHeight = useHeaderHeight();
-    const { colors, images, strings } = useResources();
-
-    // const { profile, accessToken } = route.params;
-    console.log(accessToken);
+    const { colors } = useResources();
 
     return (
       <SafeAreaView
@@ -55,7 +49,7 @@ export const AccountDetailScreen: React.FC<IAccountDetailScreenProps> =
                 fontWeight: "700",
               }}
             >
-              Email
+              メール
             </Text>
             <Text
               style={{
@@ -84,7 +78,7 @@ export const AccountDetailScreen: React.FC<IAccountDetailScreenProps> =
                 fontWeight: "700",
               }}
             >
-              Last name
+              性
             </Text>
             <Text
               style={{
@@ -113,7 +107,7 @@ export const AccountDetailScreen: React.FC<IAccountDetailScreenProps> =
                 fontWeight: "700",
               }}
             >
-              First name
+              名
             </Text>
             <Text
               style={{
@@ -142,7 +136,7 @@ export const AccountDetailScreen: React.FC<IAccountDetailScreenProps> =
                 fontWeight: "700",
               }}
             >
-              Last name (kana)
+              性 (カナ)
             </Text>
             <Text
               style={{
@@ -171,7 +165,7 @@ export const AccountDetailScreen: React.FC<IAccountDetailScreenProps> =
                 fontWeight: "700",
               }}
             >
-              First name (kana)
+              名 (カナ)
             </Text>
             <Text
               style={{
@@ -195,6 +189,7 @@ export const AccountDetailScreen: React.FC<IAccountDetailScreenProps> =
             <Touchable
               onPress={() => {
                 // TODO: Go to profile edit view
+                coordinator.toAccountEditScreen("replace");
               }}
               style={{
                 backgroundColor: colors.background,
@@ -213,7 +208,7 @@ export const AccountDetailScreen: React.FC<IAccountDetailScreenProps> =
                   textAlign: "center",
                 }}
               >
-                Edit account details
+                プロフィールを更新
               </Text>
             </Touchable>
           </View>

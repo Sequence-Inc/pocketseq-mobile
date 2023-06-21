@@ -6,7 +6,10 @@ currentPeriodStart
 name
 remainingUnit
 type
+priceType
 unit
+isCanceled
+endsAt
 `;
 
 export const ALL_SUBSCRIPTION_OBJECT = `

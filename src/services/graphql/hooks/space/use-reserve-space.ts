@@ -1,6 +1,7 @@
 import { useCallback, useEffect } from "react";
 import { gql, useMutation, useQuery } from "@apollo/client";
 import { useForm, useFieldArray } from "react-hook-form";
+import { CANCEL_POLICY } from "../../../domains";
 
 export const RESERVE_SPACE = gql`
   mutation ReserveSpace($input: ReserveSpaceInput) {
@@ -55,6 +56,9 @@ const GET_SPACE_BY_ID = gql`
         stock
       }
       subcriptionPrice
+      cancelPolicy {
+        ${CANCEL_POLICY}
+      }
     }
   }
 `;
@@ -80,14 +84,23 @@ const useReserveSpace = (spaceId: string) => {
     },
   });
 
-  const [reserveSpace, { loading: reservingSpace, data: reservationSuccessData, error: reservationFailure }] =
-    useMutation(RESERVE_SPACE, {
-      ignoreResults: false,
-    });
+  const [
+    reserveSpace,
+    {
+      loading: reservingSpace,
+      data: reservationSuccessData,
+      error: reservationFailure,
+    },
+  ] = useMutation(RESERVE_SPACE, {
+    ignoreResults: false,
+  });
 
   const { control } = useForm();
 
-  const { fields: additionalOptionsFields, update: updateAdditionalOptionsFields } = useFieldArray({
+  const {
+    fields: additionalOptionsFields,
+    update: updateAdditionalOptionsFields,
+  } = useFieldArray({
     keyName: "additionalOptionFieldId",
     name: "additionalOptions",
     control,
@@ -95,22 +108,26 @@ const useReserveSpace = (spaceId: string) => {
 
   const initializeAdditionalOptions = useCallback(() => {
     if (!spaceDetails?.spaceById?.additionalOptions?.length) return;
-    spaceDetails?.spaceById.additionalOptions?.forEach((additionalOption: OptionsType, index: number) => {
-      const stockOptions = Array.from(Array(additionalOption?.stock || 1).keys()).map((val) => ({
-        value: val + 1,
-        label: val + 1,
-      }));
-      updateAdditionalOptionsFields(index, {
-        id: additionalOption?.id,
-        name: additionalOption?.name,
-        paymentTerm: additionalOption.paymentTerm,
-        additionalPrice: additionalOption.additionalPrice,
-        quantity: 1,
-        stockOptions,
-        maxStock: additionalOption?.stock || 1,
-        isChecked: false,
-      });
-    });
+    spaceDetails?.spaceById.additionalOptions?.forEach(
+      (additionalOption: OptionsType, index: number) => {
+        const stockOptions = Array.from(
+          Array(additionalOption?.stock || 1).keys()
+        ).map((val) => ({
+          value: val + 1,
+          label: val + 1,
+        }));
+        updateAdditionalOptionsFields(index, {
+          id: additionalOption?.id,
+          name: additionalOption?.name,
+          paymentTerm: additionalOption.paymentTerm,
+          additionalPrice: additionalOption.additionalPrice,
+          quantity: 1,
+          stockOptions,
+          maxStock: additionalOption?.stock || 1,
+          isChecked: false,
+        });
+      }
+    );
   }, [spaceDetails]);
 
   const onAdditionalOptionsCheckboxAction = useCallback(

@@ -1,16 +1,24 @@
-import { gql, useMutation } from "@apollo/client";
+import { gql, useLazyQuery, useMutation, useQuery } from "@apollo/client";
 import { Profile } from "../../../domains";
 import { isEmpty } from "lodash";
-import { MutationHook } from "../../types";
+import { MutationHook, QueryHook } from "../../types";
 
 export type LoginInput = {
   email: string;
   password: string;
   deviceID?: string;
 };
+export type SocialLoginInput = {
+  provider: "facebook" | "google";
+  providerAccountId: string;
+  id_token: string;
+};
 
 export type LoginVariables = {
   input: LoginInput;
+};
+export type SocialLoginVariables = {
+  input: SocialLoginInput;
 };
 
 export type LoginResult = {
@@ -20,45 +28,105 @@ export type LoginResult = {
     profile: Profile;
   };
 };
+export type ProfileResult = {
+  myProfile: Profile;
+};
+export type SocialLoginResult = {
+  socialLogin: {
+    accessToken: string;
+    refreshToken: string;
+    profile: Profile;
+  };
+};
 
-const LOGIN = gql`
-  mutation Login($input: LoginInput!) {
-    login(input: $input) {
-      accessToken
-      refreshToken
-      profile {
-        __typename
-        ... on UserProfile {
+const profileObject = `... on UserProfile {
           id
-          accountId
           email
-          emailVerified
           firstName
           lastName
           firstNameKana
           lastNameKana
           phoneNumber
           roles
-          address {
-            id
-            addressLine1
-          }
           profilePhoto {
             id
+            mime
+            type
+            thumbnail {
+              width
+              height
+              url
+            }
+            small {
+              width
+              height
+              url
+            }
             medium {
               width
               height
               url
             }
           }
+          address {
+            id
+            addressLine1
+            addressLine2
+            city
+            longitude
+            latitude
+            postalCode
+            prefecture {
+              id
+              name
+              nameKana
+              nameRomaji
+              available
+            }
+          }
         }
-      }
+        ... on CompanyProfile {
+          id
+          email
+          name
+          nameKana
+          phoneNumber
+          registrationNumber
+          roles
+        }`;
+
+const loginObject = `accessToken
+      refreshToken
+      profile {
+        ${profileObject}
+      }`;
+
+export const LOGIN = gql`
+  mutation Login($input: LoginInput!) {
+    login(input: $input) {
+      ${loginObject}
+    }
+  }
+`;
+export const SOCIAL_LOGIN = gql`
+  mutation socialLogin($input: SocialLoginInput!) {
+    socialLogin(input: $input) {
+      ${loginObject}
+    }
+  }
+`;
+
+export const MY_PROFILE = gql`
+  query MyProfile {
+    myProfile {
+      ${profileObject}
     }
   }
 `;
 
 export const useLogin: MutationHook<LoginResult, LoginInput> = () => {
   let [mutation, result] = useMutation<LoginResult, LoginVariables>(LOGIN);
+
   async function login({ email, password, deviceID }: LoginInput) {
     if (isEmpty(email) || isEmpty(password))
       throw new Error("Both email and password are required!!");
@@ -69,5 +137,39 @@ export const useLogin: MutationHook<LoginResult, LoginInput> = () => {
 
     return loginResult;
   }
+
   return [login, result];
+};
+
+export const useSocialLogin: MutationHook<
+  SocialLoginResult,
+  SocialLoginInput
+> = () => {
+  let [mutation, result] = useMutation<SocialLoginResult, SocialLoginVariables>(
+    SOCIAL_LOGIN
+  );
+  async function socialLogin({
+    provider,
+    providerAccountId,
+    id_token,
+  }: SocialLoginInput) {
+    const socialLoginResult = await mutation({
+      variables: { input: { provider, providerAccountId, id_token } },
+      fetchPolicy: "no-cache",
+    });
+
+    return socialLoginResult;
+  }
+  return [socialLogin, result];
+};
+
+export const useMyProfile = () => {
+  const [fetchProfile] = useLazyQuery<ProfileResult>(MY_PROFILE);
+
+  const myProfile = async () => {
+    const myProfileResult = await fetchProfile({ fetchPolicy: "network-only" });
+    return myProfileResult;
+  };
+
+  return { myProfile };
 };

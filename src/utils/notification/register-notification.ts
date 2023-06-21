@@ -23,13 +23,21 @@ export async function registerNotifications() {
       finalStatus = status;
     }
     if (finalStatus !== "granted") {
-      alert("Failed to get push token for push notification!");
+      // alert("Failed to get push token for push notification!");
+      console.log("Notification disabled");
       return;
     }
     token = (await Notifications.getExpoPushTokenAsync()).data;
+    console.log("-".repeat(50));
+    console.log("EXPO PUSH NOTIFICATION TOKEN");
+    console.log("-".repeat(50));
     console.log(token);
+    console.log("-".repeat(50));
   } else {
-    alert("Must use physical device for Push Notifications");
+    // alert("Must use physical device for Push Notifications");
+    console.log("-".repeat(50));
+    console.log("RUNNING ON SIMULATOR - NOTIFICATIONS DO NOT WORK");
+    console.log("-".repeat(50));
   }
 
   return token;

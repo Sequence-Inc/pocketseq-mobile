@@ -8,4 +8,8 @@ export default abstract class ChatCoordinator {
     this.screenName = screenName;
     this.navigation = navigation;
   }
+
+  goBack(): void {
+    this.navigation.goBack();
+  }
 }

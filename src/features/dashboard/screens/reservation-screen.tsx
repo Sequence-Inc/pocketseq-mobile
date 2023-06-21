@@ -85,7 +85,7 @@ const HotelReservationItem: React.FC<IHotelReservationItemProps> = ({
 const EmptySpaceComponent: React.FC = () => {
   return (
     <View style={{ alignItems: "center", padding: 20 }}>
-      <Text>No Space Reservations</Text>
+      <Text>予約はありません。</Text>
     </View>
   );
 };
@@ -135,7 +135,7 @@ const SpaceReservationItem: React.FC<ISpaceReservationItemProps> = ({
 export const ReservationScreen: React.FC<IReservationScreenProps> = ({
   coordinator,
 }) => {
-  const { colors, images, strings } = useResources();
+  const { colors, images } = useResources();
   const [myReservations, reservations] = useUserReservation();
 
   const screenWidth = Dimensions.get("window").width;
@@ -196,7 +196,7 @@ export const ReservationScreen: React.FC<IReservationScreenProps> = ({
             fontWeight: "bold",
           }}
         >
-          予約 <Text style={{ fontWeight: "400" }}>(Reservation)</Text>
+          予約
         </Text>
       </View>
       <View
@@ -205,12 +205,12 @@ export const ReservationScreen: React.FC<IReservationScreenProps> = ({
         <Button
           containerStyle={{ flex: 1, borderColor: "transparent" }}
           onPress={() => showSpaceReservations()}
-          title="Space"
+          title="スペース"
         />
         <Button
           containerStyle={{ flex: 1, borderColor: "transparent" }}
           onPress={() => showHotelReservations()}
-          title="Hotel"
+          title="宿泊"
         />
         <Animated.View
           style={[

@@ -19,7 +19,7 @@ export type IForgotPasswordScreenProps = {
 export const ForgotPasswordScreen: React.FC<IForgotPasswordScreenProps> = ({
   coordinator,
 }) => {
-  const { colors, images, strings } = useResources();
+  const { colors, images } = useResources();
   const [handleForgetPassword, { loading }] = useForgotPassword();
 
   const [email, setEmail] = React.useState<string>("");
@@ -61,24 +61,24 @@ export const ForgotPasswordScreen: React.FC<IForgotPasswordScreenProps> = ({
               textAlign: "center",
             }}
           >
-            {strings("reset_password")}
+            パスワードをリセットする
           </Text>
           <TextInput
             containerStyle={{ margin: 12 }}
             keyboardType="email-address"
-            label={`${strings("mail_address")}`}
+            label={`メールアドレス`}
             onChangeText={React.useCallback(
               (email) => setEmail(email),
               [email]
             )}
-            placeholder={`${strings("mail_address_hint")}`}
+            placeholder={`例）taro@mail.com`}
           />
           <Button
             containerStyle={{ backgroundColor: colors.primary, margin: 12 }}
             onPress={onResetPress}
             loading={loading}
             titleStyle={{ color: colors.background }}
-            title={`${strings("reset")}`}
+            title={`リセットする`}
           />
           <View
             style={{
@@ -110,7 +110,7 @@ export const ForgotPasswordScreen: React.FC<IForgotPasswordScreenProps> = ({
                   fontSize: 14,
                 }}
               >
-                {strings("those_who_have_acc")}
+                アカウントをお持ちの方
               </Text>
             </View>
           </View>
@@ -122,10 +122,10 @@ export const ForgotPasswordScreen: React.FC<IForgotPasswordScreenProps> = ({
             onPress={onLoginPress}
             disabled={loading}
             titleStyle={{ color: colors.background }}
-            title={`${strings("do_login")}`}
+            title={`ログインする`}
           />
           <Text style={{ color: colors.text, margin: 28, textAlign: "center" }}>
-            {strings("copyright")}
+            © copyright PocketseQ 2023.
           </Text>
         </View>
       </ScrollView>

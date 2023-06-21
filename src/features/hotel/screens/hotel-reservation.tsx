@@ -25,14 +25,14 @@ export const HotelReservation: React.FC<IHotelReservationProps> = ({
 }) => {
   const route: RouteProp<{ params: IHotelScreenParams }> = useRoute();
   const headerHeight = useHeaderHeight();
-  const { colors, images, strings } = useResources();
+  const { colors, images } = useResources();
   const { hotelId } = route.params;
   const [selectedPlan, setSelectedPlan] = useState(null);
 
   const { fetchHotelById, loading, error, hotel } = useHotelQuery();
 
   const reserve = (data: ReserveHotelParams) =>
-    coordinator.toHotelReserveConfirm("replace", { ...data });
+    coordinator.toHotelReserveConfirm("navigate", { ...data });
 
   useFocusEffect(
     React.useCallback(() => {

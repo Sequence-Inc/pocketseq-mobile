@@ -23,6 +23,9 @@ import { useResources } from "../../../resources";
 import { Touchable } from "../../../widgets/touchable";
 import { Button } from "../../../widgets/button";
 import { CardView } from "../../../widgets/card-view";
+import { currencyFormatter } from "../../../utils/strings";
+
+const { width, height } = Dimensions.get("window");
 
 type Colors = {
   primary: string;
@@ -52,8 +55,6 @@ export type TUseCalculateSpacePriceProps = {
 };
 
 export type SubscriptionCategoryType = "A" | "B" | "C";
-
-const { height } = Dimensions.get("window");
 
 const SUBSCRIPTION_CATEGORIES: Record<string, SubscriptionCategoryType> = {
   A: "A",
@@ -87,7 +88,7 @@ export const Subscription: React.FC<ISpaceReservationConfirmationProps> = ({
     useBuySubscription({
       onCompleted: () => {
         setSelectedPriceId(null);
-        Alert.alert("Subscribed successfully.");
+        Alert.alert("サブスクリプションが成功しました。");
       },
       onError: () => {
         setSelectedPriceId(null);
@@ -95,9 +96,30 @@ export const Subscription: React.FC<ISpaceReservationConfirmationProps> = ({
           subscriptionFailed?.message ===
           `You have already subscribed to ${subscriptionType} subscription`
         ) {
-          Alert.alert(`You have already subscribed to ${subscriptionType}`);
+          Alert.alert(
+            `加入しています`,
+            `既に ${
+              subscriptionType === "hotel" ? "ホテル" : "スペース"
+            } サブスクリプションに加入しています`
+          );
+        } else if (subscriptionFailed?.message === "Not authorized") {
+          Alert.alert(
+            `ログインしてください`,
+            `サブスクリプションに登録する前にログインしてください。`
+          );
+        } else if (
+          subscriptionFailed?.message ===
+          "Cannot charge a customer that has no active card"
+        ) {
+          Alert.alert(
+            "カードがありません",
+            "アカウントにカードを追加してください。"
+          );
         } else {
-          Alert.alert("Subscription failed. Try again later.");
+          Alert.alert(
+            "失敗しました",
+            "サブスクリプションに失敗しました。 後でもう一度試してください。"
+          );
         }
       },
     });
@@ -136,6 +158,8 @@ export const Subscription: React.FC<ISpaceReservationConfirmationProps> = ({
 
   useFocusEffect(handleFetchAllSubscriptions);
 
+  const subscriptionUnit = subscriptionType === "hotel" ? "日" : "時間";
+
   return (
     <SafeAreaView
       edges={["bottom", "left", "right"]}
@@ -145,80 +169,56 @@ export const Subscription: React.FC<ISpaceReservationConfirmationProps> = ({
         flex: 1,
       }}
     >
-      <View style={[styles.categoryWrapper(colors)]}>
-        <Touchable
-          onPress={() => setSubscriptionCategory(SUBSCRIPTION_CATEGORIES.A)}
-          style={[
-            styles.categoryPill(
-              colors,
-              subscriptionCategory === SUBSCRIPTION_CATEGORIES.A
-            ),
-          ]}
-        >
-          <Text
-            style={[
-              styles.categoryText(
-                colors,
-                subscriptionCategory === SUBSCRIPTION_CATEGORIES.A
-              ),
-            ]}
-          >
-            Category A
-          </Text>
-        </Touchable>
-        <Touchable
-          onPress={() => setSubscriptionCategory(SUBSCRIPTION_CATEGORIES.B)}
-          style={[
-            styles.categoryPill(
-              colors,
-              subscriptionCategory === SUBSCRIPTION_CATEGORIES.B
-            ),
-          ]}
-        >
-          <Text
-            style={[
-              styles.categoryText(
-                colors,
-                subscriptionCategory === SUBSCRIPTION_CATEGORIES.B
-              ),
-            ]}
-          >
-            Category B
-          </Text>
-        </Touchable>
-        <Touchable
-          onPress={() => setSubscriptionCategory(SUBSCRIPTION_CATEGORIES.C)}
-          style={[
-            styles.categoryPill(
-              colors,
-              subscriptionCategory === SUBSCRIPTION_CATEGORIES.C
-            ),
-          ]}
-        >
-          <Text
-            style={[
-              styles.categoryText(
-                colors,
-                subscriptionCategory === SUBSCRIPTION_CATEGORIES.C
-              ),
-            ]}
-          >
-            Category C
-          </Text>
-        </Touchable>
-      </View>
-      <ScrollView
-        style={{ backgroundColor: colors.background, borderRadius: 10 }}
+      <View
+        style={[
+          styles.categoryWrapper,
+          {
+            backgroundColor: colors.backgroundVariant,
+          },
+        ]}
       >
+        {Object.keys(SUBSCRIPTION_CATEGORIES).map((key) => {
+          const selected =
+            subscriptionCategory === SUBSCRIPTION_CATEGORIES[key];
+          return (
+            <Touchable
+              key={key}
+              onPress={() =>
+                setSubscriptionCategory(SUBSCRIPTION_CATEGORIES[key])
+              }
+              style={[
+                styles.categoryPill,
+                {
+                  backgroundColor: selected
+                    ? colors.primaryVariant
+                    : colors.background,
+                },
+              ]}
+            >
+              <Text
+                style={[
+                  styles.categoryText,
+                  {
+                    color: selected ? colors.background : colors.textVariant,
+                  },
+                ]}
+              >
+                カテゴリー{SUBSCRIPTION_CATEGORIES[key]}
+              </Text>
+            </Touchable>
+          );
+        })}
+      </View>
+      <ScrollView style={{ backgroundColor: colors.background }}>
         <View>
-          {fetchingAllSubscriptions ? <Text>Loading...</Text> : <></>}
+          {fetchingAllSubscriptions ? <Text>読み込み中...</Text> : <></>}
           {!fetchingAllSubscriptions && fetchingAllSubscriptionError ? (
-            <Text>Opps...</Text>
+            <Text>エラーが発生しました。 後でもう一度試してください。</Text>
           ) : (
             <></>
           )}
           {!fetchingAllSubscriptions && !subscriptions.length ? (
-            <Text>Subscriptions not availale</Text>
+            <Text>サブスクリプション プランは利用できません。</Text>
           ) : (
             <></>
           )}
@@ -231,11 +231,22 @@ export const Subscription: React.FC<ISpaceReservationConfirmationProps> = ({
                   style={[styles.planCardWrapper]}
                 >
                   <View style={[styles.planCardTitleSection]}>
-                    <Text style={[styles.planCardHeader]}>
+                    <Text
+                      style={[
+                        styles.planCardHeader,
+                        { color: colors.primaryVariant },
+                      ]}
+                    >
                       {subscription.categoryName}
                     </Text>
-                    <Text style={[styles.planCardDesc]}>
-                      Spend {subscription.unit} hours a month
+                    <Text
+                      style={[
+                        styles.planCardDesc,
+                        { color: colors.textVariant },
+                      ]}
+                    >
+                      毎月{subscription.unit}
+                      {subscriptionUnit}を使う
                     </Text>
                   </View>
                   <View style={[styles.planCardPrice]}>
@@ -244,41 +255,46 @@ export const Subscription: React.FC<ISpaceReservationConfirmationProps> = ({
                         flexDirection: "row",
                         width: "100%",
                         justifyContent: "center",
-                        alignItems: "center",
+                        alignItems: "flex-end",
                       }}
                     >
-                      <Text style={[styles.priceText]}>
-                        {subscription.amount}
+                      <Text style={[styles.priceText, { color: colors.text }]}>
+                        {currencyFormatter(subscription.amount)}
                       </Text>
                       <Text
                         style={{
-                          fontWeight: "200",
-                          fontSize: 16,
-                          marginLeft: 5,
+                          fontWeight: "400",
+                          fontSize: 18,
+                          marginLeft: 6,
+                          marginBottom: 7,
+                          color: colors.textVariant,
                         }}
                       >
-                        / month
+                        /月
                       </Text>
                     </View>
-
-                    <Button
-                      title={`Buy ${subscription.categoryName}`}
-                      titleStyle={{ color: colors.background }}
-                      loading={
-                        creatingSubscription &&
-                        selectedPriceId === subscription.id
-                      }
-                      disabled={
-                        !!creatingSubscription &&
-                        selectedPriceId !== subscription.id
-                      }
-                      containerStyle={{
-                        margin: 20,
-                        backgroundColor: colors.primaryVariant,
-                      }}
-                      onPress={() => hadleBuySubscription(subscription.id)}
-                    />
                   </View>
+                  <Button
+                    title={`${subscription.categoryName}を買う`}
+                    titleStyle={{
+                      color: colors.background,
+                      fontSize: 16,
+                      fontWeight: "900",
+                    }}
+                    loading={
+                      creatingSubscription &&
+                      selectedPriceId === subscription.id
+                    }
+                    disabled={
+                      !!creatingSubscription &&
+                      selectedPriceId !== subscription.id
+                    }
+                    containerStyle={
+                      (styles.priceButtonContainer,
+                      { backgroundColor: colors.primaryVariant })
+                    }
+                    onPress={() => hadleBuySubscription(subscription.id)}
+                  />
                 </CardView>
               )
             )
@@ -292,69 +308,54 @@ export const Subscription: React.FC<ISpaceReservationConfirmationProps> = ({
 };
 
 const styles = StyleSheet.create({
-  categoryWrapper: (color: Colors) => ({
+  categoryWrapper: {
     justifyContent: "space-evenly",
-    height: height / 15,
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
-    padding: 5,
-    marginBottom: 10,
-    backgroundColor: color.backgroundVariant,
-  }),
-  categoryPill: (color: Colors, selected: boolean) => ({
-    borderWidth: selected ? 1.5 : 0,
-    height: "100%",
-    display: "flex",
-    flex: 1 / 3.5,
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    marginHorizontal: 5,
-    borderRadius: 10,
-    borderColor: selected ? color.primaryVariant : "rgba(120,120,120,0.2)",
-    backgroundColor: selected ? color.background : color.backgroundVariant,
-    elevation: 3,
-  }),
-  categoryText: (colors: Colors, selected: boolean) => ({
+    padding: 12,
+  },
+  categoryPill: {
+    borderRadius: 50,
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+  },
+  categoryText: {
     fontWeight: "700",
-    color: selected ? colors.text : colors.textVariant,
-  }),
+  },
   planCardWrapper: {
-    display: "flex",
-    height: height / 4,
+    width: width - 12 * 2,
     borderWidth: 1,
-    margin: 10,
-    borderRadius: 12,
-    padding: 10,
+    margin: 12,
+    borderRadius: 6,
+    padding: 12,
     alignItems: "center",
-    borderColor: "rgba(125,125,125,0.2)",
+    borderColor: "rgba(0,0,0,0.1)",
+    backgroundColor: "rgba(255,255,255,1)",
   },
   planCardTitleSection: {
     alignItems: "center",
-    marginBottom: 20,
+    marginTop: 6,
   },
   planCardHeader: {
     fontWeight: "bold",
     fontSize: 22,
-    lineHeight: 30,
-    letterSpacing: 2,
   },
   planCardDesc: {
-    fontWeight: "200",
-    fontSize: 17,
-    lineHeight: 30,
-    letterSpacing: 2,
+    fontWeight: "300",
+    fontSize: 18,
+    marginTop: 6,
   },
   planCardPrice: {
-    flexGrow: 1,
     width: "100%",
+    marginVertical: 24,
     justifyContent: "center",
-    // alignItems: "flex-end",
-    // justifyContent: "center",
-    // flexDirection: "row",
   },
   priceText: {
     fontSize: 32,
+    fontWeight: "700",
+  },
+  priceButtonContainer: {
+    borderRadius: 6,
   },
 });

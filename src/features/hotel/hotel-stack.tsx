@@ -4,11 +4,13 @@ import HotelCoordinator from "./hotel-coordinator";
 import { HotelScreen, ConfirmReserve, HotelReservation } from "./screens";
 import { useResources } from "../../resources";
 import { HeaderLeftButton } from "../../widgets/header-left-button";
+import { AccountPaymentMethodScreen } from "../account/screens";
 
 type HotelStackParamList = {
   "hotel-screen": undefined;
   "hotel-reservation": undefined;
   "confirm-hotel-reservation": undefined;
+  "payment-method": undefined;
 };
 
 type HotelStackProps = {
@@ -54,6 +56,18 @@ export default function HotelStack({ hotelCoordinator }: HotelStackProps) {
         </Screen>
         <Screen name="confirm-hotel-reservation">
           {(props) => <ConfirmReserve {...props} coordinator={coordinator} />}
+        </Screen>
+        <Screen
+          name="payment-method"
+          options={{
+            presentation: "modal",
+            headerLeft: () => null,
+            title: "お支払い方法管理",
+          }}
+        >
+          {(props) => (
+            <AccountPaymentMethodScreen {...props} coordinator={coordinator} />
+          )}
         </Screen>
       </Group>
     </Navigator>

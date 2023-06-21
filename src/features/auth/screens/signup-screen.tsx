@@ -15,7 +15,7 @@ export type ISignupScreenProps = {
 };
 
 export const SignupScreen: React.FC<ISignupScreenProps> = ({ coordinator }) => {
-  const { colors, images, strings } = useResources();
+  const { colors, images } = useResources();
   const [form, setForm] = useState<SignUpInput>({
     email: "",
     password: "",
@@ -86,50 +86,50 @@ export const SignupScreen: React.FC<ISignupScreenProps> = ({ coordinator }) => {
               textAlign: "center",
             }}
           >
-            {strings("create_acc")}
+            アカウントを作成する
           </Text>
           <TextInput
             containerStyle={{ margin: 12 }}
-            label={`${strings("lastname")}`}
-            placeholder={`${strings("lastname")}`}
+            label={`性`}
+            placeholder={`性`}
             onChangeText={(val) => handleFormChange(val, "lastName")}
           />
           <TextInput
             containerStyle={{ margin: 12 }}
-            label={`${strings("name")}`}
+            label={`名`}
             onChangeText={(val) => handleFormChange(val, "firstName")}
-            placeholder={`${strings("name_hint")}`}
+            placeholder={`名`}
           />
           <TextInput
             containerStyle={{ margin: 12 }}
-            label={`${strings("lastname_kana")}`}
-            placeholder={`${strings("lastname_kana_example")}`}
+            label={`性（カナ）`}
+            placeholder={`例）ヤマダ`}
             onChangeText={(val) => handleFormChange(val, "lastNameKana")}
           />
           <TextInput
             containerStyle={{ margin: 12 }}
-            label={`${strings("name_kana")}`}
-            placeholder={`${strings("name_kana_hint")}`}
+            label={`名（カナ）`}
+            placeholder={`名（カナ）`}
             onChangeText={(val) => handleFormChange(val, "firstNameKana")}
           />
           <TextInput
             containerStyle={{ margin: 12 }}
             keyboardType="email-address"
-            label={`${strings("mail_address")}`}
-            placeholder={`${strings("mail_address_hint")}`}
+            label={`メールアドレス`}
+            placeholder={`例）taro@mail.com`}
             onChangeText={(val) => handleFormChange(val, "email")}
           />
           <TextInput
             containerStyle={{ margin: 12 }}
-            label={`${strings("password")}`}
-            placeholder={`${strings("password_hint")}`}
+            label={`パスワード`}
+            placeholder={`パスワード`}
             secureTextEntry={true}
             onChangeText={(val) => handleFormChange(val, "password")}
           />
           <TextInput
             containerStyle={{ margin: 12 }}
-            label={`${strings("confirm_password")}`}
-            placeholder={`${strings("confirm_password_hint")}`}
+            label={`パスワード認証`}
+            placeholder={`パスワード認証`}
             secureTextEntry={true}
             onChangeText={(val) => setConfirmPassword(val)}
           />
@@ -137,7 +137,7 @@ export const SignupScreen: React.FC<ISignupScreenProps> = ({ coordinator }) => {
             onValueChange={(val) => setTermsAccepted(val)}
             value={termsAccepted}
             containerStyle={{ marginHorizontal: 12 }}
-            text={`${strings("i_agree_the_terms")}`}
+            text={`利用規約に同意いたします`}
             textStyle={{ color: colors.link }}
           />
           <Button
@@ -146,7 +146,7 @@ export const SignupScreen: React.FC<ISignupScreenProps> = ({ coordinator }) => {
             onPress={onCreateAccount}
             loading={signingUp}
             titleStyle={{ color: colors.background }}
-            title={`${strings("create_acc")}`}
+            title={`アカウントを作成する`}
           />
           <View
             style={{
@@ -178,7 +178,7 @@ export const SignupScreen: React.FC<ISignupScreenProps> = ({ coordinator }) => {
                   fontSize: 14,
                 }}
               >
-                {strings("those_who_have_acc")}
+                アカウントをお持ちの方
               </Text>
             </View>
           </View>
@@ -189,7 +189,7 @@ export const SignupScreen: React.FC<ISignupScreenProps> = ({ coordinator }) => {
             }}
             onPress={onLoginPress}
             titleStyle={{ color: colors.background }}
-            title={`${strings("do_login")}`}
+            title={`ログインする`}
           />
 
           {errorMessage ? (
@@ -202,7 +202,7 @@ export const SignupScreen: React.FC<ISignupScreenProps> = ({ coordinator }) => {
             <></>
           )}
           <Text style={{ color: colors.text, margin: 28, textAlign: "center" }}>
-            {strings("copyright")}
+            © copyright PocketseQ 2023.
           </Text>
         </View>
       </ScrollView>

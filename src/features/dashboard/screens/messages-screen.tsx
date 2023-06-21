@@ -120,7 +120,7 @@ const ItemSeperator: React.FC = () => {
 const EmptyMessageComponent: React.FC = () => {
   return (
     <View style={{ alignItems: "center", padding: 20 }}>
-      <Text>No Messages</Text>
+      <Text>メッセージはありません。</Text>
     </View>
   );
 };
@@ -128,7 +128,7 @@ const EmptyMessageComponent: React.FC = () => {
 export const MessagesScreen: React.FC<IMessagesScreenProps> = ({
   coordinator,
 }) => {
-  const { colors, images, strings } = useResources();
+  const { colors, images } = useResources();
 
   const [myChatsQuery, myChatsResult] = useMyChats();
 
@@ -165,7 +165,7 @@ export const MessagesScreen: React.FC<IMessagesScreenProps> = ({
             fontWeight: "bold",
           }}
         >
-          メッセージ <Text style={{ fontWeight: "400" }}>(Messages)</Text>
+          メッセージ
         </Text>
       </View>
       <FlatList

@@ -5,9 +5,11 @@ import {
   SubscriptionCategoryType,
 } from "../../services/domains";
 import SearchCoordinator from "./search-coordinator";
+import { DashboardCoordinator } from "../dashboard";
 
 export type ISearchScreenProps = {
-  coordinator: SearchCoordinator;
+  coordinator: SearchCoordinator | DashboardCoordinator;
+  isTabScreen: boolean;
 } & SpaceSearchFilterOptions &
   HotelSearchFilterOptions;
 

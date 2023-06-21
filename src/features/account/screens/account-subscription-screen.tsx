@@ -1,20 +1,15 @@
-import { RouteProp, useRoute } from "@react-navigation/native";
 import { useHeaderHeight } from "@react-navigation/elements";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { Alert, FlatList, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useResources } from "../../../resources";
 import AccountCoordinator from "../account-coordinator";
-import {
-  PaymentSource,
-  Profile,
-  UserSubscription,
-} from "../../../services/domains";
+import { Profile } from "../../../services/domains";
 import { Touchable } from "../../../widgets/touchable";
-import { useAccount } from "../../../services/graphql";
+import { useFetchSubscriptions } from "../../../services/graphql";
 import { FullScreenActivityIndicator } from "../../../widgets/full-screen-activity-indicator";
-import { SVGImage } from "@widgets/svg-image";
 import moment from "moment";
+import { currencyFormatter } from "../../../utils/strings";
 
 export interface IAccountSubscriptionScreenProps {
   coordinator: AccountCoordinator;
@@ -27,68 +22,102 @@ export interface IAccountSubscriptionScreenParams {
 
 export const AccountSubscriptionScreen: React.FC<
   IAccountSubscriptionScreenProps
-> = ({ coordinator }) => {
-  const [loading, setLoading] = useState<boolean>(true);
-  const [subscriptions, setSubscriptions] = useState<UserSubscription[]>();
-
-  const route: RouteProp<{ params: IAccountSubscriptionScreenParams }> =
-    useRoute();
+> = () => {
   const headerHeight = useHeaderHeight();
-  const { colors, images, strings } = useResources();
+  const { colors } = useResources();
 
-  const { getSubscriptions } = useAccount();
-
-  const getData = useCallback(async () => {
-    try {
-      const { data, error } = await getSubscriptions();
-
-      if (!error) {
-        setSubscriptions(data?.mySubscriptions);
-      } else {
-        Alert.alert("Error fetching data.");
-      }
-    } catch (error: any) {
-      if (error) {
-        console.log(error);
-        Alert.alert(error.message);
-      }
-    }
-    setLoading(false);
-  }, []);
+  const {
+    getSubscriptions,
+    fetchingSubscriptions: loading,
+    fetchingSubscriptionError: error,
+    subscriptions,
+    cancelSubscription,
+    isReady,
+    setIsReady,
+  } = useFetchSubscriptions();
 
   useEffect(() => {
-    getData();
+    getSubscriptions();
   }, []);
 
   if (loading) {
     return <FullScreenActivityIndicator />;
   }
 
+  if (error) {
+    return (
+      <View>
+        <Text>There was an error.</Text>
+        <Text>{error.message}</Text>
+      </View>
+    );
+  }
+
+  console.log(subscriptions);
+
+  const _cancelSubscription = ({
+    name,
+    priceType,
+    type,
+    id,
+  }: {
+    name: string;
+    priceType: string;
+    type: string;
+    id: string;
+  }) => {
+    Alert.alert(
+      `Unsubscribe`,
+      `Are you sure you want to unsubscribe ${
+        type === "hotel" ? "宿泊" : "レンタルスペース"
+      } subscription ${name} ${priceType}?`,
+      [
+        { text: `キャンセル`, style: "cancel", onPress: () => null },
+        {
+          text: "Unsubscribe",
+          style: "destructive",
+          onPress: () => {
+            setIsReady(false);
+            cancelSubscription({ variables: { id } });
+          },
+        },
+      ]
+    );
+  };
+
   const renderStatus = ({
     currentPeriodEnd,
     isCanceled,
     endsAt,
     canceledAt,
-  }: UserSubscription) => {
+    name,
+    id,
+    priceType,
+    type,
+  }: any) => {
     if (!isCanceled) {
       return (
         <View>
           <Text style={{ color: colors.textVariant }}>
-            Status:{" "}
+            スターテス:{" "}
             <Text style={{ color: colors.primary, fontWeight: "500" }}>
-              Active
+              アクティブ
             </Text>
           </Text>
           <Text style={{ color: colors.textVariant, marginTop: 4 }}>
-            Renewal on: {moment(currentPeriodEnd).format("YYYY年MM月DD日")}
+            更新日: {moment(currentPeriodEnd).format("YYYY年MM月DD日")}
           </Text>
           <Touchable
             style={{
               marginTop: 24,
-              backgroundColor: "rgba(240,240,240,1)",
+              backgroundColor: `rgba(240,240,240,${isReady ? `1` : `0.5`})`,
               paddingHorizontal: 24,
               paddingVertical: 12,
               borderRadius: 6,
+            }}
+            disabled={isReady}
+            onPress={() => {
+              _cancelSubscription({ name, priceType, type, id });
             }}
           >
             <Text
@@ -109,16 +138,16 @@ export const AccountSubscriptionScreen: React.FC<
         return (
           <View>
             <Text style={{ color: colors.textVariant }}>
-              Status:{" "}
+              スターテス:{" "}
               <Text style={{ color: "rgba(150,150,150,1)", fontWeight: "500" }}>
-                Pending cancelation
+                キャンセル保留中
               </Text>
             </Text>
             <Text style={{ color: colors.textVariant, marginTop: 4 }}>
-              Canceled at: {moment(canceledAt).format("YYYY年MM月DD日")}
+              キャンセル日: {moment(canceledAt).format("YYYY年MM月DD日")}
             </Text>
             <Text style={{ marginTop: 4, color: "red" }}>
-              Ends on: {moment(endsAt).format("YYYY年MM月DD日")}
+              終了日: {moment(endsAt).format("YYYY年MM月DD日")}
             </Text>
           </View>
         );
@@ -127,11 +156,13 @@ export const AccountSubscriptionScreen: React.FC<
         return (
           <View>
             <Text style={{ color: colors.textVariant }}>
-              Status:{" "}
-              <Text style={{ color: "red", fontWeight: "500" }}>Cancelled</Text>
+              スターテス:{" "}
+              <Text style={{ color: "red", fontWeight: "500" }}>
+                キャンセル
+              </Text>
             </Text>
             <Text style={{ color: colors.textVariant, marginTop: 4 }}>
-              Canceled at: {moment(canceledAt).format("YYYY年MM月DD日")}
+              キャンセル日: {moment(canceledAt).format("YYYY年MM月DD日")}
             </Text>
           </View>
         );
@@ -149,18 +180,9 @@ export const AccountSubscriptionScreen: React.FC<
       }}
     >
       <FlatList
-        data={subscriptions || []}
-        renderItem={({ item, index }) => {
-          const {
-            id,
-            name,
-            priceType,
-            type,
-            remainingUnit,
-            unit,
-            amount,
-            isCanceled,
-          } = item;
+        data={subscriptions?.mySubscriptions || []}
+        renderItem={({ item }) => {
+          const { name, priceType, type, remainingUnit, unit, amount } = item;
           return (
             <View
               key={item.id}
@@ -205,8 +227,7 @@ export const AccountSubscriptionScreen: React.FC<
                   <Text
                     style={{
                       fontSize: 18,
-                      fontWeight: "600",
-                      fontVariant: ["tabular-nums"],
+                      fontWeight: "bold",
                       color: colors.textVariant,
                       flexGrow: 1,
                       marginTop: 6,
@@ -224,7 +245,7 @@ export const AccountSubscriptionScreen: React.FC<
                   }}
                 >
                   <Text style={{ fontWeight: "700", fontSize: 20 }}>
-                    {amount}
+                    {currencyFormatter(amount)}
                   </Text>
                   /月
                 </Text>

@@ -20,7 +20,7 @@ export type IAccountVerificationScreenProps = {
 export const AccountVerificationScreen: React.FC<
   IAccountVerificationScreenProps
 > = ({ coordinator }) => {
-  const { colors, images, strings } = useResources();
+  const { colors, images } = useResources();
   const route: RouteProp<{ params: { email: string } }> = useRoute();
   const [code, setCode] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string>();
@@ -89,7 +89,7 @@ export const AccountVerificationScreen: React.FC<
               textAlign: "center",
             }}
           >
-            {strings("check_acc_verification_code")}
+            アカウント確認コードを確認してください
           </Text>
           <Text
             style={{
@@ -99,17 +99,15 @@ export const AccountVerificationScreen: React.FC<
               textAlign: "center",
             }}
           >
-            {strings("confirmation_sent_code_to_email", {
-              email: route.params.email,
-            })}
+            確認コードが「{route?.params?.email}」に送信されました
           </Text>
           <TextInput
             containerStyle={{ margin: 12 }}
             keyboardType="number-pad"
-            label={`${strings("enter_confirmation_code")}`}
+            label={`確認コード入力`}
             maxLength={6}
             onChangeText={(val) => setCode(val)}
-            placeholder={`${strings("enter_confirmation_code")}`}
+            placeholder={`確認コード入力`}
           />
           <Button
             containerStyle={{ backgroundColor: colors.primary, margin: 12 }}
@@ -117,7 +115,7 @@ export const AccountVerificationScreen: React.FC<
             loading={verifyingEmail}
             disabled={resendingPasscode}
             titleStyle={{ color: colors.background }}
-            title={`${strings("confirm")}`}
+            title={`決定`}
           />
           <Button
             containerStyle={{
@@ -127,7 +125,7 @@ export const AccountVerificationScreen: React.FC<
             onPress={onCancelPress}
             disabled={verifyingEmail || resendingPasscode}
             titleStyle={{ color: colors.background }}
-            title={`${strings("cancel")}`}
+            title={`キャンセル`}
           />
           <View
             style={{
@@ -159,7 +157,7 @@ export const AccountVerificationScreen: React.FC<
                   fontSize: 14,
                 }}
               >
-                {strings("code_not_received")}
+                コードを受け取っていない場合
               </Text>
             </View>
           </View>
@@ -169,7 +167,7 @@ export const AccountVerificationScreen: React.FC<
             loading={resendingPasscode}
             disabled={verifyingEmail}
             onPress={onResendPasscode}
-            title={`${strings("resend_code")}`}
+            title={`コードを再送する`}
           />
 
           {successMessage ? (
@@ -195,7 +193,7 @@ export const AccountVerificationScreen: React.FC<
             <></>
           )}
           <Text style={{ color: colors.text, margin: 28, textAlign: "center" }}>
-            {strings("copyright")}
+            © copyright PocketseQ 2023.
           </Text>
         </View>
       </ScrollView>

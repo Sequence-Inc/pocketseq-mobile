@@ -54,7 +54,7 @@ export const AccountScreen: React.FC<IAccountScreenProps> = observer(
               fontWeight: "bold",
             }}
           >
-            アカウント <Text style={{ fontWeight: "400" }}>(Account)</Text>
+            アカウント
           </Text>
         </View>
 
@@ -70,7 +70,9 @@ export const AccountScreen: React.FC<IAccountScreenProps> = observer(
             >
               <Image
                 source={{
-                  uri: `https://avatars.dicebear.com/api/identicon/${profile.id}.png`,
+                  uri: profile.profilePhoto?.medium?.url
+                    ? profile.profilePhoto?.medium?.url
+                    : `https://avatars.dicebear.com/api/identicon/${profile.id}.png`,
                 }}
                 style={{
                   borderWidth: 1,
@@ -127,7 +129,7 @@ export const AccountScreen: React.FC<IAccountScreenProps> = observer(
                   fontWeight: "500",
                 }}
               >
-                Account information
+                アカウント
               </Text>
             </Touchable>
             <Touchable
@@ -158,7 +160,7 @@ export const AccountScreen: React.FC<IAccountScreenProps> = observer(
                   fontWeight: "500",
                 }}
               >
-                Payment methods
+                お支払方法
               </Text>
             </Touchable>
             <Touchable
@@ -169,6 +171,37 @@ export const AccountScreen: React.FC<IAccountScreenProps> = observer(
                 paddingVertical: 18,
                 flexDirection: "row",
                 alignItems: "center",
+              }}
+              onPress={() => {
+                coordinator.toAccountSubscriptionScreen("navigate", {});
+              }}
+            >
+              <SVGImage
+                source={images.svg.calendar_days}
+                color={colors.textVariant}
+                style={{ width: 20, height: 20, marginRight: 24 }}
+              />
+              <Text
+                style={{
+                  color: colors.textVariant,
+                  fontSize: 16,
+                  fontWeight: "500",
+                }}
+              >
+                サブスクリプション
+              </Text>
+            </Touchable>
+            <Touchable
+              style={{
+                paddingHorizontal: 24,
+                borderTopWidth: 1,
+                borderTopColor: "rgba(230,230,230,1)",
+                paddingVertical: 18,
+                flexDirection: "row",
+                alignItems: "center",
+              }}
+              onPress={() => {
+                coordinator.toAccountEditScreen("navigate");
               }}
             >
               <SVGImage
@@ -183,7 +216,35 @@ export const AccountScreen: React.FC<IAccountScreenProps> = observer(
                   fontWeight: "500",
                 }}
               >
-                Settings
+                設定
+              </Text>
+            </Touchable>
+            <Touchable
+              style={{
+                paddingHorizontal: 24,
+                borderTopWidth: 1,
+                borderTopColor: "rgba(230,230,230,1)",
+                paddingVertical: 18,
+                flexDirection: "row",
+                alignItems: "center",
+              }}
+              onPress={() => {
+                coordinator.toAccountPasswordChangeScreen("navigate");
+              }}
+            >
+              <SVGImage
+                source={images.svg.cog_6_tooth}
+                color={colors.textVariant}
+                style={{ width: 20, height: 20, marginRight: 24 }}
+              />
+              <Text
+                style={{
+                  color: colors.textVariant,
+                  fontSize: 16,
+                  fontWeight: "500",
+                }}
+              >
+                パスワード修正
               </Text>
             </Touchable>
             <View
@@ -213,7 +274,7 @@ export const AccountScreen: React.FC<IAccountScreenProps> = observer(
                     textAlign: "center",
                   }}
                 >
-                  Log out
+                  ログアウト
                 </Text>
               </Touchable>
             </View>
@@ -249,13 +310,18 @@ export const AccountScreen: React.FC<IAccountScreenProps> = observer(
               />
               <View style={{ flex: 1, justifyContent: "center" }}>
                 <Text
-                  style={{ color: colors.text, fontSize: 20, marginBottom: 4 }}
+                  style={{
+                    color: colors.textVariant,
+                    fontSize: 18,
+                    fontWeight: "bold",
+                    marginBottom: 8,
+                  }}
                 >
-                  Login / Signup
+                  ログインまたは登録
                 </Text>
-                <Text style={{ color: colors.textVariant, fontSize: 12 }}>
-                  Please login to use the app services. Or create an account if
-                  you don't have one.
+                <Text style={{ color: colors.textVariant, fontSize: 16 }}>
+                  アプリサービスを利用するにはログインしてください。
+                  または、アカウントをお持ちでない場合は登録してください。
                 </Text>
               </View>
               <SVGImage

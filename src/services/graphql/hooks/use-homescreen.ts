@@ -47,6 +47,9 @@ export const useHomeScreen = ({ take, skip }: PaginationOption) => {
     TOP_PICKS,
     {
       variables: { paginate: { take, skip } },
+      notifyOnNetworkStatusChange: true,
+      fetchPolicy: "network-only",
+      refetchWritePolicy: "overwrite",
     }
   );
   return { getTopPicks, result };

@@ -23,6 +23,7 @@ import {
   getEndDateTime,
   getStartDateTime,
 } from "../../../services/graphql/hooks/utility";
+import { currencyFormatter } from "../../../utils/strings";
 
 export type ISpaceReservationProps = {
   coordinator: SpaceCoordinator;
@@ -43,9 +44,11 @@ type TDefaultSettings = {
 };
 type DurationType = "DAILY" | "HOURLY" | "MINUTES";
 
+const DurationTypeString = { DAILY: "日", HOURLY: "時間", MINUTES: "分" };
+
 const options = {
-  DAILY: Array.from({ length: 30 }).map((_, index) => index + 1),
-  HOURLY: Array.from({ length: 24 }).map((_, index) => index + 1),
+  DAILY: Array.from({ length: 10 }).map((_, index) => index + 1),
+  HOURLY: Array.from({ length: 12 }).map((_, index) => index + 1),
   MINUTES: [5, 10, 15, 30, 45],
 };
 
@@ -62,7 +65,7 @@ const SpaceReservation: React.FC<ISpaceReservationProps> = ({
     error,
     data: space,
   } = useSpace();
-  const { colors, strings } = useResources();
+  const { colors } = useResources();
   const [{ globalStyles }] = React.useState(styleStore);
   const headerHeight = useHeaderHeight();
   const [start, setStart] = useState<Moment>(moment(new Date()));
@@ -74,9 +77,9 @@ const SpaceReservation: React.FC<ISpaceReservationProps> = ({
   const [defaultSettings, setDefaultSettings] = useState<TDefaultSettings>();
   const [availableHours, setAvailableHours] = useState<number[]>();
 
-  const [duration, setDuration] = useState(options["DAILY"][0]);
-  const [durationType, setDurationType] = useState<DurationType>("DAILY");
-  const [durationOptions, setDurationOptions] = useState(options["DAILY"]);
+  const [duration, setDuration] = useState(options["HOURLY"][0]);
+  const [durationType, setDurationType] = useState<DurationType>("HOURLY");
+  const [durationOptions, setDurationOptions] = useState(options["HOURLY"]);
 
   const [showCheckInTime, setShowCheckInTime] = useState(false);
 
@@ -155,7 +158,9 @@ const SpaceReservation: React.FC<ISpaceReservationProps> = ({
 
   React.useEffect(() => {
     if (space?.settings?.length) {
-      setDefaultSettings(space.settings.find((setting) => !!setting.isDefault));
+      setDefaultSettings(
+        space?.settings?.find((setting) => !!setting.isDefault)
+      );
     }
   }, [space]);
 
@@ -184,7 +189,7 @@ const SpaceReservation: React.FC<ISpaceReservationProps> = ({
 
   const toConfirmation = React.useCallback(
     () =>
-      coordinator.toSpaceReserveConfirm("replace", {
+      coordinator.toSpaceReserveConfirm("navigate", {
         spaceId,
         duration,
         durationType,
@@ -228,8 +233,8 @@ const SpaceReservation: React.FC<ISpaceReservationProps> = ({
               marginBottom: 12,
             }}
           >
-            <Text style={{ fontSize: 19, fontWeight: "700", marginBottom: 20 }}>
-              Plans
+            <Text style={{ fontSize: 18, fontWeight: "700", marginBottom: 20 }}>
+              プラン
             </Text>
             {pricePlans?.map((plan, index) => {
               const {
@@ -248,19 +253,54 @@ const SpaceReservation: React.FC<ISpaceReservationProps> = ({
                     width: "100%",
                     borderWidth: 1,
                     borderColor: colors.surfaceVariant,
-                    borderRadius: 12,
-                    padding: 5,
+                    borderRadius: 8,
+                    padding: 8,
                   }}
                 >
-                  <Text>{title}</Text>
-                  {isOverride && <Text>(Override price)</Text>}
-
-                  <View style={[globalStyles.row]}>
-                    <Text>{amount} / </Text>
-                    <Text> {duration}</Text>
-                    <Text> {type}</Text>
+                  <View
+                    style={[
+                      globalStyles.row,
+                      { justifyContent: "space-between" },
+                    ]}
+                  >
+                    <View>
+                      <Text
+                        style={{
+                          color: colors.textVariant,
+                          fontSize: 14,
+                        }}
+                      >
+                        {title}
+                      </Text>
+                      {isOverride && (
+                        <Text
+                          style={{ color: colors.textVariant, fontSize: 14 }}
+                        >
+                          (Override price)
+                        </Text>
+                      )}
+                      <Text
+                        style={{
+                          color: colors.surface,
+                          fontSize: 18,
+                          fontWeight: "700",
+                          marginTop: 6,
+                        }}
+                      >
+                        {currencyFormatter(amount)}/{duration}
+                        {DurationTypeString[type]}
+                      </Text>
+                    </View>
+                    {/* <Text
+                      style={{
+                        color: colors.primary,
+                        fontWeight: "700",
+                        fontSize: 18,
+                      }}
+                    >
+                      {appliedTimes}回
+                    </Text> */}
                   </View>
-                  <Text>{appliedTimes}</Text>
                 </View>
               );
             })}
@@ -277,13 +317,13 @@ const SpaceReservation: React.FC<ISpaceReservationProps> = ({
           >
             <Text
               style={{
-                fontSize: 25,
+                fontSize: 18,
                 fontWeight: "700",
                 color: colors.textVariant,
                 marginBottom: 12,
               }}
             >
-              Fee Details :
+              料金内容
             </Text>
             <View
               style={[
@@ -294,13 +334,13 @@ const SpaceReservation: React.FC<ISpaceReservationProps> = ({
             >
               <Text
                 style={{
-                  fontSize: 17,
+                  fontSize: 16,
                   fontWeight: "700",
                   color: colors.textVariant,
                   marginRight: 14,
                 }}
               >
-                Duration :
+                時間
               </Text>
               <Text
                 style={{
@@ -310,37 +350,7 @@ const SpaceReservation: React.FC<ISpaceReservationProps> = ({
                   marginRight: 14,
                 }}
               >
-                {duration + ` ${durationType}`}
-              </Text>
-            </View>
-
-            <View
-              style={[
-                globalStyles.row,
-                globalStyles.col_12,
-
-                { flex: 1, marginBottom: 12, justifyContent: "space-between" },
-              ]}
-            >
-              <Text
-                style={{
-                  fontSize: 20,
-                  fontWeight: "700",
-                  color: colors.textVariant,
-                  marginRight: 14,
-                }}
-              >
-                Subtotal :
-              </Text>
-              <Text
-                style={{
-                  fontSize: 16,
-                  fontWeight: "700",
-                  color: colors.textVariant,
-                  marginRight: 14,
-                }}
-              >
-                {Math.ceil(taxableAmount)}
+                {duration} {DurationTypeString[durationType]}
               </Text>
             </View>
 
@@ -353,13 +363,12 @@ const SpaceReservation: React.FC<ISpaceReservationProps> = ({
             >
               <Text
                 style={{
-                  fontSize: 20,
+                  fontSize: 16,
                   fontWeight: "700",
                   color: colors.textVariant,
-                  marginRight: 14,
                 }}
               >
-                Tax :
+                小計
               </Text>
               <Text
                 style={{
@@ -369,7 +378,36 @@ const SpaceReservation: React.FC<ISpaceReservationProps> = ({
                   marginRight: 14,
                 }}
               >
-                {Math.ceil(total - taxableAmount)}
+                {currencyFormatter(Math.ceil(taxableAmount))}
+              </Text>
+            </View>
+
+            <View
+              style={[
+                globalStyles.row,
+                globalStyles.col_12,
+                { flex: 1, marginBottom: 12, justifyContent: "space-between" },
+              ]}
+            >
+              <Text
+                style={{
+                  fontSize: 16,
+                  fontWeight: "700",
+                  color: colors.textVariant,
+                  marginRight: 14,
+                }}
+              >
+                税金
+              </Text>
+              <Text
+                style={{
+                  fontSize: 16,
+                  fontWeight: "700",
+                  color: colors.textVariant,
+                  marginRight: 14,
+                }}
+              >
+                {currencyFormatter(Math.ceil(total - taxableAmount))}
               </Text>
             </View>
 
@@ -384,19 +422,19 @@ const SpaceReservation: React.FC<ISpaceReservationProps> = ({
                   marginTop: 12,
                   borderTopWidth: 1,
                   paddingVertical: 10,
-                  borderTopColor: colors.text,
+                  borderTopColor: colors.surfaceVariant,
                 },
               ]}
             >
               <Text
                 style={{
-                  fontSize: 25,
+                  fontSize: 20,
                   fontWeight: "700",
                   color: colors.textVariant,
                   marginRight: 14,
                 }}
               >
-                Total :
+                合計
               </Text>
               <Text
                 style={{
@@ -406,7 +444,7 @@ const SpaceReservation: React.FC<ISpaceReservationProps> = ({
                   marginRight: 14,
                 }}
               >
-                {total}
+                {currencyFormatter(total)}
               </Text>
             </View>
           </View>
@@ -415,6 +453,12 @@ const SpaceReservation: React.FC<ISpaceReservationProps> = ({
     }
     return content;
   };
+
+  let photos = space?.photos || [];
+  const mainPhoto = photos.find((photo) => photo.isDefault);
+  if (mainPhoto) {
+    photos = [mainPhoto, ...photos.filter(({ isDefault }) => !isDefault)];
+  }
 
   return (
     <SafeAreaView
@@ -444,7 +488,7 @@ const SpaceReservation: React.FC<ISpaceReservationProps> = ({
             flex: 1,
           }}
         >
-          {space?.photos.map((photo) => {
+          {photos?.map((photo) => {
             return (
               <View
                 key={photo.id}
@@ -530,27 +574,44 @@ const SpaceReservation: React.FC<ISpaceReservationProps> = ({
               marginBottom: 12,
             }}
           >
-            Reservation Details
+            予約内容
           </Text>
 
-          <View style={[globalStyles.row, { marginBottom: 12 }]}>
+          <View
+            style={[
+              {
+                marginBottom: 12,
+                flexDirection: "row",
+                alignItems: "center",
+              },
+            ]}
+          >
             <Text
               style={{
                 fontSize: 16,
                 fontWeight: "700",
                 color: colors.textVariant,
                 marginRight: 14,
+                flex: 1,
+                flexDirection: "row",
               }}
             >
-              Check In :
+              チェックイン:
             </Text>
-
-            <DatePicker
-              mode="date"
-              onChange={(val: any) => setStart(val)}
-              date={start}
-              minimumValue={moment().add(1, "day").endOf("day").toDate()}
-            />
+            <View
+              style={{
+                flex: 1,
+                flexDirection: "row",
+                justifyContent: "flex-end",
+              }}
+            >
+              <DatePicker
+                mode="date"
+                onChange={(val: any) => setStart(val)}
+                date={start}
+                minimumValue={moment().add(1, "day").endOf("day").toDate()}
+              />
+            </View>
           </View>
 
           <View style={[{ marginBottom: 12 }]}>
@@ -562,11 +623,11 @@ const SpaceReservation: React.FC<ISpaceReservationProps> = ({
                 marginRight: 14,
               }}
             >
-              Period
+              期間
             </Text>
             <View style={[globalStyles.row]}>
               <Picker
-                style={[globalStyles.col_3]}
+                style={[globalStyles.col_4]}
                 mode="dialog"
                 placeholder="Select Category"
                 selectedValue={duration}
@@ -574,13 +635,19 @@ const SpaceReservation: React.FC<ISpaceReservationProps> = ({
                   setDuration(itemValue);
                 }}
               >
-                {durationOptions.map((_) => {
-                  return <Picker.Item key={_} label={_.toString()} value={_} />;
+                {durationOptions.map((option) => {
+                  return (
+                    <Picker.Item
+                      key={`key_${option}`}
+                      label={option.toString()}
+                      value={option}
+                    />
+                  );
                 })}
               </Picker>
 
               <Picker
-                style={[globalStyles.col_6]}
+                style={[globalStyles.col_4]}
                 mode="dialog"
                 placeholder="Select Category"
                 selectedValue={durationType}
@@ -588,13 +655,9 @@ const SpaceReservation: React.FC<ISpaceReservationProps> = ({
                   setDurationType(itemValue);
                 }}
               >
-                <Picker.Item key={"DAILY"} label={"DAILY"} value={"DAILY"} />
-                <Picker.Item key={"HOURLY"} label={"HOURLY"} value={"HOURLY"} />
-                <Picker.Item
-                  key={"MINUTES"}
-                  label={"MINUTES"}
-                  value={"MINUTES"}
-                />
+                <Picker.Item key={"DAILY"} label={"日"} value={"DAILY"} />
+                <Picker.Item key={"HOURLY"} label={"時間"} value={"HOURLY"} />
+                <Picker.Item key={"MINUTES"} label={"分"} value={"MINUTES"} />
               </Picker>
             </View>
           </View>
@@ -609,13 +672,13 @@ const SpaceReservation: React.FC<ISpaceReservationProps> = ({
                   marginBottom: 12,
                 }}
               >
-                Check in time
+                チェックイン時間:
               </Text>
 
               <View style={[globalStyles.row]}>
                 <>
                   <Picker
-                    style={[globalStyles.col_3]}
+                    style={[globalStyles.col_4]}
                     mode="dialog"
                     placeholder="Select Category"
                     selectedValue={hour}
@@ -633,13 +696,13 @@ const SpaceReservation: React.FC<ISpaceReservationProps> = ({
                   </Picker>
                   <Text
                     style={{
-                      fontSize: 12,
+                      fontSize: 16,
                       fontWeight: "700",
                       color: colors.textVariant,
                       marginBottom: 12,
                     }}
                   >
-                    Hours
+                    時
                   </Text>
                 </>
 
@@ -669,13 +732,13 @@ const SpaceReservation: React.FC<ISpaceReservationProps> = ({
                   </Picker>
                   <Text
                     style={{
-                      fontSize: 12,
+                      fontSize: 16,
                       fontWeight: "700",
                       color: colors.textVariant,
                       marginBottom: 12,
                     }}
                   >
-                    Minutes
+                    分
                   </Text>
                 </>
               </View>
@@ -687,13 +750,13 @@ const SpaceReservation: React.FC<ISpaceReservationProps> = ({
           {fetchApplicablePricePlanErrors && (
             <Text
               style={{
-                fontSize: 12,
                 fontWeight: "700",
                 color: colors.textVariant,
-                marginBottom: 12,
+                padding: 12,
+                paddingTop: 0,
               }}
             >
-              Space unavailbale for reservation on the chosen date
+              選択した予定日このスペースは空いてません。
             </Text>
           )}
 
@@ -706,10 +769,7 @@ const SpaceReservation: React.FC<ISpaceReservationProps> = ({
           globalStyles.row,
           {
             minHeight: 20,
-            padding: 10,
             justifyContent: "center",
-            borderWidth: 1,
-            borderTopColor: colors.surfaceVariant,
           },
         ]}
       >
@@ -717,11 +777,10 @@ const SpaceReservation: React.FC<ISpaceReservationProps> = ({
           <Button
             containerStyle={{
               backgroundColor: colors.primary,
-              margin: 12,
-              borderRadius: 14,
+              borderRadius: 0,
             }}
-            titleStyle={{ color: colors.error }}
-            title={`Space Unavailable`}
+            titleStyle={{ color: colors.error, fontSize: 18 }}
+            title={`予約不可`}
             loading={fetchingApplicablePricePlans}
             // onPress={fetchApplicatblePricePlans}
           />
@@ -730,15 +789,13 @@ const SpaceReservation: React.FC<ISpaceReservationProps> = ({
           <Button
             containerStyle={{
               backgroundColor: colors.primary,
-              margin: 12,
-              borderRadius: 14,
+              borderRadius: 0,
             }}
             titleStyle={{
               color: colors.background,
               fontSize: 18,
-              letterSpacing: 4,
             }}
-            title={`Proceed`}
+            title={`次へ`}
             loading={fetchingApplicablePricePlans}
             onPress={toConfirmation}
           />

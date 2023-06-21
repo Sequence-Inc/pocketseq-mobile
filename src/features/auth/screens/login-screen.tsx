@@ -1,4 +1,10 @@
-import { LoginInput, useLogin } from "../../../services/graphql";
+import {
+  LoginInput,
+  SocialLoginInput,
+  useLogin,
+  useMyProfile,
+  useSocialLogin,
+} from "../../../services/graphql";
 import { SessionStore } from "../../../services/storage";
 
 import { Button } from "../../../widgets/button";
@@ -16,42 +22,159 @@ import { useResources } from "../../../resources";
 import AuthCoordinator from "../auth-coordinator";
 import { registerNotifications } from "../../../utils/notification";
 
+import * as WebBrowser from "expo-web-browser";
+import * as Facebook from "expo-auth-session/providers/facebook";
+import * as Google from "expo-auth-session/providers/google";
+import { ResponseType } from "expo-auth-session";
+
 export type ILoginScreenProps = {
   coordinator: AuthCoordinator;
 };
 
+WebBrowser.maybeCompleteAuthSession();
+
 export const LoginScreen: React.FC<ILoginScreenProps> = observer(
   ({ coordinator }) => {
-    const { colors, images, strings } = useResources();
-    const [login, { loading }] = useLogin();
+    const { colors, images } = useResources();
     const [input, setInput] = React.useState<Partial<LoginInput>>({});
     const [{ saveLogin }] = React.useState(SessionStore);
+    const [login, { loading }] = useLogin();
+    const [socialLogin, { loading: socialLoginLoading }] = useSocialLogin();
+    const { myProfile } = useMyProfile();
+
+    const [requestFB, responseFB, promptAsyncFB] = Facebook.useAuthRequest({
+      clientId: "3219481098313902",
+      responseType: ResponseType.Token,
+    });
+    const [requestGoogle, responseGoogle, promptAsyncGoogle] =
+      Google.useIdTokenAuthRequest({
+        clientId:
+          "433774052323-s08bivoltig4h9enlidqrj8ja7ghe0g0.apps.googleusercontent.com",
+        iosClientId:
+          "433774052323-728i8icfbc4dfpqo75lo5h5fhqemjlbg.apps.googleusercontent.com",
+        androidClientId:
+          "433774052323-b1v3dps6o8vkltmevobci2b9cena85og.apps.googleusercontent.com",
+        responseType: ResponseType.IdToken,
+        selectAccount: true,
+      });
+
+    React.useEffect(() => {
+      if (responseFB?.type === "success") {
+        if (responseFB?.authentication?.accessToken) {
+          fetch(
+            `https://graph.facebook.com/me?access_token=${responseFB?.authentication?.accessToken}`
+          )
+            .then((response) => response.json())
+            .then((data) => {
+              onSocialLogin({
+                provider: "facebook",
+                providerAccountId: data.id,
+                id_token: `${responseFB?.authentication?.accessToken}`,
+              });
+            })
+            .catch((error) => {
+              console.log(error);
+              Alert.alert(error.message);
+            });
+        }
+      }
+    }, [responseFB]);
+
+    React.useEffect(() => {
+      if (responseGoogle?.type === "success") {
+        if (responseGoogle?.params?.id_token) {
+          fetch(
+            `https://oauth2.googleapis.com/tokeninfo?id_token=${responseGoogle?.params?.id_token}`
+          )
+            .then((response) => response.json())
+            .then((data) => {
+              onSocialLogin({
+                provider: "google",
+                providerAccountId: data.sub,
+                id_token: `${responseGoogle?.params?.id_token}`,
+              });
+            })
+            .catch((error) => {
+              console.log(error);
+              Alert.alert(error.message);
+            });
+        }
+      }
+    }, [responseGoogle]);
+
     const onForgotPasswordPress = React.useCallback(
       () => !loading && coordinator.toForgotPasswordScreen(),
       []
     );
+
     const onLoginPress = React.useCallback(async () => {
       try {
         if (loading) return;
         const { email, password } = input;
         if (isEmpty(email) || isEmpty(password)) console.log("Empty fields");
-        const deviceID = await registerNotifications();
+        // const deviceID = await registerNotifications();
+        const deviceID = "";
         const result = await login({
           email: email!!,
           password: password!!,
           deviceID,
         });
         if (result.data) {
-          flowResult(saveLogin({ ...result.data?.login }));
-          coordinator.toDashboardScreen();
+          await flowResult(saveLogin({ ...result.data?.login }));
+          const profile = await myProfile();
+          if (profile.data) {
+            const { accessToken, refreshToken } = result.data?.login;
+            await flowResult(
+              saveLogin({
+                accessToken,
+                refreshToken,
+                profile: profile.data?.myProfile,
+              })
+            );
+          }
+
+          coordinator.toDashboardScreen("replace");
         }
       } catch (err: any) {
         console.log(err);
         Alert.alert(err.message);
       }
     }, [input]);
+
     const onSignupPress = React.useCallback(
       () => !loading && coordinator.toSignupScreen("replace"),
+      []
+    );
+
+    const onSocialLogin = React.useCallback(
+      async (params: SocialLoginInput) => {
+        try {
+          if (loading) return;
+          // TODO: updated social login mutation to accept deviceID
+          // const deviceID = await registerNotifications();
+          const result = await socialLogin(params);
+          if (result.data) {
+            await flowResult(saveLogin({ ...result.data?.socialLogin }));
+
+            const profile = await myProfile();
+            if (profile.data) {
+              const { accessToken, refreshToken } = result.data?.socialLogin;
+              await flowResult(
+                saveLogin({
+                  accessToken,
+                  refreshToken,
+                  profile: profile.data?.myProfile,
+                })
+              );
+            }
+
+            coordinator.toDashboardScreen("replace");
+          }
+        } catch (error: any) {
+          console.log(error);
+          Alert.alert(error.message);
+        }
+      },
       []
     );
 
@@ -79,24 +202,24 @@ export const LoginScreen: React.FC<ILoginScreenProps> = observer(
                 textAlign: "center",
               }}
             >
-              {strings("login")}
+              ログイン
             </Text>
             <TextInput
               containerStyle={{ margin: 12 }}
-              editable={!loading}
+              editable={!loading || !socialLoginLoading}
               keyboardType="email-address"
-              label={`${strings("mail_address")}`}
+              label={`メールアドレス`}
               onChangeText={React.useCallback(
                 (email) => setInput({ ...input, email }),
                 [input]
               )}
-              placeholder={`${strings("mail_address_hint")}`}
+              placeholder={`例）taro@mail.com`}
             />
             <TextInput
               containerStyle={{ margin: 12 }}
-              editable={!loading}
-              label={`${strings("password")}`}
-              placeholder={`${strings("password_hint")}`}
+              editable={!loading || !socialLoginLoading}
+              label={`パスワード`}
+              placeholder={`パスワード`}
               onChangeText={React.useCallback(
                 (password) => setInput({ ...input, password }),
                 [input]
@@ -113,14 +236,42 @@ export const LoginScreen: React.FC<ILoginScreenProps> = observer(
                 alignSelf: "flex-end",
               }}
             >
-              {strings("forgot_password")}
+              パスワードをお忘れですか
             </Text>
             <Button
               containerStyle={{ backgroundColor: colors.primary, margin: 12 }}
-              loading={loading}
+              loading={
+                loading || socialLoginLoading || !requestFB || !requestGoogle
+              }
               onPress={onLoginPress}
               titleStyle={{ color: colors.background }}
-              title={`${strings("do_login")}`}
+              title={`ログインする`}
+            />
+            <Button
+              containerStyle={{ backgroundColor: "#4285F4", margin: 12 }}
+              loading={
+                loading || socialLoginLoading || !requestFB || !requestGoogle
+              }
+              onPress={() => {
+                promptAsyncGoogle();
+              }}
+              titleStyle={{ color: colors.background }}
+              title={`Googleでログイン`}
+            />
+            <Button
+              containerStyle={{
+                backgroundColor: "#1877F2",
+                marginHorizontal: 12,
+                marginTop: 0,
+              }}
+              loading={
+                loading || socialLoginLoading || !requestFB || !requestGoogle
+              }
+              onPress={() => {
+                promptAsyncFB();
+              }}
+              titleStyle={{ color: colors.background }}
+              title={`Facebookでログイン`}
             />
             <View
               style={{
@@ -128,6 +279,7 @@ export const LoginScreen: React.FC<ILoginScreenProps> = observer(
                 flexDirection: "row",
                 justifyContent: "center",
                 margin: 12,
+                marginTop: 24,
               }}
             >
               <View
@@ -150,9 +302,10 @@ export const LoginScreen: React.FC<ILoginScreenProps> = observer(
                     backgroundColor: colors.background,
                     color: colors.text,
                     fontSize: 14,
+                    paddingHorizontal: 8,
                   }}
                 >
-                  {strings("do_you_have_acc")}
+                  アカウントをお持ちではありませんか？
                 </Text>
               </View>
             </View>
@@ -164,12 +317,12 @@ export const LoginScreen: React.FC<ILoginScreenProps> = observer(
               disabled={loading}
               onPress={onSignupPress}
               titleStyle={{ color: colors.background }}
-              title={`${strings("create_acc")}`}
+              title={`アカウントを作成する`}
             />
             <Text
               style={{ color: colors.text, margin: 28, textAlign: "center" }}
             >
-              {strings("copyright")}
+              © copyright PocketseQ 2023.
             </Text>
           </View>
         </ScrollView>

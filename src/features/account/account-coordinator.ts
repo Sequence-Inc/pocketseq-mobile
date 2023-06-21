@@ -1,5 +1,4 @@
-import { NavigationProp } from "@react-navigation/native";
-import { IAccountPaymentMethodScreenParams } from "./screens";
+import { NavigationProp, StackActions } from "@react-navigation/native";
 
 export type NavigationAction = "replace" | "navigate";
 
@@ -19,7 +18,55 @@ export default abstract class AccountCoordinator {
     this.navigation.goBack();
   }
 
-  toAccountPaymentMethodScreen(params: IAccountPaymentMethodScreenParams) {
-    this.navigation.push(this.screenName, { screen: "account-payment-method-screen", params });
+  toAccountDetailScreen(action: NavigationAction = "navigate") {
+    if (action === "replace")
+      this.navigation.dispatch(
+        StackActions.replace(this.screenName, {
+          screen: "account-detail-screen",
+        })
+      );
+    else
+      this.navigation.navigate(this.screenName, {
+        screen: "account-detail-screen",
+      });
+  }
+
+  toAccountPaymentMethodScreen(action: NavigationAction = "navigate") {
+    if (action === "replace")
+      this.navigation.dispatch(
+        StackActions.replace(this.screenName, {
+          screen: "account-payment-method-screen",
+        })
+      );
+    else
+      this.navigation.navigate(this.screenName, {
+        screen: "account-payment-method-screen",
+      });
+  }
+
+  toAccountSubscriptionScreen(action: NavigationAction = "navigate") {
+    if (action === "replace")
+      this.navigation.dispatch(
+        StackActions.replace(this.screenName, {
+          screen: "account-subscription-screen",
+        })
+      );
+    else
+      this.navigation.navigate(this.screenName, {
+        screen: "account-subscription-screen",
+      });
+  }
+
+  toAccountEditScreen(action: NavigationAction = "navigate") {
+    if (action === "replace")
+      this.navigation.dispatch(
+        StackActions.replace(this.screenName, {
+          screen: "account-edit-screen",
+        })
+      );
+    else
+      this.navigation.navigate(this.screenName, {
+        screen: "account-edit-screen",
+      });
   }
 }

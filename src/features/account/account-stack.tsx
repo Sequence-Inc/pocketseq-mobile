@@ -1,14 +1,23 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import React from "react";
 import AccountCoordinator from "./account-coordinator";
-import { AccountDetailScreen, AccountPaymentMethodScreen } from "./screens";
+import {
+  AccountDetailScreen,
+  AccountPaymentMethodScreen,
+  AccountSubscriptionScreen,
+  AccountEditScreen,
+} from "./screens";
 import { useResources } from "../../resources";
 import { Profile } from "../../services/domains";
 import { HeaderLeftButton } from "../../widgets/header-left-button";
+import { AccountPasswordChangeScreen } from "./screens/account-password-change-screen";
 
 type AccountStackParamList = {
   "account-detail-screen": undefined;
   "account-payment-method-screen": undefined;
+  "account-subscription-screen": undefined;
+  "account-edit-screen": undefined;
+  "account-password-change-screen": undefined;
 };
 
 type AccountStackProps = {
@@ -57,11 +66,41 @@ export default function AccountStack({
         <Screen
           name="account-payment-method-screen"
           options={{
-            title: "ペイメント管理",
+            title: "お支払方法",
           }}
         >
           {(props) => (
             <AccountPaymentMethodScreen {...props} coordinator={coordinator} />
+          )}
+        </Screen>
+        <Screen
+          name="account-subscription-screen"
+          options={{
+            title: "サブスクリプション",
+          }}
+        >
+          {(props) => (
+            <AccountSubscriptionScreen {...props} coordinator={coordinator} />
+          )}
+        </Screen>
+        <Screen
+          name="account-edit-screen"
+          options={{
+            title: "設定",
+          }}
+        >
+          {(props) => (
+            <AccountEditScreen {...props} coordinator={coordinator} />
+          )}
+        </Screen>
+        <Screen
+          name="account-password-change-screen"
+          options={{
+            title: "Password Change",
+          }}
+        >
+          {(props) => (
+            <AccountPasswordChangeScreen {...props} coordinator={coordinator} />
           )}
         </Screen>
       </Group>
