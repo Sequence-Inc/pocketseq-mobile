@@ -25,22 +25,8 @@ import { Button } from "../../../widgets/button";
 import { CardView } from "../../../widgets/card-view";
 import { currencyFormatter } from "../../../utils/strings";
 
-const { width, height } = Dimensions.get("window");
+const { width } = Dimensions.get("window");
 
-type Colors = {
-  primary: string;
-  primaryVariant: string;
-  secondary: string;
-  secondaryVariant: string;
-  background: string;
-  backgroundVariant: string;
-  surface: string;
-  surfaceVariant: string;
-  error: string;
-  text: string;
-  textVariant: string;
-  link: string;
-};
 export type ISpaceReservationConfirmationProps = {
   coordinator: SubscriptionCoordinator;
 };
@@ -62,12 +48,12 @@ const SUBSCRIPTION_CATEGORIES: Record<string, SubscriptionCategoryType> = {
   C: "C",
 };
 
-export const Subscription: React.FC<ISpaceReservationConfirmationProps> = ({
-  coordinator,
-}) => {
+export const Subscription: React.FC<
+  ISpaceReservationConfirmationProps
+> = () => {
   const route: RouteProp<{ params: TTO_SUBSCRIPTION_PROPS }> = useRoute();
   const [subscriptions, setSubscriptions] = React.useState<any[]>([]);
-  const [{ globalStyles }] = React.useState(() => styleStore);
+  const [] = React.useState(() => styleStore);
   const [subscriptionCategory, setSubscriptionCategory] =
     React.useState<SubscriptionCategoryType>(SUBSCRIPTION_CATEGORIES.A);
   const [selectedPriceId, setSelectedPriceId] = React.useState<string | null>(
@@ -313,12 +299,12 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
-    padding: 12,
+    paddingVertical: 12,
   },
   categoryPill: {
     borderRadius: 50,
-    paddingHorizontal: 24,
-    paddingVertical: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
   },
   categoryText: {
     fontWeight: "700",
