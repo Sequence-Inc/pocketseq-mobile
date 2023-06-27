@@ -8,6 +8,7 @@ import HotelCoordinator, { ReserveHotelParams } from "../hotel-coordinator";
 import { useHotelQuery } from "../../../services/graphql";
 
 import { HotelPriceCalculation } from "../components/HotelPriceCalculation";
+import { IHotelScreenParams } from "./hotel-screen";
 
 const { width } = Dimensions.get("window");
 const COVER_IMAGE_WIDTH = width;
@@ -15,9 +16,6 @@ const COVER_IMAGE_HEIGHT = Math.floor(COVER_IMAGE_WIDTH / 1.7);
 
 export type IHotelReservationProps = {
   coordinator: HotelCoordinator;
-};
-export type IHotelScreenParams = {
-  hotelId: string;
 };
 
 export const HotelReservation: React.FC<IHotelReservationProps> = ({

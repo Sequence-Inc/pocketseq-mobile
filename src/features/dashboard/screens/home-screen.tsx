@@ -350,7 +350,7 @@ export const HomeScreen: React.FC<IHomeScreenProps> = ({ coordinator }) => {
                   fontSize: 18,
                 }}
               >
-                新着宿泊スペース
+                新着宿泊施設
               </Text>
             </View>
             <Touchable onPress={() => goToSearch({ searchType: "HOTEL" })}>

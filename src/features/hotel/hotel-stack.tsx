@@ -45,7 +45,7 @@ export default function HotelStack({ hotelCoordinator }: HotelStackProps) {
         screenOptions={{
           headerShown: true,
           headerTransparent: true,
-          title: "宿泊スペース",
+          title: "宿泊施設",
         }}
       >
         <Screen name="hotel-screen">

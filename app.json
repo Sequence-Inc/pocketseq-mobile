@@ -24,7 +24,9 @@
         }
       }
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "extra": {
       "eas": {
         "projectId": "0d25da57-059d-4fd1-ad34-23d9debffae5"
@@ -33,12 +35,14 @@
     "icon": "./assets/images/ic_app.png",
     "ios": {
       "bundleIdentifier": "com.sequence.pocketseq",
-      "buildNumber": "55",
+      "buildNumber": "56",
       "supportsTablet": false,
       "infoPlist": {
         "NSLocationUsageDescription": "位置情報へのアクセスを許可して、近くの施設を見つけられるようにします。",
         "cameraPermission": "$(PRODUCT_NAME)がカメラにアクセスできるようにする",
-        "CFBundleLocalizations": ["ja"],
+        "CFBundleLocalizations": [
+          "ja"
+        ],
         "CFBundleDevelopmentRegion": "ja",
         "CFBundleAllowMixedLocalizations": true
       },
@@ -46,7 +50,9 @@
         "googleMapsApiKey": "AIzaSyDijYEeUIa9FCakUPipxEUAKjKaAv1DsXo"
       },
       "entitlements": {
-        "com.apple.developer.applesignin": ["default"]
+        "com.apple.developer.applesignin": [
+          "default"
+        ]
       },
       "usesAppleSignIn": true
     },

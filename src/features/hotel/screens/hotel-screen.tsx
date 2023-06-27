@@ -8,7 +8,6 @@ import HotelCoordinator from "../hotel-coordinator";
 import { useHotel } from "../../../services/graphql";
 import { FullScreenActivityIndicator } from "../../../widgets/full-screen-activity-indicator";
 import { FullScreenErrorView } from "../../../widgets/full-screen-error-view";
-import { Touchable } from "../../../widgets/touchable";
 import {
   Hotel,
   HotelBuildingType,
@@ -314,15 +313,11 @@ export const HotelScreen: React.FC<ISpaceScreenProps> = ({ coordinator }) => {
                     paddingBottom: 12,
                     borderRadius: 12,
                     backgroundColor: colors.backgroundVariant,
+                    width: IMAGE_WIDTH + 12,
                   }}
                 >
-                  <ScrollView
-                    horizontal
-                    showsHorizontalScrollIndicator={false}
-                    pagingEnabled
-                    nestedScrollEnabled
+                  <View
                     style={{
-                      width: IMAGE_WIDTH,
                       marginBottom: 12,
                       borderRadius: 8,
                     }}
@@ -336,25 +331,27 @@ export const HotelScreen: React.FC<ISpaceScreenProps> = ({ coordinator }) => {
                             backgroundColor: colors.backgroundVariant,
                             width: IMAGE_WIDTH,
                             height: IMAGE_HEIGHT,
+                            borderRadius: 6,
                           }}
                         />
                       );
                     })}
-                  </ScrollView>
+                  </View>
                   <View style={{ paddingHorizontal: 6 }}>
                     <Text
                       style={{
                         color: colors.textVariant,
                         marginBottom: 6,
-                        fontSize: 18,
+                        fontSize: 16,
                         fontWeight: "700",
                       }}
+                      numberOfLines={2}
                     >
                       {plan.name}
                     </Text>
                     <Text
-                      numberOfLines={1}
-                      style={{ color: colors.textVariant, marginBottom: 6 }}
+                      numberOfLines={2}
+                      style={{ color: colors.textVariant, marginBottom: 12 }}
                     >
                       {plan.description}
                     </Text>
@@ -435,15 +432,10 @@ export const HotelScreen: React.FC<ISpaceScreenProps> = ({ coordinator }) => {
                     paddingBottom: 12,
                     borderRadius: 12,
                     backgroundColor: colors.backgroundVariant,
+                    width: IMAGE_WIDTH + 12,
                   }}
                 >
-                  <ScrollView
-                    horizontal
-                    showsHorizontalScrollIndicator={false}
-                    pagingEnabled
-                    nestedScrollEnabled
-                    style={{ width: IMAGE_WIDTH, marginBottom: 12 }}
-                  >
+                  <View style={{ width: IMAGE_WIDTH, marginBottom: 12 }}>
                     {room.photos.map((photo) => {
                       return (
                         <Image
@@ -458,20 +450,21 @@ export const HotelScreen: React.FC<ISpaceScreenProps> = ({ coordinator }) => {
                         />
                       );
                     })}
-                  </ScrollView>
+                  </View>
                   <View style={{ paddingHorizontal: 6 }}>
                     <Text
                       style={{
                         color: colors.textVariant,
-                        fontSize: 18,
+                        fontSize: 16,
                         fontWeight: "700",
                         marginBottom: 6,
                       }}
+                      numberOfLines={2}
                     >
                       {room.name}
                     </Text>
                     <Text
-                      numberOfLines={1}
+                      numberOfLines={2}
                       style={{ color: colors.textVariant }}
                     >
                       {room.description}
