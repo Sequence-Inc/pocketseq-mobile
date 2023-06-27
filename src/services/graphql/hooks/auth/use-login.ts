@@ -1,7 +1,7 @@
-import { gql, useLazyQuery, useMutation, useQuery } from "@apollo/client";
+import { gql, useLazyQuery, useMutation } from "@apollo/client";
 import { Profile } from "../../../domains";
 import { isEmpty } from "lodash";
-import { MutationHook, QueryHook } from "../../types";
+import { MutationHook } from "../../types";
 
 export type LoginInput = {
   email: string;
@@ -9,7 +9,7 @@ export type LoginInput = {
   deviceID?: string;
 };
 export type SocialLoginInput = {
-  provider: "facebook" | "google";
+  provider: "facebook" | "google" | "apple";
   providerAccountId: string;
   id_token: string;
 };

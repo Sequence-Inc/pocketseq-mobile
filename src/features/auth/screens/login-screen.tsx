@@ -15,12 +15,13 @@ import { observer } from "mobx-react";
 
 import { flowResult } from "mobx";
 import React from "react";
-import { Alert, Text, View } from "react-native";
+import { Alert, Text, View, Platform } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useResources } from "../../../resources";
 import AuthCoordinator from "../auth-coordinator";
-import { registerNotifications } from "../../../utils/notification";
+// import { registerNotifications } from "../../../utils/notification";
+import * as AppleAuthentication from "expo-apple-authentication";
 
 import * as WebBrowser from "expo-web-browser";
 import * as Facebook from "expo-auth-session/providers/facebook";
@@ -32,6 +33,19 @@ export type ILoginScreenProps = {
 };
 
 WebBrowser.maybeCompleteAuthSession();
+
+// https://docs.expo.dev/versions/latest/sdk/apple-authentication/#error-codes
+type AppleAuthenticationError = {
+  code:
+    | "ERR_INVALID_OPERATION"
+    | "ERR_INVALID_RESPONSE"
+    | "ERR_INVALID_SCOPE"
+    | "ERR_REQUEST_CANCELED"
+    | "ERR_REQUEST_FAILED"
+    | "ERR_REQUEST_NOT_HANDLED"
+    | "ERR_REQUEST_NOT_INTERACTIVE"
+    | "ERR_REQUEST_UNKNOWN";
+};
 
 export const LoginScreen: React.FC<ILoginScreenProps> = observer(
   ({ coordinator }) => {
@@ -178,6 +192,33 @@ export const LoginScreen: React.FC<ILoginScreenProps> = observer(
       []
     );
 
+    const handleAppleSignIn = React.useCallback(async () => {
+      try {
+        const credential = await AppleAuthentication.signInAsync({
+          requestedScopes: [
+            AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+            AppleAuthentication.AppleAuthenticationScope.EMAIL,
+          ],
+        });
+        // signed in
+
+        // check server to see if the credentials are valid
+        onSocialLogin({
+          provider: "apple",
+          providerAccountId: credential.user,
+          id_token: `${credential.identityToken}`,
+        });
+      } catch (e) {
+        const error = e as AppleAuthenticationError;
+        if (error.code === "ERR_REQUEST_CANCELED") {
+          // handle that the user canceled the sign-in flow
+        } else {
+          // handle other errors
+          Alert.alert("Error!", JSON.stringify(error));
+        }
+      }
+    }, []);
+
     return (
       <SafeAreaView style={{ backgroundColor: colors.background, flex: 1 }}>
         <ScrollView keyboardDismissMode="on-drag">
@@ -210,7 +251,7 @@ export const LoginScreen: React.FC<ILoginScreenProps> = observer(
               keyboardType="email-address"
               label={`メールアドレス`}
               onChangeText={React.useCallback(
-                (email) => setInput({ ...input, email }),
+                (email: string) => setInput({ ...input, email }),
                 [input]
               )}
               placeholder={`例）taro@mail.com`}
@@ -221,7 +262,7 @@ export const LoginScreen: React.FC<ILoginScreenProps> = observer(
               label={`パスワード`}
               placeholder={`パスワード`}
               onChangeText={React.useCallback(
-                (password) => setInput({ ...input, password }),
+                (password: string) => setInput({ ...input, password }),
                 [input]
               )}
               secureTextEntry={true}
@@ -273,6 +314,31 @@ export const LoginScreen: React.FC<ILoginScreenProps> = observer(
               titleStyle={{ color: colors.background }}
               title={`Facebookでログイン`}
             />
+            {Platform.OS === "ios" && (
+              <View
+                style={{
+                  paddingHorizontal: 12,
+                  marginTop: 18,
+                  height: 40,
+                  width: "100%",
+                }}
+              >
+                <AppleAuthentication.AppleAuthenticationButton
+                  buttonType={
+                    AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN
+                  }
+                  buttonStyle={
+                    AppleAuthentication.AppleAuthenticationButtonStyle.WHITE
+                  }
+                  cornerRadius={8}
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                  }}
+                  onPress={handleAppleSignIn}
+                />
+              </View>
+            )}
             <View
               style={{
                 alignItems: "center",

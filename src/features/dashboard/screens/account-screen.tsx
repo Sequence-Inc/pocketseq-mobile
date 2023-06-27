@@ -9,6 +9,7 @@ import { useResources } from "../../../resources";
 import DashboardCoordinator from "../dashboard-coordinator";
 import { isEmpty } from "lodash";
 import { flowResult } from "mobx";
+import { signOutAsync } from "expo-apple-authentication";
 
 export type IAccountScreenProps = {
   coordinator: DashboardCoordinator;
