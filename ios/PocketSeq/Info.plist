@@ -5,7 +5,7 @@
     <key>CFBundleDevelopmentRegion</key>
     <string>ja</string>
     <key>CFBundleDisplayName</key>
-    <string>PocketSeq</string>
+    <string>PocketseQ</string>
     <key>CFBundleExecutable</key>
     <string>$(EXECUTABLE_NAME)</string>
     <key>CFBundleIdentifier</key>
@@ -35,7 +35,7 @@
       </dict>
     </array>
     <key>CFBundleVersion</key>
-    <string>56</string>
+    <string>60</string>
     <key>GMSApiKey</key>
     <string>AIzaSyDijYEeUIa9FCakUPipxEUAKjKaAv1DsXo</string>
     <key>LSRequiresIPhoneOS</key>
@@ -54,15 +54,15 @@
       </dict>
     </dict>
     <key>NSCameraUsageDescription</key>
-    <string>Allow $(PRODUCT_NAME) to access your camera</string>
+    <string>$(PRODUCT_NAME)がカードのスキャンのためカメラにアクセスできるようにします</string>
     <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-    <string>Allow $(PRODUCT_NAME) to access your location</string>
+    <string>位置情報へのアクセスを許可して、近くの施設を見つけられるようにします。</string>
     <key>NSLocationAlwaysUsageDescription</key>
-    <string>Allow $(PRODUCT_NAME) to access your location</string>
+    <string>位置情報へのアクセスを許可して、近くの施設を見つけられるようにします。</string>
     <key>NSLocationUsageDescription</key>
     <string>位置情報へのアクセスを許可して、近くの施設を見つけられるようにします。</string>
     <key>NSLocationWhenInUseUsageDescription</key>
-    <string>Allow $(PRODUCT_NAME) to access your location</string>
+    <string>位置情報へのアクセスを許可して、近くの施設を見つけられるようにします。</string>
     <key>NSMicrophoneUsageDescription</key>
     <string>Allow $(PRODUCT_NAME) to access your microphone</string>
     <key>NSPhotoLibraryUsageDescription</key>
