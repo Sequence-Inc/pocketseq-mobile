@@ -17,14 +17,16 @@
         "WRITE_EXTERNAL_STORAGE",
         "AD_ID"
       ],
-      "versionCode": 37,
+      "versionCode": 38,
       "config": {
         "googleMaps": {
           "apiKey": "AIzaSyD2fBfh5KYKd4Mcyw_iN90EQCfGT917fKE"
         }
       }
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "extra": {
       "eas": {
         "projectId": "0d25da57-059d-4fd1-ad34-23d9debffae5"
@@ -33,11 +35,13 @@
     "icon": "./assets/images/ic_app.png",
     "ios": {
       "bundleIdentifier": "com.sequence.pocketseq",
-      "buildNumber": "60",
+      "buildNumber": "61",
       "supportsTablet": false,
       "infoPlist": {
         "NSLocationUsageDescription": "位置情報へのアクセスを許可して、近くの施設を見つけられるようにします。",
-        "CFBundleLocalizations": ["ja"],
+        "CFBundleLocalizations": [
+          "ja"
+        ],
         "CFBundleDevelopmentRegion": "ja",
         "CFBundleAllowMixedLocalizations": true,
         "NSCameraUsageDescription": "$(PRODUCT_NAME)がカードのスキャンのためカメラにアクセスできるようにします"
@@ -46,7 +50,9 @@
         "googleMapsApiKey": "AIzaSyDijYEeUIa9FCakUPipxEUAKjKaAv1DsXo"
       },
       "entitlements": {
-        "com.apple.developer.applesignin": ["default"]
+        "com.apple.developer.applesignin": [
+          "default"
+        ]
       },
       "usesAppleSignIn": true
     },
