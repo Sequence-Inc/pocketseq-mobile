@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1012108307659",
+    "project_id": "pocketseq",
+    "storage_bucket": "pocketseq.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1012108307659:android:8e86814c7fa673646d7f4e",
+        "android_client_info": {
+          "package_name": "com.sequence.pocketseq"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1012108307659-g9kl90ujkuubrb6ra9e6kbm48svc2e85.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAUs25xZgVIZIyY0p6U8oTR1dBCvMaRDW4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1012108307659-g9kl90ujkuubrb6ra9e6kbm48svc2e85.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

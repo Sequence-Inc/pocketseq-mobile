@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-               BuildableName = "PocketSeq.app"
-               BlueprintName = "PocketSeq"
-               ReferencedContainer = "container:PocketSeq.xcodeproj">
+               BuildableName = "PocketseQ.app"
+               BlueprintName = "PocketseQ"
+               ReferencedContainer = "container:PocketseQ.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,9 +33,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "00E356ED1AD99517003FC87E"
-               BuildableName = "PocketSeqTests.xctest"
-               BlueprintName = "PocketSeqTests"
-               ReferencedContainer = "container:PocketSeq.xcodeproj">
+               BuildableName = "PocketseQTests.xctest"
+               BlueprintName = "PocketseQTests"
+               ReferencedContainer = "container:PocketseQ.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -55,9 +55,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "PocketSeq.app"
-            BlueprintName = "PocketSeq"
-            ReferencedContainer = "container:PocketSeq.xcodeproj">
+            BuildableName = "PocketseQ.app"
+            BlueprintName = "PocketseQ"
+            ReferencedContainer = "container:PocketseQ.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -72,9 +72,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "PocketSeq.app"
-            BlueprintName = "PocketSeq"
-            ReferencedContainer = "container:PocketSeq.xcodeproj">
+            BuildableName = "PocketseQ.app"
+            BlueprintName = "PocketseQ"
+            ReferencedContainer = "container:PocketseQ.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
