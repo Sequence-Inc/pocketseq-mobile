@@ -318,7 +318,7 @@ export const LoginScreen: React.FC<ILoginScreenProps> = observer(
               <View
                 style={{
                   paddingHorizontal: 12,
-                  marginTop: 18,
+                  marginTop: 12,
                   height: 40,
                   width: "100%",
                 }}
@@ -328,7 +328,7 @@ export const LoginScreen: React.FC<ILoginScreenProps> = observer(
                     AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN
                   }
                   buttonStyle={
-                    AppleAuthentication.AppleAuthenticationButtonStyle.WHITE
+                    AppleAuthentication.AppleAuthenticationButtonStyle.BLACK
                   }
                   cornerRadius={8}
                   style={{
