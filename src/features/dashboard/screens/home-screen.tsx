@@ -75,15 +75,22 @@ export const HomeScreen: React.FC<IHomeScreenProps> = ({ coordinator }) => {
   };
 
   const renderHotelPrice = (plans: HotelPlan[]): ReactElement<any, any> => {
-    let min = 9999999999;
+    let min: number = 9999999999;
+    let paymentTerm: string | null = null;
+
     plans.map((plan) => {
+      paymentTerm = plan.paymentTerm;
       plan.roomTypes.map((roomPlan) => {
+        let charge: number | null = null;
         roomPlan.priceSettings.map((price) => {
           const { roomCharge, oneAdultCharge } = price.priceScheme;
-          if (roomCharge < min) {
-            min = roomCharge;
-          } else if (oneAdultCharge < min) {
-            min = oneAdultCharge;
+          if (paymentTerm === "PER_ROOM") {
+            charge = roomCharge;
+          } else {
+            charge = oneAdultCharge;
+          }
+          if (charge < min) {
+            min = charge;
           }
         });
       });
