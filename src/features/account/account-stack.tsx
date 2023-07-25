@@ -11,6 +11,7 @@ import { useResources } from "../../resources";
 import { Profile } from "../../services/domains";
 import { HeaderLeftButton } from "../../widgets/header-left-button";
 import { AccountPasswordChangeScreen } from "./screens/account-password-change-screen";
+import { AccountDeactivateScreen } from "./screens/account-account-deactivate";
 
 type AccountStackParamList = {
   "account-detail-screen": undefined;
@@ -18,6 +19,7 @@ type AccountStackParamList = {
   "account-subscription-screen": undefined;
   "account-edit-screen": undefined;
   "account-password-change-screen": undefined;
+  "account-account-deactivate": undefined;
 };
 
 type AccountStackProps = {
@@ -96,11 +98,21 @@ export default function AccountStack({
         <Screen
           name="account-password-change-screen"
           options={{
-            title: "Password Change",
+            title: "パスワードを変更",
           }}
         >
           {(props) => (
             <AccountPasswordChangeScreen {...props} coordinator={coordinator} />
+          )}
+        </Screen>
+        <Screen
+          name="account-account-deactivate"
+          options={{
+            title: "アカウントを削除",
+          }}
+        >
+          {(props) => (
+            <AccountDeactivateScreen {...props} coordinator={coordinator} />
           )}
         </Screen>
       </Group>

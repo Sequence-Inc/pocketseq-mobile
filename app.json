@@ -17,7 +17,7 @@
         "WRITE_EXTERNAL_STORAGE",
         "AD_ID"
       ],
-      "versionCode": 40,
+      "versionCode": 42,
       "config": {
         "googleMaps": {
           "apiKey": "AIzaSyD2fBfh5KYKd4Mcyw_iN90EQCfGT917fKE"
@@ -35,7 +35,7 @@
     "icon": "./assets/images/ic_app.png",
     "ios": {
       "bundleIdentifier": "com.sequence.pocketseq",
-      "buildNumber": "63",
+      "buildNumber": "67",
       "supportsTablet": false,
       "infoPlist": {
         "NSLocationUsageDescription": "位置情報へのアクセスを許可して、近くの施設を見つけられるようにします。",

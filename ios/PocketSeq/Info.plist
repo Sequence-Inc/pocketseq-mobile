@@ -37,7 +37,7 @@
       </dict>
     </array>
     <key>CFBundleVersion</key>
-    <string>63</string>
+    <string>67</string>
     <key>GMSApiKey</key>
     <string>AIzaSyDijYEeUIa9FCakUPipxEUAKjKaAv1DsXo</string>
     <key>LSRequiresIPhoneOS</key>
@@ -56,17 +56,17 @@
       </dict>
     </dict>
     <key>NSCameraUsageDescription</key>
-    <string>$(PRODUCT_NAME)がカメラにアクセスできるようにする</string>
+    <string>$(PRODUCT_NAME)がカードのスキャンのためカメラにアクセスできるようにします</string>
     <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-    <string>Allow $(PRODUCT_NAME) to access your location</string>
+    <string>位置情報へのアクセスを許可して、近くの施設を見つけられるようにします。</string>
     <key>NSLocationAlwaysUsageDescription</key>
-    <string>Allow $(PRODUCT_NAME) to access your location</string>
+    <string>位置情報へのアクセスを許可して、近くの施設を見つけられるようにします。</string>
     <key>NSLocationUsageDescription</key>
     <string>位置情報へのアクセスを許可して、近くの施設を見つけられるようにします。</string>
     <key>NSLocationWhenInUseUsageDescription</key>
-    <string>Allow $(PRODUCT_NAME) to access your location</string>
+    <string>位置情報へのアクセスを許可して、近くの施設を見つけられるようにします。</string>
     <key>NSMicrophoneUsageDescription</key>
-    <string>Allow $(PRODUCT_NAME) to access your microphone</string>
+    <string>アプリはマイクロホンにアクセスします。</string>
     <key>NSPhotoLibraryUsageDescription</key>
     <string>アプリは写真にアクセスします。</string>
     <key>UILaunchStoryboardName</key>

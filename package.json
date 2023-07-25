@@ -74,11 +74,14 @@
   "private": true,
   "scripts": {
     "resources": "node ./bin/resources generate -src assets -dst ./src/resources/generated",
-    "start": "expo start --dev-client",
+    "start": "npx expo start --dev-client",
     "build:ios": "eas build --platform ios  --auto-submit --clear-cache",
     "build:android": "eas build -p=android --auto-submit --clear-cache",
-    "android": "expo run:android",
-    "ios": "expo run:ios"
+    "android": "npx expo run:android",
+    "ios": "npx expo run:ios"
   },
-  "version": "0.0.0"
+  "version": "0.0.0",
+  "overrides": {
+    "expo-modules-core": "1.2.7"
+  }
 }

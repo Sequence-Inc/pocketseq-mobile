@@ -173,7 +173,7 @@ export const HotelScreen: React.FC<ISpaceScreenProps> = ({ coordinator }) => {
       >
         {/* Cover Images Carousel */}
         <ScrollView
-          horizontal
+          horizontal={true}
           showsHorizontalScrollIndicator={false}
           pagingEnabled
           style={{ width: COVER_IMAGE_WIDTH, height: COVER_IMAGE_HEIGHT }}
@@ -322,20 +322,18 @@ export const HotelScreen: React.FC<ISpaceScreenProps> = ({ coordinator }) => {
                       borderRadius: 8,
                     }}
                   >
-                    {plan.photos.map((photo) => {
-                      return (
-                        <Image
-                          key={photo.id}
-                          source={{ uri: photo.large.url }}
-                          style={{
-                            backgroundColor: colors.backgroundVariant,
-                            width: IMAGE_WIDTH,
-                            height: IMAGE_HEIGHT,
-                            borderRadius: 6,
-                          }}
-                        />
-                      );
-                    })}
+                    {plan.photos?.length > 0 && (
+                      <Image
+                        key={plan.photos[0].id}
+                        source={{ uri: plan.photos[0].large.url }}
+                        style={{
+                          backgroundColor: colors.backgroundVariant,
+                          width: IMAGE_WIDTH,
+                          height: IMAGE_HEIGHT,
+                          borderRadius: 6,
+                        }}
+                      />
+                    )}
                   </View>
                   <View style={{ paddingHorizontal: 6 }}>
                     <Text
@@ -436,20 +434,18 @@ export const HotelScreen: React.FC<ISpaceScreenProps> = ({ coordinator }) => {
                   }}
                 >
                   <View style={{ width: IMAGE_WIDTH, marginBottom: 12 }}>
-                    {room.photos.map((photo) => {
-                      return (
-                        <Image
-                          key={photo.id}
-                          source={{ uri: photo.large.url }}
-                          style={{
-                            backgroundColor: colors.backgroundVariant,
-                            width: IMAGE_WIDTH,
-                            height: IMAGE_HEIGHT,
-                            borderRadius: 8,
-                          }}
-                        />
-                      );
-                    })}
+                    {room.photos?.length > 0 && (
+                      <Image
+                        key={room.photos[0].id}
+                        source={{ uri: room.photos[0].large.url }}
+                        style={{
+                          backgroundColor: colors.backgroundVariant,
+                          width: IMAGE_WIDTH,
+                          height: IMAGE_HEIGHT,
+                          borderRadius: 8,
+                        }}
+                      />
+                    )}
                   </View>
                   <View style={{ paddingHorizontal: 6 }}>
                     <Text

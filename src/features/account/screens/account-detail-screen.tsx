@@ -7,7 +7,7 @@ import { Profile } from "../../../services/domains";
 import { SessionStore } from "../../../services/storage";
 import { Touchable } from "../../../widgets/touchable";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { ScrollView, View, Text } from "react-native";
+import { View, Text } from "react-native";
 
 export interface IAccountDetailScreenProps {
   coordinator: AccountCoordinator;
@@ -33,9 +33,7 @@ export const AccountDetailScreen: React.FC<IAccountDetailScreenProps> =
           flex: 1,
         }}
       >
-        <ScrollView
-          style={{ backgroundColor: colors.background, borderRadius: 10 }}
-        >
+        <View style={{ backgroundColor: colors.background, flex: 1 }}>
           <View
             style={{
               paddingHorizontal: 12,
@@ -178,41 +176,78 @@ export const AccountDetailScreen: React.FC<IAccountDetailScreenProps> =
               {profile?.firstNameKana}
             </Text>
           </View>
-          <View
-            style={{
-              paddingHorizontal: 12,
-              paddingTop: 12,
-              borderTopWidth: 1,
-              borderTopColor: "rgba(230,230,230,1)",
-            }}
-          >
-            <Touchable
-              onPress={() => {
-                // TODO: Go to profile edit view
-                coordinator.toAccountEditScreen("replace");
-              }}
+          <View style={{ flex: 1, justifyContent: "space-between" }}>
+            <View
               style={{
-                backgroundColor: colors.background,
-                borderWidth: 1,
-                borderColor: colors.backgroundVariant,
-                paddingHorizontal: 24,
-                paddingVertical: 12,
-                borderRadius: 6,
+                paddingHorizontal: 12,
+                paddingTop: 12,
+                borderTopWidth: 1,
+                borderTopColor: "rgba(230,230,230,1)",
               }}
             >
-              <Text
+              <Touchable
+                onPress={() => {
+                  coordinator.toAccountEditScreen("replace");
+                }}
                 style={{
-                  fontWeight: "700",
-                  fontSize: 16,
-                  color: colors.textVariant,
-                  textAlign: "center",
+                  backgroundColor: colors.background,
+                  borderWidth: 1,
+                  borderColor: colors.backgroundVariant,
+                  paddingHorizontal: 24,
+                  paddingVertical: 12,
+                  borderRadius: 6,
                 }}
               >
-                プロフィールを更新
-              </Text>
-            </Touchable>
+                <Text
+                  style={{
+                    fontWeight: "700",
+                    fontSize: 16,
+                    color: colors.textVariant,
+                    textAlign: "center",
+                  }}
+                >
+                  プロフィールを更新
+                </Text>
+              </Touchable>
+            </View>
+
+            <View
+              style={{
+                marginTop: 12,
+                paddingHorizontal: 0,
+                paddingTop: 12,
+              }}
+            >
+              <View>
+                <Touchable
+                  onPress={() => {
+                    coordinator.toAccountDeactivateScreen("replace");
+                  }}
+                  style={{
+                    backgroundColor: "#E02424",
+                    borderWidth: 1,
+                    borderColor: "#E02424",
+                    marginHorizontal: 12,
+                    paddingHorizontal: 24,
+                    paddingVertical: 12,
+                    borderRadius: 6,
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontWeight: "700",
+                      fontSize: 16,
+                      color: "#fff",
+                      textAlign: "center",
+                    }}
+                  >
+                    アカウントを削除
+                  </Text>
+                </Touchable>
+              </View>
+            </View>
           </View>
-        </ScrollView>
+        </View>
       </SafeAreaView>
     );
   });

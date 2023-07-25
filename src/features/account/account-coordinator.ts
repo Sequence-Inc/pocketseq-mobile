@@ -47,7 +47,7 @@ export default abstract class AccountCoordinator {
   toAccountSubscriptionScreen(action: NavigationAction = "navigate") {
     if (action === "replace")
       this.navigation.dispatch(
-        StackActions.replace(this.screenName, {
+        StackActions.push(this.screenName, {
           screen: "account-subscription-screen",
         })
       );
@@ -60,13 +60,25 @@ export default abstract class AccountCoordinator {
   toAccountEditScreen(action: NavigationAction = "navigate") {
     if (action === "replace")
       this.navigation.dispatch(
-        StackActions.replace(this.screenName, {
+        StackActions.push(this.screenName, {
           screen: "account-edit-screen",
         })
       );
     else
       this.navigation.navigate(this.screenName, {
         screen: "account-edit-screen",
+      });
+  }
+  toAccountDeactivateScreen(action: NavigationAction = "navigate") {
+    if (action === "replace")
+      this.navigation.dispatch(
+        StackActions.push(this.screenName, {
+          screen: "account-account-deactivate",
+        })
+      );
+    else
+      this.navigation.navigate(this.screenName, {
+        screen: "account-account-deactivate",
       });
   }
 }

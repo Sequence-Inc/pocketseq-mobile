@@ -9,7 +9,6 @@ import { useResources } from "../../../resources";
 import DashboardCoordinator from "../dashboard-coordinator";
 import { isEmpty } from "lodash";
 import { flowResult } from "mobx";
-import { signOutAsync } from "expo-apple-authentication";
 
 export type IAccountScreenProps = {
   coordinator: DashboardCoordinator;
@@ -25,15 +24,13 @@ export const AccountScreen: React.FC<IAccountScreenProps> = observer(
       () => coordinator.toAuthScreen(),
       []
     );
+
     const onLogOutPress = () => {
       flowResult(clearToken());
     };
 
     return (
-      <ScrollView
-        style={{ backgroundColor: colors.background, flex: 1 }}
-        keyboardDismissMode="on-drag"
-      >
+      <View style={{ backgroundColor: colors.background, flex: 1 }}>
         <View
           style={{
             flexDirection: "row",
@@ -60,7 +57,7 @@ export const AccountScreen: React.FC<IAccountScreenProps> = observer(
         </View>
 
         {accessToken && profile ? (
-          <>
+          <ScrollView>
             <View
               style={{
                 flexDirection: "row",
@@ -279,7 +276,7 @@ export const AccountScreen: React.FC<IAccountScreenProps> = observer(
                 </Text>
               </Touchable>
             </View>
-          </>
+          </ScrollView>
         ) : (
           <></>
         )}
@@ -292,167 +289,82 @@ export const AccountScreen: React.FC<IAccountScreenProps> = observer(
               paddingVertical: 15,
             }}
           >
-            <Touchable
-              onPress={onStartPress}
+            <View
               style={{
                 alignItems: "center",
-                flexDirection: "row",
+                flexDirection: "column",
                 justifyContent: "center",
+                marginHorizontal: 32,
+                marginVertical: 8,
               }}
             >
               <View
                 style={{
+                  backgroundColor: colors.primary,
                   aspectRatio: 1,
-                  backgroundColor: colors.secondaryVariant,
-                  borderRadius: 32,
-                  height: 64,
-                  marginHorizontal: 15,
+                  width: 60,
+                  borderRadius: 30,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  marginBottom: 16,
+                  marginTop: 16,
                 }}
-              />
-              <View style={{ flex: 1, justifyContent: "center" }}>
+              >
+                <SVGImage
+                  style={{ aspectRatio: 1, width: 30, margin: 5 }}
+                  color={colors.background}
+                  source={images.svg.user}
+                />
+              </View>
+              <View style={{ marginBottom: 24 }}>
                 <Text
                   style={{
-                    color: colors.textVariant,
+                    color: colors.primary,
                     fontSize: 18,
                     fontWeight: "bold",
-                    marginBottom: 8,
+                    marginBottom: 16,
+                    textAlign: "center",
                   }}
                 >
                   ログインまたは登録
                 </Text>
-                <Text style={{ color: colors.textVariant, fontSize: 16 }}>
+                <Text
+                  style={{
+                    color: colors.textVariant,
+                    fontSize: 16,
+                    textAlign: "center",
+                  }}
+                >
                   アプリサービスを利用するにはログインしてください。
                   または、アカウントをお持ちでない場合は登録してください。
                 </Text>
               </View>
-              <SVGImage
-                style={{ aspectRatio: 1, width: 25, margin: 5 }}
-                color={colors.textVariant}
-                source={images.svg.ic_caret_right}
-              />
-            </Touchable>
+              <Touchable onPress={onStartPress}>
+                <View
+                  style={{
+                    backgroundColor: colors.primary,
+                    paddingHorizontal: 18,
+                    paddingVertical: 8,
+                    borderRadius: 4,
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 14,
+                      fontWeight: "bold",
+                      color: colors.background,
+                    }}
+                  >
+                    ログインまたは登録
+                  </Text>
+                </View>
+              </Touchable>
+            </View>
           </View>
         ) : (
           <></>
         )}
-
-        {/* {profile && (
-        <View style={{ backgroundColor: colors.background, borderRadius: 10, paddingVertical: 15 }}>
-          <View style={{ alignItems: "center", flexDirection: "row", justifyContent: "center", marginBottom: 12 }}>
-            <View
-              style={{
-                aspectRatio: 1,
-                backgroundColor: colors.secondaryVariant,
-                borderRadius: 32,
-                height: 40,
-                marginHorizontal: 15,
-              }}
-            />
-            <View style={{ flex: 1, justifyContent: "center" }}>
-              <Text style={{ color: colors.textVariant, fontSize: 18, marginBottom: 4 }}>
-                {profile.lastName} {profile.firstName}
-              </Text>
-              <Text style={{ color: colors.textVariant, fontSize: 12 }}>{profile.email}</Text>
-            </View>
-          </View>
-          <View
-            style={{
-              marginTop: 12,
-              paddingHorizontal: 12,
-              borderTopWidth: 1,
-              borderTopColor: "rgba(240,240,240,1)",
-              paddingTop: 12,
-            }}
-          >
-            <Text style={{ color: colors.textVariant, fontSize: 14, fontWeight: "700" }}>Email</Text>
-            <Text style={{ flexGrow: 1, color: colors.textVariant, fontSize: 16, marginBottom: 4 }}>
-              {profile.email}
-            </Text>
-          </View>
-          <View
-            style={{
-              marginTop: 12,
-              paddingHorizontal: 12,
-              borderTopWidth: 1,
-              borderTopColor: "rgba(240,240,240,1)",
-              paddingTop: 12,
-            }}
-          >
-            <Text style={{ color: colors.textVariant, fontSize: 14, fontWeight: "700" }}>Last name</Text>
-            <Text style={{ flexGrow: 1, color: colors.textVariant, fontSize: 16, marginBottom: 4 }}>
-              {profile.lastName}
-            </Text>
-          </View>
-          <View
-            style={{
-              marginTop: 12,
-              paddingHorizontal: 12,
-              borderTopWidth: 1,
-              borderTopColor: "rgba(240,240,240,1)",
-              paddingTop: 12,
-            }}
-          >
-            <Text style={{ color: colors.textVariant, fontSize: 14, fontWeight: "700" }}>First name</Text>
-            <Text style={{ flexGrow: 1, color: colors.textVariant, fontSize: 16, marginBottom: 4 }}>
-              {profile.firstName}
-            </Text>
-          </View>
-          <View
-            style={{
-              marginTop: 12,
-              paddingHorizontal: 12,
-              borderTopWidth: 1,
-              borderTopColor: "rgba(240,240,240,1)",
-              paddingTop: 12,
-            }}
-          >
-            <Text style={{ color: colors.textVariant, fontSize: 14, fontWeight: "700" }}>Last name (kana)</Text>
-            <Text style={{ flexGrow: 1, color: colors.textVariant, fontSize: 16, marginBottom: 4 }}></Text>
-          </View>
-          <View
-            style={{
-              marginTop: 12,
-              paddingHorizontal: 12,
-              borderTopWidth: 1,
-              borderTopColor: "rgba(240,240,240,1)",
-              paddingTop: 12,
-            }}
-          >
-            <Text style={{ color: colors.textVariant, fontSize: 14, fontWeight: "700" }}>First name (kana)</Text>
-            <Text style={{ flexGrow: 1, color: colors.textVariant, fontSize: 16, marginBottom: 4 }}></Text>
-          </View>
-        </View>
-      )} */}
-        {/* {!profile && (
-        <View style={{ backgroundColor: colors.background, borderRadius: 10, paddingVertical: 15 }}>
-          <Touchable
-            onPress={onStartPress}
-            style={{ alignItems: "center", flexDirection: "row", justifyContent: "center" }}
-          >
-            <View
-              style={{
-                aspectRatio: 1,
-                backgroundColor: colors.secondaryVariant,
-                borderRadius: 32,
-                height: 64,
-                marginHorizontal: 15,
-              }}
-            />
-            <View style={{ flex: 1, justifyContent: "center" }}>
-              <Text style={{ color: colors.text, fontSize: 20, marginBottom: 4 }}>Login / Signup</Text>
-              <Text style={{ color: colors.textVariant, fontSize: 12 }}>
-                Please login to use the app services. Or create an account if you don't have one.
-              </Text>
-            </View>
-            <SVGImage
-              style={{ aspectRatio: 1, width: 25, margin: 5 }}
-              color={colors.textVariant}
-              source={images.svg.ic_caret_right}
-            />
-          </Touchable>
-        </View>
-      )} */}
-      </ScrollView>
+      </View>
     );
   }
 );
