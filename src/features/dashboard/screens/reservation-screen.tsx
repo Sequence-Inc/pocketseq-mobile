@@ -49,7 +49,7 @@ const HotelReservationItem: React.FC<IHotelReservationItemProps> = ({
   const onItemPress = useCallback(() => {
     coordinator.toUserReservationScreen("navigate", {
       type: "HOTEL",
-      data: reservation,
+      data: { id: reservation.id },
     });
   }, [coordinator, reservation]);
 
@@ -63,20 +63,22 @@ const HotelReservationItem: React.FC<IHotelReservationItemProps> = ({
       onPress={onItemPress}
     >
       <View style={{ flexDirection: "row" }}>
-        <Text style={{ flex: 1 }}>
-          {toDateTime.diff(fromDateTime, "days")}日間
-        </Text>
-        <Text>
+        <Text style={{ flex: 1, color: colors.textVariant }}>
           {fromDateTime.format("YYYY年MM月DD日")}〜
-          {toDateTime.format("MM月DD日")}まで
+          {toDateTime.format("MM月DD日")}
+        </Text>
+        <Text style={{ color: colors.textVariant }}>
+          {toDateTime.diff(fromDateTime, "days")}日間
         </Text>
       </View>
       <Text style={{ color: colors.primary, fontSize: 20, paddingVertical: 5 }}>
         {reservation.packagePlan.name}
       </Text>
       <View style={{ flexDirection: "row" }}>
-        <Text style={{ flex: 1 }}>{reservation.hotelRoom.name}</Text>
-        <Text>{reservation.status}</Text>
+        <Text style={{ flex: 1, color: colors.textVariant }}>
+          {reservation.hotelRoom.name}
+        </Text>
+        <Text style={{ color: colors.textVariant }}>{reservation.status}</Text>
       </View>
     </Touchable>
   );
@@ -113,13 +115,10 @@ const SpaceReservationItem: React.FC<ISpaceReservationItemProps> = ({
       onPress={onItemPress}
     >
       <View style={{ flexDirection: "row" }}>
-        <Text style={{ flex: 1 }}>
-          {toDateTime.diff(fromDateTime, "days")}日間
+        <Text style={{ color: colors.textVariant }}>
+          {fromDateTime.format("YYYY年MM月DD日")}
         </Text>
-        <Text>
-          {fromDateTime.format("YYYY年MM月DD日")}〜
-          {toDateTime.format("MM月DD日")}まで
-        </Text>
+        <Text style={{ flex: 1 }}></Text>
       </View>
       <Text style={{ color: colors.primary, fontSize: 20, paddingVertical: 5 }}>
         {reservation.space.name}

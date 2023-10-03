@@ -34,7 +34,6 @@ import {
   hoursAsCancelPolicyDuration,
 } from "../../../utils/strings";
 import { Touchable } from "../../../widgets/touchable";
-import { AccountCoordinator } from "../../account";
 
 export type ISpaceReservationConfirmationProps = {
   coordinator: SpaceCoordinator;
@@ -105,7 +104,10 @@ const ReservationConfirmation: React.FC<ISpaceReservationConfirmationProps> = ({
     includedOptions,
     handleSpaceReservation,
     reservingSpace,
+    reservationFailure,
   } = useReserveSpace(reservationData?.spaceId);
+
+  console.log(reservationFailure);
 
   const { subscriptions } = useFetchSubscriptions();
 
@@ -175,18 +177,24 @@ const ReservationConfirmation: React.FC<ISpaceReservationConfirmationProps> = ({
         })),
         useSubscription: !!reservationData?.useSubscription,
       };
+      console.log(input);
       const { data } = await handleSpaceReservation(input);
-      console.log(data);
       if (data) {
-        Alert.alert("Successfully reserved space");
-        coordinator.toReservationTab("replace", {
-          type: "space",
-          data: data?.reserveSpace,
-        });
+        Alert.alert("予約完了", "予約リクエストを完了しました。", [
+          {
+            text: "OK",
+            onPress: () => {
+              coordinator.toReservationScreen("replace", {
+                type: "SPACE",
+                data: data?.reserveSpace,
+              });
+            },
+          },
+        ]);
       }
     } catch (error) {
       console.log(error);
-      Alert.alert(error.message || "Error!");
+      Alert.alert(error?.message || "Error!");
     }
   }, [selectedPayment, reservationData]);
 

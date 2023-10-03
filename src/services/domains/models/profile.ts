@@ -21,4 +21,5 @@ export interface Profile extends UserProfile, CompanyProfile {
   phoneNumber: string;
   profilePhoto?: Photo;
   dob?: string;
+  roles?: string[];
 }

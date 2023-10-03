@@ -47,7 +47,7 @@ export const AccountSubscriptionScreen: React.FC<
   if (error) {
     return (
       <View>
-        <Text>There was an error.</Text>
+        <Text>エラーが発生しました</Text>
         <Text>{error.message}</Text>
       </View>
     );

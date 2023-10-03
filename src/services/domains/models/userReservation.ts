@@ -3,7 +3,14 @@ import { HotelRoom, HOTEL_ROOM } from "./hotelRoom";
 import { SpaceExcerpt, SPACE_EXCERPT } from "./space";
 import { TRANSACTION, Transaction } from "./transaction";
 
-export type ReservationStatus = "RESERVED" | "HOLD" | "PENDING" | "FAILED" | "DISAPPROVED" | "CANCELED" | undefined;
+export type ReservationStatus =
+  | "RESERVED"
+  | "HOLD"
+  | "PENDING"
+  | "FAILED"
+  | "DISAPPROVED"
+  | "CANCELED"
+  | undefined;
 
 export type SortOrder = "asc" | "desc";
 

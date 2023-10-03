@@ -29,6 +29,19 @@ export type MyReservationsVariables = {
   filter_hotel?: HotelReservationFilter;
 };
 
+export type SpaceReservationByIdVariables = {
+  id: string;
+};
+export type HotelReservationByIdVariables = {
+  id: string;
+};
+export type SpaceReservationResult = {
+  reservationById: UserReservationSpace;
+};
+export type HotelReservationResult = {
+  hotelRoomReservationById: UserReservationHotel;
+};
+
 const GET_RESERVATIONS = gql`
   query MyReservations ($paginate: PaginationOption, $filter_space: MyReservationFilter, $filter_hotel: MyHotelRoomReservationFilter ) {
     myReservations (paginate: $paginate, filter: $filter_space) {
@@ -50,6 +63,22 @@ const GET_RESERVATIONS = gql`
   }
 `;
 
+const GET_SPACE_RESERVATION_BY_ID = gql`
+  query SpaceReservationById ($id: ID!) {
+    reservationById (id: $id) {
+      ${USER_RESERVATION_SPACE}
+    }
+  }
+`;
+
+const GET_HOTEL_RESERVATION_BY_ID = gql`
+  query HotelReservationById ($id: ID!) {
+    hotelRoomReservationById (id: $id) {
+      ${USER_RESERVATION_HOTEL}
+    }
+  }
+`;
+
 export const useUserReservation: QueryHook<
   MyReservationsResult,
   MyReservationsVariables,
@@ -62,5 +91,44 @@ export const useUserReservation: QueryHook<
   async function myReservations(variables: MyReservationsVariables) {
     return await query({ variables });
   }
+
   return [myReservations, result];
+};
+
+export const useSpaceReservationById: QueryHook<
+  SpaceReservationResult,
+  SpaceReservationByIdVariables,
+  true
+> = () => {
+  const [spaceReservationByIdQuery, spaceReservationByIdResult] = useLazyQuery<
+    SpaceReservationResult,
+    SpaceReservationByIdVariables
+  >(GET_SPACE_RESERVATION_BY_ID);
+
+  async function getSpaceReservationById(
+    variables: SpaceReservationByIdVariables
+  ) {
+    return await spaceReservationByIdQuery({ variables });
+  }
+
+  return [getSpaceReservationById, spaceReservationByIdResult];
+};
+
+export const useHotelReservationById: QueryHook<
+  HotelReservationResult,
+  HotelReservationByIdVariables,
+  true
+> = () => {
+  const [hotelReservationByIdQuery, hotelReservationByIdResult] = useLazyQuery<
+    HotelReservationResult,
+    HotelReservationByIdVariables
+  >(GET_HOTEL_RESERVATION_BY_ID);
+
+  async function getHotelReservationById(
+    variables: HotelReservationByIdVariables
+  ) {
+    return await hotelReservationByIdQuery({ variables });
+  }
+
+  return [getHotelReservationById, hotelReservationByIdResult];
 };

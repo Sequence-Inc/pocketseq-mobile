@@ -213,7 +213,7 @@ export const AccountDetailScreen: React.FC<IAccountDetailScreenProps> =
 
             <View
               style={{
-                marginTop: 12,
+                marginVertical: 12,
                 paddingHorizontal: 0,
                 paddingTop: 12,
               }}

@@ -163,12 +163,16 @@ export const SPACE_EXCERPT = `
   id
   description
   name
+  address {
+    ${ADDRESS}
+  }
 `;
 
 export interface SpaceExcerpt {
   id: string;
   description: string;
   name: string;
+  address: Address;
 }
 
 export interface Space {

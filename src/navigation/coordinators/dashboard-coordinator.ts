@@ -188,6 +188,25 @@ export class DashboardCoordinator extends IDashboardCoordinator {
         screen: "account-edit-screen",
       });
   }
+
+  toAccountDeactivateScreen(
+    action: NavigationAction = "navigate",
+    params?: void
+  ): void {
+    if (action === "replace")
+      this.navigation.dispatch(
+        StackActions.replace("account-stack", {
+          params,
+          screen: "account-account-deactivate",
+        })
+      );
+    else
+      this.navigation.navigate("account-stack", {
+        params,
+        screen: "account-account-deactivate",
+      });
+  }
+
   toAccountPasswordChangeScreen(
     action: NavigationAction = "navigate",
     params?: void

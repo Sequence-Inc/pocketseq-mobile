@@ -134,6 +134,15 @@ export const LoginScreen: React.FC<ILoginScreenProps> = observer(
           deviceID,
         });
         if (result.data) {
+          // check if account role is not 'user' then do not allow login
+          if (!result?.data?.login?.profile?.roles?.includes("user")) {
+            Alert.alert(
+              "ホストはアプリを使用できません",
+              "PCを使用してホストアカウントにログインしてください。"
+            );
+            return;
+          }
+
           await flowResult(saveLogin({ ...result.data?.login }));
           const profile = await myProfile();
           if (profile.data) {

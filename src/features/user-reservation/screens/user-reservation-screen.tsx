@@ -1,6 +1,6 @@
 import { useHeaderHeight } from "@react-navigation/elements";
-import React, { useCallback, useState } from "react";
-import { Modal, ScrollView, Text, View } from "react-native";
+import React, { useCallback, useEffect, useState } from "react";
+import { ActivityIndicator, Modal, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useResources } from "../../../resources";
 import UserReservationCoordinator from "../user-reservation-coordinator";
@@ -15,6 +15,8 @@ import { Touchable } from "../../../widgets/touchable";
 import {
   useCancelHotelReservation,
   useCancelSpaceReservation,
+  useHotelReservationById,
+  useSpaceReservationById,
 } from "../../../services/graphql";
 import { currencyFormatter } from "../../../utils/strings";
 
@@ -30,208 +32,504 @@ export type IUserReservationScreenParams = {
 export const UserReservationScreen: React.FC<IUserReservationScreenProps> = ({
   coordinator,
 }) => {
+  const [reservation, setReservation] = useState<
+    UserReservationSpace | UserReservationHotel
+  >();
+
+  const [showModal, setShowModal] = useState(false);
   const headerHeight = useHeaderHeight();
-  const { colors, images } = useResources();
+  const { colors } = useResources();
 
   const route: RouteProp<{ params: IUserReservationScreenParams }> = useRoute();
   const { type, data } = route.params;
+
+  useEffect(() => {
+    if (type && data?.id) {
+      fetchReservationDetails(type, data?.id);
+    }
+  }, [data?.id]);
+
+  const [getSpaceReservationById] = useSpaceReservationById();
+  const [getHotelReservationById] = useHotelReservationById();
+
+  const fetchReservationDetails = async (
+    type: string,
+    reservationId: string
+  ) => {
+    if (type === "SPACE") {
+      const spaceReservationData = await getSpaceReservationById({
+        id: reservationId,
+      });
+      if (spaceReservationData.data) {
+        setReservation(
+          spaceReservationData.data
+            .reservationById as unknown as UserReservationSpace
+        );
+      }
+    } else if (type === "HOTEL") {
+      const hotelReservationData = await getHotelReservationById({
+        id: reservationId,
+      });
+
+      if (hotelReservationData?.data?.hotelRoomReservationById) {
+        setReservation(
+          hotelReservationData.data
+            .hotelRoomReservationById as unknown as UserReservationHotel
+        );
+      }
+    }
+    return null;
+  };
 
   const [cancelHotelReservation, cancelHotelReservationResult] =
     useCancelHotelReservation();
   const [cancelSpaceReservation, cancelSpaceReservationResult] =
     useCancelSpaceReservation();
 
-  const [showModal, setShowModal] = useState(false);
-
-  console.log(data.id, data.reservationId);
   const onConfirmCancellationPress = useCallback(async () => {
     setShowModal(false);
-
-    if (type === "HOTEL") await cancelHotelReservation(data);
-    else if (type === "SPACE") await cancelSpaceReservation(data);
-
+    if (!reservation) {
+      return;
+    }
+    if (type === "HOTEL")
+      await cancelHotelReservation(reservation as UserReservationHotel);
+    else if (type === "SPACE")
+      await cancelSpaceReservation(reservation as UserReservationSpace);
     coordinator.goBack();
   }, []);
 
-  const fromDateTime = moment(data.fromDateTime);
-  const toDateTime = moment(data.toDateTime);
+  const content = useCallback(() => {
+    if (!reservation) {
+      return null;
+    }
+    const fromDateTime = moment(reservation.fromDateTime);
+    const toDateTime = moment(reservation.toDateTime);
 
-  return (
-    <SafeAreaView
-      edges={["bottom", "left", "right"]}
-      style={{
-        backgroundColor: colors.background,
-        paddingTop: headerHeight,
-        flex: 1,
-      }}
-    >
-      <ScrollView
-        style={{ flex: 1 }}
-        contentContainerStyle={{ paddingBottom: 100 }}
-      >
-        <View style={{ paddingHorizontal: 12, paddingVertical: 18 }}>
-          <Text
-            style={{ fontSize: 24, color: colors.primary, fontWeight: "600" }}
-          >
-            {type === "HOTEL" ? data.packagePlan.name : data.space.name}
-          </Text>
-          <Text
+    if (type === "SPACE") {
+      const reservationData = reservation as UserReservationSpace;
+      return (
+        <>
+          <View style={{ paddingHorizontal: 12, paddingVertical: 18 }}>
+            <Text
+              style={{ fontSize: 24, color: colors.primary, fontWeight: "600" }}
+            >
+              {reservationData.space.name}
+            </Text>
+            <Text
+              style={{
+                fontSize: 16,
+                color: colors.textVariant,
+                marginTop: 8,
+                fontWeight: "500",
+              }}
+            >
+              {toDateTime.diff(fromDateTime, "days")}日間
+            </Text>
+            <Text
+              style={{
+                fontSize: 14,
+                color: "rgba(150,150,150,1)",
+                marginTop: 4,
+              }}
+            >
+              {fromDateTime.format("YYYY年MM月DD日")}〜
+              {toDateTime.format("MM月DD日")}まで
+            </Text>
+          </View>
+          <View
             style={{
-              fontSize: 16,
-              color: colors.textVariant,
-              marginTop: 8,
-              fontWeight: "500",
+              paddingVertical: 16,
+              paddingHorizontal: 12,
+              borderTopWidth: 1,
+              borderTopColor: "rgba(0,0,0,0.1)",
+              flexDirection: "row",
+              alignItems: "flex-start",
             }}
           >
-            {toDateTime.diff(fromDateTime, "days")}日間
-          </Text>
-          <Text
-            style={{ fontSize: 14, color: "rgba(150,150,150,1)", marginTop: 4 }}
-          >
-            {fromDateTime.format("YYYY年MM月DD日")}〜
-            {toDateTime.format("MM月DD日")}まで
-          </Text>
-        </View>
-
-        {/* Reservation Id */}
-        <View
-          style={{
-            paddingVertical: 16,
-            paddingHorizontal: 12,
-            borderTopWidth: 1,
-            borderTopColor: "rgba(0,0,0,0.1)",
-            flexDirection: "row",
-            alignItems: "flex-start",
-          }}
-        >
-          <Text
+            <Text
+              style={{
+                fontSize: 16,
+                color: colors.textVariant,
+                fontWeight: "600",
+                width: 120,
+                marginRight: 6,
+              }}
+            >
+              予約ID
+            </Text>
+            <Text style={{ fontSize: 16, color: "rgba(150,150,150,1)" }}>
+              {reservationData.reservationId}
+            </Text>
+          </View>
+          <View
             style={{
-              fontSize: 16,
-              color: colors.textVariant,
-              fontWeight: "600",
-              width: 120,
-              marginRight: 6,
+              paddingVertical: 16,
+              paddingHorizontal: 12,
+              borderTopWidth: 1,
+              borderTopColor: "rgba(0,0,0,0.1)",
+              flexDirection: "row",
+              alignItems: "flex-start",
             }}
           >
-            予約ID
-          </Text>
-          <Text style={{ fontSize: 16, color: "rgba(150,150,150,1)" }}>
-            {data.id}
-          </Text>
-        </View>
+            <Text
+              style={{
+                fontSize: 16,
+                color: colors.textVariant,
+                fontWeight: "600",
+                width: 120,
+                marginRight: 6,
+              }}
+            >
+              チェックイン
+            </Text>
+            <Text style={{ fontSize: 16, color: "rgba(150,150,150,1)" }}>
+              {fromDateTime.format("YYYY年MM月DD日　HH：mm時")}
+            </Text>
+          </View>
 
-        {/* From Date Time */}
-        <View
-          style={{
-            paddingVertical: 16,
-            paddingHorizontal: 12,
-            borderTopWidth: 1,
-            borderTopColor: "rgba(0,0,0,0.1)",
-            flexDirection: "row",
-            alignItems: "flex-start",
-          }}
-        >
-          <Text
+          <View
             style={{
-              fontSize: 16,
-              color: colors.textVariant,
-              fontWeight: "600",
-              width: 120,
-              marginRight: 6,
+              paddingVertical: 16,
+              paddingHorizontal: 12,
+              borderTopWidth: 1,
+              borderTopColor: "rgba(0,0,0,0.1)",
+              flexDirection: "row",
+              alignItems: "flex-start",
             }}
           >
-            チェックイン
-          </Text>
-          <Text style={{ fontSize: 16, color: "rgba(150,150,150,1)" }}>
-            {fromDateTime.format("YYYY年MM月DD日　HH：mm時")}
-          </Text>
-        </View>
-
-        {/* To Date Time */}
-        <View
-          style={{
-            paddingVertical: 16,
-            paddingHorizontal: 12,
-            borderTopWidth: 1,
-            borderTopColor: "rgba(0,0,0,0.1)",
-            flexDirection: "row",
-            alignItems: "flex-start",
-          }}
-        >
-          <Text
+            <Text
+              style={{
+                fontSize: 16,
+                color: colors.textVariant,
+                fontWeight: "600",
+                width: 120,
+                marginRight: 6,
+              }}
+            >
+              チェックアウト
+            </Text>
+            <Text style={{ fontSize: 16, color: "rgba(150,150,150,1)" }}>
+              {toDateTime.format("YYYY年MM月DD日　HH：mm時")}
+            </Text>
+          </View>
+          <View
             style={{
-              fontSize: 16,
-              color: colors.textVariant,
-              fontWeight: "600",
-              width: 120,
-              marginRight: 6,
+              paddingVertical: 16,
+              paddingHorizontal: 12,
+              borderTopWidth: 1,
+              borderTopColor: "rgba(0,0,0,0.1)",
+              flexDirection: "row",
+              alignItems: "flex-start",
             }}
           >
-            チェックアウト
-          </Text>
-          <Text style={{ fontSize: 16, color: "rgba(150,150,150,1)" }}>
-            {toDateTime.format("YYYY年MM月DD日　HH：mm時")}
-          </Text>
-        </View>
+            <Text
+              style={{
+                fontSize: 16,
+                color: colors.textVariant,
+                fontWeight: "600",
+                width: 120,
+                marginRight: 6,
+              }}
+            >
+              Status
+            </Text>
+            <Text style={{ fontSize: 16, color: "rgba(150,150,150,1)" }}>
+              {reservationData.status}
+            </Text>
+          </View>
 
-        {/* To Date Time */}
-        <View
-          style={{
-            paddingVertical: 16,
-            paddingHorizontal: 12,
-            borderTopWidth: 1,
-            borderTopColor: "rgba(0,0,0,0.1)",
-            flexDirection: "row",
-            alignItems: "flex-start",
-          }}
-        >
-          <Text
+          <View
             style={{
-              fontSize: 16,
-              color: colors.textVariant,
-              fontWeight: "600",
-              width: 120,
-              marginRight: 6,
+              paddingVertical: 16,
+              paddingHorizontal: 12,
+              borderTopWidth: 1,
+              borderTopColor: "rgba(0,0,0,0.1)",
+              flexDirection: "row",
+              alignItems: "flex-start",
             }}
           >
-            Status
-          </Text>
-          <Text style={{ fontSize: 16, color: "rgba(150,150,150,1)" }}>
-            {data.status}
-          </Text>
-        </View>
+            <Text
+              style={{
+                fontSize: 16,
+                color: colors.textVariant,
+                fontWeight: "600",
+                width: 120,
+                marginRight: 6,
+              }}
+            >
+              Approved on
+            </Text>
+            <Text style={{ fontSize: 16, color: "rgba(150,150,150,1)" }}>
+              {reservationData.approvedOn
+                ? moment(reservationData.approvedOn).format("YYYY年MM月DD日")
+                : "-"}
+            </Text>
+          </View>
 
-        {/* Reservation approved on */}
-        <View
-          style={{
-            paddingVertical: 16,
-            paddingHorizontal: 12,
-            borderTopWidth: 1,
-            borderTopColor: "rgba(0,0,0,0.1)",
-            flexDirection: "row",
-            alignItems: "flex-start",
-          }}
-        >
-          <Text
+          <View
             style={{
-              fontSize: 16,
-              color: colors.textVariant,
-              fontWeight: "600",
-              width: 120,
-              marginRight: 6,
+              paddingVertical: 16,
+              paddingHorizontal: 12,
+              borderTopWidth: 1,
+              borderTopColor: "rgba(0,0,0,0.1)",
+              flexDirection: "row",
+              alignItems: "flex-start",
             }}
           >
-            Approved on
-          </Text>
-          <Text style={{ fontSize: 16, color: "rgba(150,150,150,1)" }}>
-            {data.approvedOn
-              ? moment(data.approvedOn).format("YYYY年MM月DD日")
-              : "-"}
-          </Text>
-        </View>
+            <Text
+              style={{
+                fontSize: 16,
+                color: colors.textVariant,
+                fontWeight: "600",
+                width: 120,
+                marginRight: 6,
+              }}
+            >
+              スペース
+            </Text>
+            <View>
+              <Text
+                style={{
+                  fontSize: 18,
+                  fontWeight: "600",
+                  color: "rgba(150,150,150,1)",
+                }}
+              >
+                {reservationData.space.name}
+              </Text>
+              <Text
+                style={{
+                  fontSize: 16,
+                  color: "rgba(150,150,150,1)",
+                  marginTop: 4,
+                }}
+                numberOfLines={3}
+              >
+                {reservationData.space.description}
+              </Text>
 
-        {type === "SPACE" && (
-          /* Plan */
+              <Text
+                style={{
+                  fontSize: 16,
+                  color: "rgba(150,150,150,1)",
+                  marginTop: 12,
+                }}
+              >
+                {reservationData.space.address.prefecture.name}
+                {reservationData.space.address.city}
+              </Text>
+              <Text
+                style={{
+                  fontSize: 16,
+                  color: "rgba(150,150,150,1)",
+                  marginTop: 4,
+                }}
+              >
+                {reservationData.space.address.addressLine1}{" "}
+                {reservationData.space.address.addressLine2}
+              </Text>
+            </View>
+          </View>
+
+          <View
+            style={{
+              paddingVertical: 16,
+              paddingHorizontal: 12,
+              borderTopWidth: 1,
+              borderTopColor: "rgba(0,0,0,0.1)",
+              flexDirection: "row",
+              alignItems: "flex-start",
+            }}
+          >
+            <Text
+              style={{
+                fontSize: 16,
+                color: colors.textVariant,
+                fontWeight: "600",
+                width: 120,
+                marginRight: 6,
+              }}
+            >
+              料金
+            </Text>
+            <View>
+              <Text
+                style={{
+                  fontSize: 18,
+                  fontWeight: "600",
+                  color: "rgba(150,150,150,1)",
+                }}
+              >
+                {currencyFormatter(reservationData.transaction?.amount || 0)}
+              </Text>
+            </View>
+          </View>
+        </>
+      );
+    } else if (type === "HOTEL") {
+      const reservationData = reservation as UserReservationHotel;
+      return (
+        <>
+          <View style={{ paddingHorizontal: 12, paddingVertical: 18 }}>
+            <Text
+              style={{ fontSize: 24, color: colors.primary, fontWeight: "600" }}
+            >
+              {reservationData.packagePlan.name}
+            </Text>
+            <Text
+              style={{
+                fontSize: 16,
+                color: colors.textVariant,
+                marginTop: 8,
+                fontWeight: "500",
+              }}
+            >
+              {toDateTime.diff(fromDateTime, "days")}日間
+            </Text>
+            <Text
+              style={{
+                fontSize: 14,
+                color: "rgba(150,150,150,1)",
+                marginTop: 4,
+              }}
+            >
+              {fromDateTime.format("YYYY年MM月DD日")}〜
+              {toDateTime.format("MM月DD日")}まで
+            </Text>
+          </View>
+
+          <View
+            style={{
+              paddingVertical: 16,
+              paddingHorizontal: 12,
+              borderTopWidth: 1,
+              borderTopColor: "rgba(0,0,0,0.1)",
+              flexDirection: "row",
+              alignItems: "flex-start",
+            }}
+          >
+            <Text
+              style={{
+                fontSize: 16,
+                color: colors.textVariant,
+                fontWeight: "600",
+                width: 120,
+                marginRight: 6,
+              }}
+            >
+              予約ID
+            </Text>
+            <Text style={{ fontSize: 16, color: "rgba(150,150,150,1)" }}>
+              {reservationData.reservationId}
+            </Text>
+          </View>
+
+          <View
+            style={{
+              paddingVertical: 16,
+              paddingHorizontal: 12,
+              borderTopWidth: 1,
+              borderTopColor: "rgba(0,0,0,0.1)",
+              flexDirection: "row",
+              alignItems: "flex-start",
+            }}
+          >
+            <Text
+              style={{
+                fontSize: 16,
+                color: colors.textVariant,
+                fontWeight: "600",
+                width: 120,
+                marginRight: 6,
+              }}
+            >
+              チェックイン
+            </Text>
+            <Text style={{ fontSize: 16, color: "rgba(150,150,150,1)" }}>
+              {fromDateTime.format("YYYY年MM月DD日　HH：mm時")}
+            </Text>
+          </View>
+
+          <View
+            style={{
+              paddingVertical: 16,
+              paddingHorizontal: 12,
+              borderTopWidth: 1,
+              borderTopColor: "rgba(0,0,0,0.1)",
+              flexDirection: "row",
+              alignItems: "flex-start",
+            }}
+          >
+            <Text
+              style={{
+                fontSize: 16,
+                color: colors.textVariant,
+                fontWeight: "600",
+                width: 120,
+                marginRight: 6,
+              }}
+            >
+              チェックアウト
+            </Text>
+            <Text style={{ fontSize: 16, color: "rgba(150,150,150,1)" }}>
+              {toDateTime.format("YYYY年MM月DD日　HH：mm時")}
+            </Text>
+          </View>
+
+          <View
+            style={{
+              paddingVertical: 16,
+              paddingHorizontal: 12,
+              borderTopWidth: 1,
+              borderTopColor: "rgba(0,0,0,0.1)",
+              flexDirection: "row",
+              alignItems: "flex-start",
+            }}
+          >
+            <Text
+              style={{
+                fontSize: 16,
+                color: colors.textVariant,
+                fontWeight: "600",
+                width: 120,
+                marginRight: 6,
+              }}
+            >
+              Status
+            </Text>
+            <Text style={{ fontSize: 16, color: "rgba(150,150,150,1)" }}>
+              {reservationData.status}
+            </Text>
+          </View>
+
+          <View
+            style={{
+              paddingVertical: 16,
+              paddingHorizontal: 12,
+              borderTopWidth: 1,
+              borderTopColor: "rgba(0,0,0,0.1)",
+              flexDirection: "row",
+              alignItems: "flex-start",
+            }}
+          >
+            <Text
+              style={{
+                fontSize: 16,
+                color: colors.textVariant,
+                fontWeight: "600",
+                width: 120,
+                marginRight: 6,
+              }}
+            >
+              Approved on
+            </Text>
+            <Text style={{ fontSize: 16, color: "rgba(150,150,150,1)" }}>
+              {reservationData.approvedOn
+                ? moment(reservationData.approvedOn).format("YYYY年MM月DD日")
+                : "-"}
+            </Text>
+          </View>
+
           <View
             style={{
               paddingVertical: 16,
@@ -258,10 +556,10 @@ export const UserReservationScreen: React.FC<IUserReservationScreenProps> = ({
                 style={{
                   fontSize: 18,
                   fontWeight: "600",
-                  color: "rgba(150,150,150,1)",
+                  color: "rgba(100,100,100,1)",
                 }}
               >
-                {data.space.name}
+                {reservationData.packagePlan.name}
               </Text>
               <Text
                 style={{
@@ -270,58 +568,11 @@ export const UserReservationScreen: React.FC<IUserReservationScreenProps> = ({
                   marginTop: 4,
                 }}
               >
-                {data.space.description}
+                {reservationData.packagePlan.description}
               </Text>
             </View>
           </View>
-        )}
-        {type === "HOTEL" && (
-          /* Plan */
-          <View
-            style={{
-              paddingVertical: 16,
-              paddingHorizontal: 12,
-              borderTopWidth: 1,
-              borderTopColor: "rgba(0,0,0,0.1)",
-              flexDirection: "row",
-              alignItems: "flex-start",
-            }}
-          >
-            <Text
-              style={{
-                fontSize: 16,
-                color: colors.textVariant,
-                fontWeight: "600",
-                width: 120,
-                marginRight: 6,
-              }}
-            >
-              プラン
-            </Text>
-            <View>
-              <Text
-                style={{
-                  fontSize: 18,
-                  fontWeight: "600",
-                  color: "rgba(150,150,150,1)",
-                }}
-              >
-                {data.packagePlan.name}
-              </Text>
-              <Text
-                style={{
-                  fontSize: 16,
-                  color: "rgba(150,150,150,1)",
-                  marginTop: 4,
-                }}
-              >
-                {data.packagePlan.description}
-              </Text>
-            </View>
-          </View>
-        )}
-        {type === "HOTEL" && (
-          /* Room */
+
           <View
             style={{
               paddingVertical: 16,
@@ -348,10 +599,10 @@ export const UserReservationScreen: React.FC<IUserReservationScreenProps> = ({
                 style={{
                   fontSize: 18,
                   fontWeight: "600",
-                  color: "rgba(150,150,150,1)",
+                  color: "rgba(100,100,100,1)",
                 }}
               >
-                {data.hotelRoom.name}
+                {reservationData.hotelRoom.name}
               </Text>
               <Text
                 style={{
@@ -360,47 +611,75 @@ export const UserReservationScreen: React.FC<IUserReservationScreenProps> = ({
                   marginTop: 4,
                 }}
               >
-                {data.hotelRoom.description}
+                {reservationData.hotelRoom.description}
               </Text>
             </View>
           </View>
-        )}
-        <View
-          style={{
-            paddingVertical: 16,
-            paddingHorizontal: 12,
-            borderTopWidth: 1,
-            borderTopColor: "rgba(0,0,0,0.1)",
-            flexDirection: "row",
-            alignItems: "flex-start",
-          }}
-        >
-          <Text
+          <View
             style={{
-              fontSize: 16,
-              color: colors.textVariant,
-              fontWeight: "600",
-              width: 120,
-              marginRight: 6,
+              paddingVertical: 16,
+              paddingHorizontal: 12,
+              borderTopWidth: 1,
+              borderTopColor: "rgba(0,0,0,0.1)",
+              flexDirection: "row",
+              alignItems: "flex-start",
             }}
           >
-            料金
-          </Text>
-          <View>
             <Text
               style={{
-                fontSize: 18,
+                fontSize: 16,
+                color: colors.textVariant,
                 fontWeight: "600",
-                color: "rgba(150,150,150,1)",
+                width: 120,
+                marginRight: 6,
               }}
             >
-              {currencyFormatter(data.transaction.amount)}
+              料金
             </Text>
+            <View>
+              <Text
+                style={{
+                  fontSize: 18,
+                  fontWeight: "600",
+                  color: "rgba(150,150,150,1)",
+                }}
+              >
+                {currencyFormatter(reservationData.transaction.amount)}
+              </Text>
+            </View>
           </View>
-        </View>
-        {data.status !== "CANCELED" &&
-          data.status !== "DISAPPROVED" &&
-          data.status !== "FAILED" && (
+        </>
+      );
+    } else {
+      return null;
+    }
+  }, [reservation]);
+
+  if (!reservation) {
+    return (
+      <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+        <ActivityIndicator />
+      </View>
+    );
+  }
+
+  return (
+    <SafeAreaView
+      edges={["bottom", "left", "right"]}
+      style={{
+        backgroundColor: colors.background,
+        paddingTop: headerHeight,
+        flex: 1,
+      }}
+    >
+      <ScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={{ paddingBottom: 100 }}
+      >
+        {content()}
+        {reservation.status !== "CANCELED" &&
+          reservation.status !== "DISAPPROVED" &&
+          reservation.status !== "FAILED" && (
             <Button
               containerStyle={{
                 backgroundColor: colors.backgroundVariant,

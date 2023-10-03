@@ -1,6 +1,5 @@
 import { NavigationProp, StackActions } from "@react-navigation/native";
 import { Moment } from "moment";
-import { ReservationScreen } from "../dashboard/screens";
 
 export type NavigationAction = "replace" | "navigate";
 
@@ -28,6 +27,10 @@ export default abstract class SpaceCoordinator {
   abstract toChatScreen(
     action?: NavigationAction,
     params?: { recipientId: string; recipientName: string }
+  ): void;
+  abstract toReservationScreen(
+    action?: NavigationAction,
+    params?: { type: string; data: any }
   ): void;
 
   goBack(): void {

@@ -1,5 +1,6 @@
 import { useHeaderHeight } from "@react-navigation/elements";
 import React, { useState } from "react";
+import Checkbox from "expo-checkbox";
 import { observer } from "mobx-react";
 import { useResources } from "../../../resources";
 import AccountCoordinator from "../account-coordinator";
@@ -16,10 +17,31 @@ export interface IAccountEditScreenProps {
   coordinator: AccountCoordinator;
 }
 
+const deactivationReason = [
+  {
+    label: "借りたいスペースが見つからない",
+    value: "借りたいスペースが見つからない",
+  },
+  {
+    label: "アプリ(サイト)が使いづらい",
+    value: "アプリ(サイト)が使いづらい",
+  },
+  {
+    label: "利用する予定が無くなった",
+    value: "利用する予定が無くなった",
+  },
+  {
+    label: "その他",
+    value: "その他",
+  },
+];
+
 export const AccountDeactivateScreen: React.FC<IAccountEditScreenProps> =
   observer(({ coordinator }) => {
     const headerHeight = useHeaderHeight();
     const [password, setPassword] = useState<string>("");
+    const [selectedReason, setSelectedReason] = useState<string[]>([]);
+    const [otherReason, setOtherReason] = useState("");
     const [{ clearToken }] = useState(SessionStore);
 
     const { colors } = useResources();
@@ -50,10 +72,27 @@ export const AccountDeactivateScreen: React.FC<IAccountEditScreenProps> =
 
     const handleAccountDeactivation = async () => {
       if (password.length < 6) {
+        Alert.alert("エラー", "パスワードは 6 文字以上にする必要があります");
         return;
       }
+      if (selectedReason.length === 0) {
+        Alert.alert("エラー", "アカウント削除したい理由を選択してください");
+        return;
+      }
+
+      if (selectedReason.includes("その他") && otherReason.trim() === "") {
+        Alert.alert("エラー", "アカウント削除したいその他理由を入力して下さい");
+        return;
+      }
+
+      const reason = selectedReason.includes("その他")
+        ? `${selectedReason
+            .filter((value) => value !== "その他")
+            .join("、")}、${otherReason}`
+        : `${selectedReason.join("、")}`;
+
       deactivate({
-        variables: { input: { password } },
+        variables: { input: { password, reason } },
       });
     };
 
@@ -78,20 +117,58 @@ export const AccountDeactivateScreen: React.FC<IAccountEditScreenProps> =
           >
             <Text
               style={{
-                color: "#E02424",
-                fontSize: 14,
-                fontWeight: "700",
+                color: colors.textVariant,
+                fontSize: 16,
+                marginBottom: 8,
+                fontWeight: "500",
               }}
             >
-              ※警告！ この操作は元に戻せません。
+              アカウント削除したい理由をお聞かせください
             </Text>
+            <View>
+              {deactivationReason.map(({ value, label }, index) => (
+                <View
+                  key={index.toString()}
+                  style={{ flexDirection: "row", marginVertical: 6 }}
+                >
+                  <Checkbox
+                    value={selectedReason.includes(value) ? true : false}
+                    onValueChange={() => {
+                      if (selectedReason.includes(value)) {
+                        setSelectedReason(
+                          selectedReason.filter((reason) => value !== reason)
+                        );
+                      } else {
+                        setSelectedReason([...selectedReason, value]);
+                      }
+                    }}
+                    disabled={loading}
+                    color={colors.primary}
+                  />
+                  <Text style={{ marginLeft: 8, color: colors.textVariant }}>
+                    {label}
+                  </Text>
+                </View>
+              ))}
+            </View>
+            {selectedReason.includes("その他") && (
+              <View style={{ marginTop: 18 }}>
+                <TextInput
+                  placeholder="その他の理由を入力してください"
+                  value={otherReason}
+                  onChangeText={(text) => {
+                    setOtherReason(text);
+                  }}
+                  label="その他の理由"
+                  maxLength={100}
+                  disabled={loading}
+                />
+              </View>
+            )}
           </View>
           <View
             style={{
               marginTop: 12,
-              borderTopWidth: 1,
-              borderTopColor: "rgba(240,240,240,1)",
-              paddingTop: 12,
             }}
           >
             <TextInput
@@ -130,6 +207,23 @@ export const AccountDeactivateScreen: React.FC<IAccountEditScreenProps> =
                 アカウントを削除
               </Text>
             </Touchable>
+            <View
+              style={{
+                paddingHorizontal: 12,
+                paddingTop: 18,
+                paddingBottom: 6,
+              }}
+            >
+              <Text
+                style={{
+                  color: "#E02424",
+                  fontSize: 14,
+                  textAlign: "center",
+                }}
+              >
+                ※この操作は元には戻せません。
+              </Text>
+            </View>
           </View>
           {loading && (
             <View style={{ marginTop: 24 }}>

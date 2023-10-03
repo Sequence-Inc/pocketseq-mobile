@@ -21,4 +21,22 @@ export class SpaceCoordinator extends ISpaceCoordinator {
       this.navigation.dispatch(StackActions.replace("dashboard-tab"));
     else this.navigation.navigate("dashboard-tab");
   }
+  toReservationScreen(
+    action: NavigationAction = "navigate",
+    params: any
+  ): void {
+    console.log({ params });
+    if (action === "replace") {
+      // goes back to space screen
+      this.navigation.dispatch(StackActions.popToTop());
+      // then navigates to reservation screen
+      this.navigation.navigate("user-reservation-stack", {
+        screen: "user-reservation-screen",
+        initial: true,
+        params,
+      });
+    } else {
+      this.navigation.navigate("user-reservation-stack", params);
+    }
+  }
 }

@@ -13,7 +13,7 @@ export interface SpaceSetting {
 }
 
 export const SPACE_SETTING = `
-  id:
+  id
   totalStock
   isDefault
   closed

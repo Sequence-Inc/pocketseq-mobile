@@ -35,7 +35,7 @@ export const useSpace = () => {
     SpaceByIdResult,
     SpaceByIdInput
   >(SPACE_BY_ID, {
-    fetchPolicy: "cache-first",
+    fetchPolicy: "network-only",
   });
 
   const fetchSpaceById = React.useCallback(

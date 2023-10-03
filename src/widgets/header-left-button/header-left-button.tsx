@@ -21,6 +21,9 @@ const HeaderLeftButton: React.FC<IHeaderLeftButtonProps> = (props) => {
         onPress={() => {
           coordinator.goBack();
         }}
+        accessible={true}
+        accessibilityLabel="戻る"
+        accessibilityHint="前の画面に移動します"
       >
         <SVGImage
           style={{ width: 28, height: 28 }}

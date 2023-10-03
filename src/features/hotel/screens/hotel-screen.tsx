@@ -110,7 +110,7 @@ export const HotelScreen: React.FC<ISpaceScreenProps> = ({ coordinator }) => {
         <Text
           style={{ fontSize: 16, fontWeight: "700", color: colors.textVariant }}
         >
-          {error || `There was an error!`}
+          {error || `エラーが発生しました`}
         </Text>
       </FullScreenErrorView>
     );

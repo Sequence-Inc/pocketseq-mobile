@@ -3,9 +3,30 @@ import { gql, useMutation, useQuery } from "@apollo/client";
 import { useForm, useFieldArray } from "react-hook-form";
 import { CANCEL_POLICY } from "../../../domains";
 
+// const test = {
+//   fromDateTime: 1695943800000,
+//   duration: 1,
+//   durationType: "HOURLY",
+//   spaceId: "cl8vb6c9q022209jrk8s9759s",
+//   paymentSourceId: "pm_1MlSTbJX7alBswvIKzOdQTcY",
+//   additionalOptions: [],
+//   useSubscription: false,
+// };
+
+// const another = {
+//   fromDateTime: 1695943800000,
+//   duration: 1,
+//   durationType: "HOURLY",
+//   spaceId: "cl8vb6c9q022209jrk8s9759s",
+//   paymentSourceId: "pm_1MlSTbJX7alBswvIKzOdQTcY",
+//   additionalOptions: [],
+//   useSubscription: false,
+// };
+
 export const RESERVE_SPACE = gql`
   mutation ReserveSpace($input: ReserveSpaceInput) {
     reserveSpace(input: $input) {
+      id
       transactionId
       intentId
       intentCode

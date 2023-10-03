@@ -74,7 +74,7 @@ export const MessageItem: React.FC<IMessageItemProps> = ({
     if (!messageObject) return {};
 
     return {
-      isSelfSender: messageObject.sender?.accountId === currentProfile.id,
+      isSelfSender: messageObject.sender?.id === currentProfile.id,
       message: messageObject.message,
       messageDate: dateString(messageObject.updatedAt),
       senderImage: messageObject.sender?.profilePhoto?.medium.url,
@@ -155,20 +155,20 @@ export const ChatScreen: React.FC<IChatScreenProps> = ({
 
   const [{ accessToken, profile }] = useState(SessionStore);
 
+  // TODO: Remove this after debugging
+  // console.log(Object.keys(profile));
+
   const chatId = useMemo(() => {
     return createNewChatResult.data?.createNewChat.chatId || chatObject?.id;
   }, [createNewChatResult, chatObject]);
 
   const sendMessage = useCallback(async () => {
     if (newMessage && newMessage.length > 0) {
-      // console.log(chatId, recepientId);
-
       if (chatId) {
         const result = await sendMessageMutation({
           chatId,
           message: newMessage,
         });
-        // console.log(result.data);
 
         if (result.data?.sendMessage.delivered) {
           setNewMessage(undefined);
@@ -179,7 +179,6 @@ export const ChatScreen: React.FC<IChatScreenProps> = ({
           recipientIds: [recepientId],
           message: newMessage,
         });
-        // console.log(result.data);
 
         if (result.data?.createNewChat.delivered) {
           setNewMessage(undefined);

@@ -45,6 +45,7 @@ const newErrorLink = (uri: string) => {
   return onError(({ forward, operation, graphQLErrors, networkError }) => {
     if (graphQLErrors) {
       for (const error of graphQLErrors) {
+        console.log(error);
         const gqlError = error as unknown as GqlError;
         const { action, code, info, message } = gqlError;
         if (action === "logout") SessionStore.clearToken();
