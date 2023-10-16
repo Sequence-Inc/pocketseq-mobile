@@ -19,6 +19,7 @@ import {
 } from "../../../services/domains";
 import moment from "moment";
 import { Touchable } from "../../../widgets/touchable";
+import { reservationStatusJapanify } from "../../../utils/strings";
 
 export type IHotelReservationItemProps = IReservationScreenProps & {
   reservation: UserReservationHotel;
@@ -58,27 +59,40 @@ const HotelReservationItem: React.FC<IHotelReservationItemProps> = ({
 
   return (
     <Touchable
-      style={{ backgroundColor: colors.background, margin: 10, padding: 10 }}
+      style={{
+        backgroundColor: colors.background,
+        padding: 16,
+        borderRadius: 6,
+      }}
       touchType="none"
       onPress={onItemPress}
     >
-      <View style={{ flexDirection: "row" }}>
-        <Text style={{ flex: 1, color: colors.textVariant }}>
+      <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+        <Text style={{ flex: 1, color: "#888" }}>
           {fromDateTime.format("YYYY年MM月DD日")}〜
           {toDateTime.format("MM月DD日")}
         </Text>
-        <Text style={{ color: colors.textVariant }}>
+        <Text style={{ color: "#888" }}>
           {toDateTime.diff(fromDateTime, "days")}日間
         </Text>
       </View>
-      <Text style={{ color: colors.primary, fontSize: 20, paddingVertical: 5 }}>
-        {reservation.packagePlan.name}
-      </Text>
-      <View style={{ flexDirection: "row" }}>
-        <Text style={{ flex: 1, color: colors.textVariant }}>
-          {reservation.hotelRoom.name}
-        </Text>
-        <Text style={{ color: colors.textVariant }}>{reservation.status}</Text>
+      <View style={{ flexDirection: "row", alignItems: "center" }}>
+        <View style={{ flexGrow: 1 }}>
+          <Text
+            style={{ color: colors.primary, fontSize: 20, paddingVertical: 5 }}
+          >
+            {reservation.packagePlan.name}
+          </Text>
+          <Text style={{ flex: 1, color: colors.textVariant }}>
+            {reservation.hotelRoom.name}
+          </Text>
+        </View>
+
+        <View>
+          <Text style={{ color: colors.textVariant }}>
+            {reservationStatusJapanify(reservation.status)}
+          </Text>
+        </View>
       </View>
     </Touchable>
   );
@@ -110,22 +124,30 @@ const SpaceReservationItem: React.FC<ISpaceReservationItemProps> = ({
 
   return (
     <Touchable
-      style={{ backgroundColor: colors.background, margin: 10, padding: 10 }}
+      style={{
+        backgroundColor: colors.background,
+        padding: 16,
+        borderRadius: 6,
+      }}
       touchType="none"
       onPress={onItemPress}
     >
-      <View style={{ flexDirection: "row" }}>
-        <Text style={{ color: colors.textVariant }}>
-          {fromDateTime.format("YYYY年MM月DD日")}
-        </Text>
-        <Text style={{ flex: 1 }}></Text>
-      </View>
-      <Text style={{ color: colors.primary, fontSize: 20, paddingVertical: 5 }}>
-        {reservation.space.name}
-      </Text>
-      <View style={{ flexDirection: "row" }}>
-        <View style={{ flex: 1 }} />
-        <Text>{reservation.status}</Text>
+      <View style={{ flexDirection: "row", alignItems: "center" }}>
+        <View style={{ flexGrow: 1 }}>
+          <Text style={{ color: colors.textVariant }}>
+            {fromDateTime.format("YYYY年MM月DD日")}
+          </Text>
+          <Text
+            style={{ color: colors.primary, fontSize: 20, paddingVertical: 5 }}
+          >
+            {reservation.space.name}
+          </Text>
+        </View>
+        <View>
+          <Text style={{ color: colors.textVariant }}>
+            {reservationStatusJapanify(reservation.status)}
+          </Text>
+        </View>
       </View>
     </Touchable>
   );
@@ -240,6 +262,8 @@ export const ReservationScreen: React.FC<IReservationScreenProps> = ({
               onRefresh={onRefresh}
             />
           }
+          ItemSeparatorComponent={() => <View style={{ height: 12 }} />}
+          contentContainerStyle={{ padding: 12 }}
         />
       ) : (
         <FlatList
@@ -257,6 +281,8 @@ export const ReservationScreen: React.FC<IReservationScreenProps> = ({
               onRefresh={onRefresh}
             />
           }
+          ItemSeparatorComponent={() => <View style={{ height: 12 }} />}
+          contentContainerStyle={{ padding: 12 }}
         />
       )}
     </View>

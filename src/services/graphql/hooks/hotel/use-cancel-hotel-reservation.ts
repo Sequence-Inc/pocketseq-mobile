@@ -38,6 +38,8 @@ export const useCancelHotelReservation: MutationHook<
       variables: { input: { hotelRoomReservationId: reservation.id } },
       fetchPolicy: "no-cache",
     });
+    console.log(cancelResult);
+
     if (cancelResult.data) {
       client.writeQuery({
         query: gql`

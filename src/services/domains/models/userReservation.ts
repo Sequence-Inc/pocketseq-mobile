@@ -9,8 +9,7 @@ export type ReservationStatus =
   | "PENDING"
   | "FAILED"
   | "DISAPPROVED"
-  | "CANCELED"
-  | undefined;
+  | "CANCELED";
 
 export type SortOrder = "asc" | "desc";
 

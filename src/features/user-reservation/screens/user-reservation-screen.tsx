@@ -1,6 +1,6 @@
 import { useHeaderHeight } from "@react-navigation/elements";
 import React, { useCallback, useEffect, useState } from "react";
-import { ActivityIndicator, Modal, ScrollView, Text, View } from "react-native";
+import { ActivityIndicator, Alert, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useResources } from "../../../resources";
 import UserReservationCoordinator from "../user-reservation-coordinator";
@@ -11,14 +11,16 @@ import {
 import { RouteProp, useRoute } from "@react-navigation/native";
 import moment from "moment";
 import { Button } from "../../../widgets/button";
-import { Touchable } from "../../../widgets/touchable";
 import {
   useCancelHotelReservation,
   useCancelSpaceReservation,
   useHotelReservationById,
   useSpaceReservationById,
 } from "../../../services/graphql";
-import { currencyFormatter } from "../../../utils/strings";
+import {
+  currencyFormatter,
+  reservationStatusJapanify,
+} from "../../../utils/strings";
 
 export type IUserReservationScreenProps = {
   coordinator: UserReservationCoordinator;
@@ -36,7 +38,6 @@ export const UserReservationScreen: React.FC<IUserReservationScreenProps> = ({
     UserReservationSpace | UserReservationHotel
   >();
 
-  const [showModal, setShowModal] = useState(false);
   const headerHeight = useHeaderHeight();
   const { colors } = useResources();
 
@@ -87,7 +88,6 @@ export const UserReservationScreen: React.FC<IUserReservationScreenProps> = ({
     useCancelSpaceReservation();
 
   const onConfirmCancellationPress = useCallback(async () => {
-    setShowModal(false);
     if (!reservation) {
       return;
     }
@@ -96,7 +96,7 @@ export const UserReservationScreen: React.FC<IUserReservationScreenProps> = ({
     else if (type === "SPACE")
       await cancelSpaceReservation(reservation as UserReservationSpace);
     coordinator.goBack();
-  }, []);
+  }, [reservation]);
 
   const content = useCallback(() => {
     if (!reservation) {
@@ -104,6 +104,8 @@ export const UserReservationScreen: React.FC<IUserReservationScreenProps> = ({
     }
     const fromDateTime = moment(reservation.fromDateTime);
     const toDateTime = moment(reservation.toDateTime);
+    const differenceHours = toDateTime.diff(fromDateTime, "hours");
+    const differenceDays = toDateTime.diff(fromDateTime, "days");
 
     if (type === "SPACE") {
       const reservationData = reservation as UserReservationSpace;
@@ -123,7 +125,7 @@ export const UserReservationScreen: React.FC<IUserReservationScreenProps> = ({
                 fontWeight: "500",
               }}
             >
-              {toDateTime.diff(fromDateTime, "days")}日間
+              {differenceHours}時間
             </Text>
             <Text
               style={{
@@ -132,8 +134,8 @@ export const UserReservationScreen: React.FC<IUserReservationScreenProps> = ({
                 marginTop: 4,
               }}
             >
-              {fromDateTime.format("YYYY年MM月DD日")}〜
-              {toDateTime.format("MM月DD日")}まで
+              {fromDateTime.format("YYYY年MM月DD日 HH:mm")}〜
+              {toDateTime.format("HH:mm")}まで
             </Text>
           </View>
           <View
@@ -231,10 +233,10 @@ export const UserReservationScreen: React.FC<IUserReservationScreenProps> = ({
                 marginRight: 6,
               }}
             >
-              Status
+              進捗
             </Text>
             <Text style={{ fontSize: 16, color: "rgba(150,150,150,1)" }}>
-              {reservationData.status}
+              {reservationStatusJapanify(reservationData.status)}
             </Text>
           </View>
 
@@ -257,7 +259,7 @@ export const UserReservationScreen: React.FC<IUserReservationScreenProps> = ({
                 marginRight: 6,
               }}
             >
-              Approved on
+              承認日
             </Text>
             <Text style={{ fontSize: 16, color: "rgba(150,150,150,1)" }}>
               {reservationData.approvedOn
@@ -384,7 +386,7 @@ export const UserReservationScreen: React.FC<IUserReservationScreenProps> = ({
                 fontWeight: "500",
               }}
             >
-              {toDateTime.diff(fromDateTime, "days")}日間
+              {differenceDays}日間
             </Text>
             <Text
               style={{
@@ -446,7 +448,7 @@ export const UserReservationScreen: React.FC<IUserReservationScreenProps> = ({
               チェックイン
             </Text>
             <Text style={{ fontSize: 16, color: "rgba(150,150,150,1)" }}>
-              {fromDateTime.format("YYYY年MM月DD日　HH：mm時")}
+              {fromDateTime.format("YYYY年MM月DD日　HH:mm")}
             </Text>
           </View>
 
@@ -472,7 +474,7 @@ export const UserReservationScreen: React.FC<IUserReservationScreenProps> = ({
               チェックアウト
             </Text>
             <Text style={{ fontSize: 16, color: "rgba(150,150,150,1)" }}>
-              {toDateTime.format("YYYY年MM月DD日　HH：mm時")}
+              {toDateTime.format("YYYY年MM月DD日　HH:mm")}
             </Text>
           </View>
 
@@ -495,10 +497,10 @@ export const UserReservationScreen: React.FC<IUserReservationScreenProps> = ({
                 marginRight: 6,
               }}
             >
-              Status
+              進捗
             </Text>
             <Text style={{ fontSize: 16, color: "rgba(150,150,150,1)" }}>
-              {reservationData.status}
+              {reservationStatusJapanify(reservationData.status)}
             </Text>
           </View>
 
@@ -521,7 +523,7 @@ export const UserReservationScreen: React.FC<IUserReservationScreenProps> = ({
                 marginRight: 6,
               }}
             >
-              Approved on
+              承認日
             </Text>
             <Text style={{ fontSize: 16, color: "rgba(150,150,150,1)" }}>
               {reservationData.approvedOn
@@ -685,51 +687,31 @@ export const UserReservationScreen: React.FC<IUserReservationScreenProps> = ({
                 backgroundColor: colors.backgroundVariant,
                 margin: 12,
               }}
-              title="Cancel Reservation"
+              title="予約のキャンセル"
               loading={
                 cancelHotelReservationResult.loading ||
                 cancelSpaceReservationResult.loading
               }
-              onPress={() => setShowModal(true)}
+              onPress={() => {
+                Alert.alert(
+                  "予約をキャンセル",
+                  "この予約をキャンセルしますか？",
+                  [
+                    {
+                      text: "予約をキャンセル",
+                      style: "destructive",
+                      onPress: onConfirmCancellationPress,
+                    },
+                    {
+                      text: "却下",
+                      style: "cancel",
+                    },
+                  ]
+                );
+              }}
             />
           )}
       </ScrollView>
-      <Modal visible={showModal} transparent={true}>
-        <Touchable
-          style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
-          touchType="none"
-          onPress={() => setShowModal(false)}
-        >
-          <View
-            style={{
-              margin: 20,
-              backgroundColor: colors.background,
-              borderRadius: 20,
-              padding: 35,
-              alignItems: "center",
-              shadowColor: "#000",
-              shadowOffset: {
-                width: 0,
-                height: 2,
-              },
-              shadowOpacity: 0.25,
-              shadowRadius: 4,
-              elevation: 5,
-            }}
-          >
-            <Text style={{ marginTop: 12, marginBottom: 20 }}>
-              Are you sure you want to cancel this reservation?
-            </Text>
-            <Button
-              containerStyle={{ backgroundColor: colors.secondary, margin: 12 }}
-              titleStyle={{ color: colors.background }}
-              title="Confirm cancellation"
-              onPress={onConfirmCancellationPress}
-            />
-            <Button title="Dismiss" onPress={() => setShowModal(false)} />
-          </View>
-        </Touchable>
-      </Modal>
     </SafeAreaView>
   );
 };
